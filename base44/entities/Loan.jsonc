@@ -46,6 +46,66 @@
       "type": "string",
       "description": "Realtor brokerage name"
     },
+    "buyer_agent_name": {
+      "type": "string",
+      "description": "Buyer agent name"
+    },
+    "buyer_agent_phone": {
+      "type": "string",
+      "description": "Buyer agent phone"
+    },
+    "buyer_agent_email": {
+      "type": "string",
+      "description": "Buyer agent email"
+    },
+    "selling_agent_name": {
+      "type": "string",
+      "description": "Selling agent name"
+    },
+    "selling_agent_phone": {
+      "type": "string",
+      "description": "Selling agent phone"
+    },
+    "selling_agent_email": {
+      "type": "string",
+      "description": "Selling agent email"
+    },
+    "appraiser_name": {
+      "type": "string",
+      "description": "Appraiser name"
+    },
+    "appraiser_phone": {
+      "type": "string",
+      "description": "Appraiser phone"
+    },
+    "appraiser_email": {
+      "type": "string",
+      "description": "Appraiser email"
+    },
+    "closing_attorney_name": {
+      "type": "string",
+      "description": "Closing attorney name"
+    },
+    "closing_attorney_phone": {
+      "type": "string",
+      "description": "Closing attorney phone"
+    },
+    "closing_attorney_email": {
+      "type": "string",
+      "description": "Closing attorney email"
+    },
+    "underwriter_name": {
+      "type": "string",
+      "description": "Underwriter name"
+    },
+    "underwriter_phone": {
+      "type": "string",
+      "description": "Underwriter phone"
+    },
+    "underwriter_email": {
+      "type": "string",
+      "description": "Underwriter email"
+    },
     "needed_items": {
       "type": "array",
       "items": {

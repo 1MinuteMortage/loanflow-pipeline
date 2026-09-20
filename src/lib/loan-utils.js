@@ -64,3 +64,20 @@ export const DEFAULT_UW_CONDITIONS = [
   "Insurance binder",
   "Closing disclosure acknowledged"
 ];
+
+export const CONTACT_ROLES = [
+  { key: "buyer_agent", label: "Buyer Agent" },
+  { key: "selling_agent", label: "Selling Agent" },
+  { key: "appraiser", label: "Appraiser" },
+  { key: "closing_attorney", label: "Closing Attorney" },
+  { key: "underwriter", label: "Underwriter" }
+];
+
+export function getContacts(loan) {
+  return CONTACT_ROLES.map((r) => ({
+    role: r.label,
+    name: loan[`${r.key}_name`] || "",
+    phone: loan[`${r.key}_phone`] || "",
+    email: loan[`${r.key}_email`] || ""
+  })).filter((c) => c.name);
+}

@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { STAGES, STAGE_MAP, fullName, neededSummary, DEFAULT_UW_CONDITIONS } from "@/lib/loan-utils";
 import ChecklistTab from "./ChecklistTab";
+import ContactsTab from "./ContactsTab";
 
 export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
   const [tab, setTab] = useState("info");
@@ -68,6 +69,7 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
           <div className="flex border-b border-border px-6">
             {[
               { key: "info", label: "Borrower & Property Info" },
+              { key: "contacts", label: "Contacts" },
               { key: "docs", label: "Pre UnderWrite Documents" },
               ...(loan.stage === "under_contract"
                 ? [{ key: "uw", label: "UW Conditions" }]
@@ -225,6 +227,10 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
                   />
                 </div>
               </>
+            )}
+
+            {tab === "contacts" && (
+              <ContactsTab loan={loan} onUpdate={onUpdate} />
             )}
 
             {tab === "docs" && (
