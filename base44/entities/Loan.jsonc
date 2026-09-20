@@ -1,0 +1,64 @@
+{
+  "name": "Loan",
+  "type": "object",
+  "properties": {
+    "first_name": {
+      "type": "string",
+      "description": "Borrower's first name"
+    },
+    "last_name": {
+      "type": "string",
+      "description": "Borrower's last name"
+    },
+    "property_address": {
+      "type": "string",
+      "description": "Property street address"
+    },
+    "address_tbd": {
+      "type": "boolean",
+      "default": false,
+      "description": "True when client is in pre-approval and no property is under contract yet"
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "preapproved",
+        "under_contract",
+        "follow_up"
+      ],
+      "default": "pending",
+      "description": "Current pipeline stage"
+    },
+    "needed_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "completed": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "default": [],
+      "description": "Checklist of documents/items still needed"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date",
+      "description": "SLA target date for the current stage"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Free-form notes"
+    }
+  },
+  "required": [
+    "first_name",
+    "last_name"
+  ]
+}
