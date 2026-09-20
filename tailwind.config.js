@@ -48,6 +48,7 @@ module.exports = {
   				pending: '#f59e0b',
   				preapproved: '#10b981',
   				under_contract: '#8b5cf6',
+  				needs_review: '#f43f5e',
   				follow_up: '#0284c7'
   			}
   		},

@@ -3,6 +3,7 @@ export const STAGES = [
   { key: "pending", label: "App Pending", color: "#f59e0b", bg: "#fef3c7", text: "#92400e" },
   { key: "preapproved", label: "Pre-approved", color: "#10b981", bg: "#d1fae5", text: "#065f46" },
   { key: "under_contract", label: "Under Contract", color: "#8b5cf6", bg: "#ede9fe", text: "#5b21b6" },
+  { key: "needs_review", label: "Needs Review", color: "#f43f5e", bg: "#ffe4e6", text: "#9f1239" },
   { key: "follow_up", label: "Follow-up", color: "#0284c7", bg: "#e0f2fe", text: "#075985" }
 ];
 

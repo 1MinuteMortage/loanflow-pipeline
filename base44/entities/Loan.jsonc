@@ -25,6 +25,7 @@
         "pending",
         "preapproved",
         "under_contract",
+        "needs_review",
         "follow_up"
       ],
       "default": "pending",
