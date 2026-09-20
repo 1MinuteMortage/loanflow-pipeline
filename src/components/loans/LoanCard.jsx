@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { STAGE_MAP, fullName, daysRemaining, slaColor, slaLabel, neededSummary } from "@/lib/loan-utils";
+import RealtorCell from "./RealtorCell";
 
 export default function LoanCard({ loan, onOpen }) {
   const [expanded, setExpanded] = useState(false);
@@ -26,6 +27,12 @@ export default function LoanCard({ loan, onOpen }) {
               <span className="text-sm text-muted-foreground line-clamp-1">{loan.property_address}</span>
             )}
           </div>
+          {loan.realtor_name && (
+            <div className="mt-1.5 flex items-center gap-1 text-xs text-muted-foreground">
+              <span>Realtor:</span>
+              <RealtorCell loan={loan} />
+            </div>
+          )}
         </div>
         <span
           className="inline-flex items-center px-2 py-1 rounded-md text-xs font-semibold font-mono tabular-nums shrink-0"

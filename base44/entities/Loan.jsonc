@@ -30,6 +30,22 @@
       "default": "pending",
       "description": "Current pipeline stage"
     },
+    "realtor_name": {
+      "type": "string",
+      "description": "Name of the realtor who referred the client"
+    },
+    "realtor_phone": {
+      "type": "string",
+      "description": "Realtor contact phone number"
+    },
+    "realtor_email": {
+      "type": "string",
+      "description": "Realtor contact email"
+    },
+    "realtor_brokerage": {
+      "type": "string",
+      "description": "Realtor brokerage name"
+    },
     "needed_items": {
       "type": "array",
       "items": {

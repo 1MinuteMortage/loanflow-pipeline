@@ -2,11 +2,12 @@ import React from "react";
 import LoanRow from "./LoanRow";
 
 const COLUMNS = [
-  { key: "borrower", label: "Borrower Name", className: "w-[18%]" },
-  { key: "property", label: "Property Address", className: "w-[24%]" },
-  { key: "stage", label: "Stage", className: "w-[14%]" },
-  { key: "needed", label: "Needed Items", className: "w-[26%]" },
-  { key: "sla", label: "SLA", className: "w-[10%]" },
+  { key: "borrower", label: "Borrower Name", className: "w-[15%]" },
+  { key: "property", label: "Property Address", className: "w-[19%]" },
+  { key: "realtor", label: "Realtor", className: "w-[14%]" },
+  { key: "stage", label: "Stage", className: "w-[12%]" },
+  { key: "needed", label: "Needed Items", className: "w-[23%]" },
+  { key: "sla", label: "SLA", className: "w-[9%]" },
   { key: "actions", label: "", className: "w-[8%]" }
 ];
 

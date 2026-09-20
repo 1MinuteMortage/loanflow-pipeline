@@ -20,10 +20,14 @@ export default function NewLoanDialog({ open, onOpenChange, onCreate }) {
     address_tbd: false,
     stage: "pending",
     due_date: "",
+    realtor_name: "",
+    realtor_phone: "",
+    realtor_email: "",
+    realtor_brokerage: "",
   });
 
   const reset = () =>
-    setForm({ first_name: "", last_name: "", property_address: "", address_tbd: false, stage: "pending", due_date: "" });
+    setForm({ first_name: "", last_name: "", property_address: "", address_tbd: false, stage: "pending", due_date: "", realtor_name: "", realtor_phone: "", realtor_email: "", realtor_brokerage: "" });
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -109,6 +113,32 @@ export default function NewLoanDialog({ open, onOpenChange, onCreate }) {
               disabled={form.address_tbd}
               onChange={(e) => setForm({ ...form, property_address: e.target.value })}
               placeholder={form.address_tbd ? "No property under contract yet" : "123 Main St, Austin, TX 78701"}
+            />
+          </div>
+
+          <div className="space-y-2.5 rounded-lg border border-border p-3">
+            <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Realtor (Referral)</div>
+            <Input
+              placeholder="Realtor full name"
+              value={form.realtor_name}
+              onChange={(e) => setForm({ ...form, realtor_name: e.target.value })}
+            />
+            <div className="grid grid-cols-2 gap-3">
+              <Input
+                placeholder="Phone"
+                value={form.realtor_phone}
+                onChange={(e) => setForm({ ...form, realtor_phone: e.target.value })}
+              />
+              <Input
+                placeholder="Email"
+                value={form.realtor_email}
+                onChange={(e) => setForm({ ...form, realtor_email: e.target.value })}
+              />
+            </div>
+            <Input
+              placeholder="Brokerage"
+              value={form.realtor_brokerage}
+              onChange={(e) => setForm({ ...form, realtor_brokerage: e.target.value })}
             />
           </div>
 

@@ -50,7 +50,7 @@ export function neededSummary(loan) {
 
 // Default checklist templates per stage
 export const DEFAULT_CHECKLISTS = {
-  pending: ["Credit report", "Income documents (W-2 / paystubs)", "Bank statements", "ID verification", "Loan application signed"],
+  pending: ["Credit report", "Income documents (W-2 / paystubs / tax returns)", "Bank statements", "ID verification", "Loan application signed"],
   preapproved: ["Updated credit pull", "Pre-approval letter issued", "Property criteria confirmed"],
   under_contract: ["Purchase contract", "Appraisal ordered", "Title commitment", "Homeowners insurance", "Final loan approval"],
   follow_up: ["Re-contact borrower", "Updated documents", "Decision on resubmission"]
