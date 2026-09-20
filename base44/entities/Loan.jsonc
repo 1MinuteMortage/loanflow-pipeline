@@ -41,6 +41,14 @@
           "completed": {
             "type": "boolean",
             "default": false
+          },
+          "file_url": {
+            "type": "string",
+            "description": "Uploaded document URL"
+          },
+          "file_name": {
+            "type": "string",
+            "description": "Original uploaded file name"
           }
         }
       },

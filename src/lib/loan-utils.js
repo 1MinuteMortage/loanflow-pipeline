@@ -1,6 +1,6 @@
 // Stage metadata for the loan pipeline
 export const STAGES = [
-  { key: "pending", label: "Pending", color: "#f59e0b", bg: "#fef3c7", text: "#92400e" },
+  { key: "pending", label: "App Pending", color: "#f59e0b", bg: "#fef3c7", text: "#92400e" },
   { key: "preapproved", label: "Pre-approved", color: "#10b981", bg: "#d1fae5", text: "#065f46" },
   { key: "under_contract", label: "Under Contract", color: "#8b5cf6", bg: "#ede9fe", text: "#5b21b6" },
   { key: "follow_up", label: "Follow-up", color: "#0284c7", bg: "#e0f2fe", text: "#075985" }

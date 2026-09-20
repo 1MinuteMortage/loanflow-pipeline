@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Sheet,
   SheetContent,
@@ -10,13 +10,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Trash2, Clock, CheckCircle2 } from "lucide-react";
-import { STAGES, STAGE_MAP, fullName, daysRemaining, slaColor, slaLabel, neededSummary } from "@/lib/loan-utils";
+import { Plus, Trash2, CheckCircle2, Paperclip, FileText, Loader2, Eye } from "lucide-react";
+import { base44 } from "@/api/base44Client";
+import { STAGES, STAGE_MAP, fullName, neededSummary } from "@/lib/loan-utils";
+import DocPreview from "./DocPreview";
 
 export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
   const [tab, setTab] = useState("info");
   const [form, setForm] = useState(null);
   const [newItem, setNewItem] = useState("");
+  const [uploadingIdx, setUploadingIdx] = useState(null);
+  const [previewDoc, setPreviewDoc] = useState(null);
+  const fileRefs = useRef([]);
 
   useEffect(() => {
     if (loan) {
@@ -35,9 +40,7 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
 
   if (!form) return null;
 
-  const days = daysRemaining(loan);
   const needed = neededSummary(loan);
-  const color = slaColor(days);
   const stage = STAGE_MAP[loan.stage];
 
   const saveField = (patch) => onUpdate(loan.id, patch);
@@ -64,176 +67,172 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
     saveField({ needed_items: items });
   };
 
+  const handleUpload = async (idx, file) => {
+    if (!file) return;
+    setUploadingIdx(idx);
+    try {
+      const res = await base44.integrations.Core.UploadPublicFile({ file });
+      const file_url = res.file_url;
+      const items = form.needed_items.map((it, i) =>
+        i === idx ? { ...it, file_url, file_name: file.name } : it
+      );
+      setForm({ ...form, needed_items: items });
+      saveField({ needed_items: items });
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setUploadingIdx(null);
+    }
+  };
+
+  const openPreview = (item) => {
+    if (item.file_url) {
+      setPreviewDoc({ url: item.file_url, name: item.file_name || "Document" });
+    }
+  };
+
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-[560px] p-0 flex flex-col" side="right">
-        {/* Header */}
-        <SheetHeader className="px-6 pt-6 pb-4 border-b border-border">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <SheetTitle className="font-heading text-2xl truncate">{fullName(loan)}</SheetTitle>
-              <div className="mt-2 flex flex-wrap items-center gap-2">
-                <span
-                  className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold"
-                  style={{ backgroundColor: stage.bg, color: stage.text }}
-                >
-                  {stage.label}
-                </span>
-                <span
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-semibold font-mono tabular-nums"
-                  style={{ backgroundColor: `${color}14`, color }}
-                >
-                  <Clock className="w-3 h-3" />
-                  {slaLabel(days)}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  {needed.remaining} item{needed.remaining !== 1 ? "s" : ""} needed
-                </span>
+    <>
+      <Sheet open={open} onOpenChange={onOpenChange}>
+        <SheetContent className="w-full sm:max-w-[560px] p-0 flex flex-col" side="right">
+          {/* Header */}
+          <SheetHeader className="px-6 pt-6 pb-4 border-b border-border">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <SheetTitle className="font-heading text-2xl truncate">{fullName(loan)}</SheetTitle>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <span
+                    className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold"
+                    style={{ backgroundColor: stage.bg, color: stage.text }}
+                  >
+                    {stage.label}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {needed.remaining} item{needed.remaining !== 1 ? "s" : ""} needed
+                  </span>
+                </div>
               </div>
             </div>
+          </SheetHeader>
+
+          {/* Tabs */}
+          <div className="flex border-b border-border px-6">
+            {[
+              { key: "info", label: "Borrower & Property Info" },
+              { key: "docs", label: "Document Requirements" },
+            ].map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key)}
+                className={`px-1 py-3 mr-6 text-sm font-medium border-b-2 transition-colors ${
+                  tab === t.key
+                    ? "border-primary text-foreground"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
           </div>
-        </SheetHeader>
 
-        {/* Tabs */}
-        <div className="flex border-b border-border px-6">
-          {[
-            { key: "info", label: "Borrower & Property Info" },
-            { key: "docs", label: "Document Requirements & SLA" },
-          ].map((t) => (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              className={`px-1 py-3 mr-6 text-sm font-medium border-b-2 transition-colors ${
-                tab === t.key
-                  ? "border-primary text-foreground"
-                  : "border-transparent text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
-          {tab === "info" && (
-            <>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">First Name</Label>
-                  <Input
-                    value={form.first_name}
-                    onChange={(e) => {
-                      setForm({ ...form, first_name: e.target.value });
-                      saveField({ first_name: e.target.value });
-                    }}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Last Name</Label>
-                  <Input
-                    value={form.last_name}
-                    onChange={(e) => {
-                      setForm({ ...form, last_name: e.target.value });
-                      saveField({ last_name: e.target.value });
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Pipeline Stage</Label>
-                <select
-                  value={form.stage}
-                  onChange={(e) => {
-                    setForm({ ...form, stage: e.target.value });
-                    saveField({ stage: e.target.value });
-                  }}
-                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
-                >
-                  {STAGES.map((s) => (
-                    <option key={s.key} value={s.key}>{s.label}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Property Address</Label>
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="tbd" className="text-xs text-muted-foreground">TBD / Pre-approval</Label>
-                    <Switch
-                      id="tbd"
-                      checked={form.address_tbd}
-                      onCheckedChange={(v) => {
-                        setForm({ ...form, address_tbd: v });
-                        saveField({ address_tbd: v });
+          {/* Body */}
+          <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+            {tab === "info" && (
+              <>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">First Name</Label>
+                    <Input
+                      value={form.first_name}
+                      onChange={(e) => {
+                        setForm({ ...form, first_name: e.target.value });
+                        saveField({ first_name: e.target.value });
+                      }}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Last Name</Label>
+                    <Input
+                      value={form.last_name}
+                      onChange={(e) => {
+                        setForm({ ...form, last_name: e.target.value });
+                        saveField({ last_name: e.target.value });
                       }}
                     />
                   </div>
                 </div>
-                <Input
-                  value={form.property_address}
-                  disabled={form.address_tbd}
-                  onChange={(e) => {
-                    setForm({ ...form, property_address: e.target.value });
-                    saveField({ property_address: e.target.value });
-                  }}
-                  placeholder={form.address_tbd ? "No property under contract yet" : "123 Main St, Austin, TX 78701"}
-                />
-              </div>
 
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">SLA Due Date</Label>
-                <Input
-                  type="date"
-                  value={form.due_date}
-                  onChange={(e) => {
-                    setForm({ ...form, due_date: e.target.value });
-                    saveField({ due_date: e.target.value });
-                  }}
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Notes</Label>
-                <textarea
-                  value={form.notes}
-                  onChange={(e) => {
-                    setForm({ ...form, notes: e.target.value });
-                    saveField({ notes: e.target.value });
-                  }}
-                  rows={3}
-                  className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring resize-none"
-                  placeholder="Add any notes about this borrower..."
-                />
-              </div>
-            </>
-          )}
-
-          {tab === "docs" && (
-            <>
-              {/* SLA Tracker */}
-              <div className="rounded-lg border border-border p-4 bg-muted/30">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">SLA Countdown</div>
-                    <div className="mt-1 font-mono text-2xl font-semibold tabular-nums" style={{ color }}>
-                      {slaLabel(days)}
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Due Date</div>
-                    <div className="mt-1 text-sm font-medium">
-                      {loan.due_date
-                        ? new Date(loan.due_date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-                        : "Not set"}
-                    </div>
-                  </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Pipeline Stage</Label>
+                  <select
+                    value={form.stage}
+                    onChange={(e) => {
+                      setForm({ ...form, stage: e.target.value });
+                      saveField({ stage: e.target.value });
+                    }}
+                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
+                  >
+                    {STAGES.map((s) => (
+                      <option key={s.key} value={s.key}>{s.label}</option>
+                    ))}
+                  </select>
                 </div>
-              </div>
 
-              {/* Needed items checklist */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Property Address</Label>
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="tbd" className="text-xs text-muted-foreground">TBD / Pre-approval</Label>
+                      <Switch
+                        id="tbd"
+                        checked={form.address_tbd}
+                        onCheckedChange={(v) => {
+                          setForm({ ...form, address_tbd: v });
+                          saveField({ address_tbd: v });
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <Input
+                    value={form.property_address}
+                    disabled={form.address_tbd}
+                    onChange={(e) => {
+                      setForm({ ...form, property_address: e.target.value });
+                      saveField({ property_address: e.target.value });
+                    }}
+                    placeholder={form.address_tbd ? "No property under contract yet" : "123 Main St, Austin, TX 78701"}
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">SLA Due Date</Label>
+                  <Input
+                    type="date"
+                    value={form.due_date}
+                    onChange={(e) => {
+                      setForm({ ...form, due_date: e.target.value });
+                      saveField({ due_date: e.target.value });
+                    }}
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Notes</Label>
+                  <textarea
+                    value={form.notes}
+                    onChange={(e) => {
+                      setForm({ ...form, notes: e.target.value });
+                      saveField({ notes: e.target.value });
+                    }}
+                    rows={3}
+                    className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring resize-none"
+                    placeholder="Add any notes about this borrower..."
+                  />
+                </div>
+              </>
+            )}
+
+            {tab === "docs" && (
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <div className="text-sm font-semibold">Needed Items</div>
@@ -251,22 +250,60 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
                   {form.needed_items.map((item, idx) => (
                     <div
                       key={idx}
-                      className="group flex items-center gap-2.5 rounded-md border border-border px-3 py-2 hover:bg-muted/40 transition-colors"
+                      className="group rounded-md border border-border px-3 py-2 hover:bg-muted/40 transition-colors"
                     >
-                      <Checkbox
-                        checked={item.completed}
-                        onCheckedChange={() => toggleItem(idx)}
-                      />
-                      <span className={`flex-1 text-sm ${item.completed ? "line-through text-muted-foreground" : "text-foreground"}`}>
-                        {item.label}
-                      </span>
-                      {item.completed && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
-                      <button
-                        onClick={() => removeItem(idx)}
-                        className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center gap-2.5">
+                        <Checkbox
+                          checked={item.completed}
+                          onCheckedChange={() => toggleItem(idx)}
+                        />
+                        <span className={`flex-1 text-sm ${item.completed ? "line-through text-muted-foreground" : "text-foreground"}`}>
+                          {item.label}
+                        </span>
+                        {item.completed && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
+                        <button
+                          onClick={() => removeItem(idx)}
+                          className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      {/* Document upload / preview row */}
+                      <div className="mt-2 pl-7 flex items-center gap-2">
+                        {uploadingIdx === idx ? (
+                          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading...
+                          </span>
+                        ) : item.file_url ? (
+                          <button
+                            onClick={() => openPreview(item)}
+                            className="flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
+                          >
+                            <FileText className="w-3.5 h-3.5" />
+                            <span className="truncate max-w-[200px]">{item.file_name || "View document"}</span>
+                            <Eye className="w-3.5 h-3.5 ml-1" />
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => fileRefs.current[idx]?.click()}
+                            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition"
+                          >
+                            <Paperclip className="w-3.5 h-3.5" /> Upload PDF
+                          </button>
+                        )}
+                        <input
+                          ref={(el) => (fileRefs.current[idx] = el)}
+                          type="file"
+                          accept="application/pdf"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handleUpload(idx, file);
+                            e.target.value = "";
+                          }}
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -284,10 +321,12 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
                   </Button>
                 </div>
               </div>
-            </>
-          )}
-        </div>
-      </SheetContent>
-    </Sheet>
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <DocPreview doc={previewDoc} onClose={() => setPreviewDoc(null)} />
+    </>
   );
 }
