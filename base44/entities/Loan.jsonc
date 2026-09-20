@@ -69,7 +69,32 @@
         }
       },
       "default": [],
-      "description": "Checklist of documents/items still needed"
+      "description": "Pre UnderWrite documents checklist"
+    },
+    "uw_conditions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "completed": {
+            "type": "boolean",
+            "default": false
+          },
+          "file_url": {
+            "type": "string",
+            "description": "Uploaded document URL"
+          },
+          "file_name": {
+            "type": "string",
+            "description": "Original uploaded file name"
+          }
+        }
+      },
+      "default": [],
+      "description": "Underwriting conditions checklist (used once stage is Under Contract)"
     },
     "due_date": {
       "type": "string",

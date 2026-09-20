@@ -50,7 +50,7 @@ export default function LoanCard({ loan, onOpen }) {
           {stage.label}
         </span>
         <span className="text-xs text-muted-foreground tabular-nums">
-          {needed.remaining} needed · {needed.done}/{needed.total} done
+          {needed.remaining} docs needed · {needed.done}/{needed.total} done
         </span>
       </div>
 
@@ -63,7 +63,7 @@ export default function LoanCard({ loan, onOpen }) {
           className="mt-3 flex items-center gap-1 text-xs text-muted-foreground w-full"
         >
           <ChevronDown className={`w-3.5 h-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} />
-          Items needed
+          Pre-UW docs needed
         </button>
       )}
       {expanded && needed.labels.length > 0 && (

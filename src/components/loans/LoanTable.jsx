@@ -6,7 +6,7 @@ const COLUMNS = [
   { key: "property", label: "Property Address", className: "w-[19%]" },
   { key: "realtor", label: "Realtor", className: "w-[14%]" },
   { key: "stage", label: "Stage", className: "w-[12%]" },
-  { key: "needed", label: "Needed Items", className: "w-[23%]" },
+  { key: "needed", label: "Pre-UW Documents", className: "w-[23%]" },
   { key: "sla", label: "SLA", className: "w-[9%]" },
   { key: "actions", label: "", className: "w-[8%]" }
 ];

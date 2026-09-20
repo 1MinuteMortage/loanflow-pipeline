@@ -1,27 +1,19 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Trash2, CheckCircle2, Paperclip, FileText, Loader2, Eye } from "lucide-react";
-import { base44 } from "@/api/base44Client";
-import { STAGES, STAGE_MAP, fullName, neededSummary } from "@/lib/loan-utils";
-import DocPreview from "./DocPreview";
+import { STAGES, STAGE_MAP, fullName, neededSummary, DEFAULT_UW_CONDITIONS } from "@/lib/loan-utils";
+import ChecklistTab from "./ChecklistTab";
 
 export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
   const [tab, setTab] = useState("info");
   const [form, setForm] = useState(null);
-  const [newItem, setNewItem] = useState("");
-  const [uploadingIdx, setUploadingIdx] = useState(null);
-  const [previewDoc, setPreviewDoc] = useState(null);
-  const fileRefs = useRef([]);
 
   useEffect(() => {
     if (loan) {
@@ -37,7 +29,6 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
         realtor_phone: loan.realtor_phone || "",
         realtor_email: loan.realtor_email || "",
         realtor_brokerage: loan.realtor_brokerage || "",
-        needed_items: (loan.needed_items || []).map((i) => ({ ...i })),
       });
     }
   }, [loan]);
@@ -48,52 +39,6 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
   const stage = STAGE_MAP[loan.stage];
 
   const saveField = (patch) => onUpdate(loan.id, patch);
-
-  const toggleItem = (idx) => {
-    const items = form.needed_items.map((it, i) =>
-      i === idx ? { ...it, completed: !it.completed } : it
-    );
-    setForm({ ...form, needed_items: items });
-    saveField({ needed_items: items });
-  };
-
-  const addItem = () => {
-    if (!newItem.trim()) return;
-    const items = [...form.needed_items, { label: newItem.trim(), completed: false }];
-    setForm({ ...form, needed_items: items });
-    saveField({ needed_items: items });
-    setNewItem("");
-  };
-
-  const removeItem = (idx) => {
-    const items = form.needed_items.filter((_, i) => i !== idx);
-    setForm({ ...form, needed_items: items });
-    saveField({ needed_items: items });
-  };
-
-  const handleUpload = async (idx, file) => {
-    if (!file) return;
-    setUploadingIdx(idx);
-    try {
-      const res = await base44.integrations.Core.UploadPublicFile({ file });
-      const file_url = res.file_url;
-      const items = form.needed_items.map((it, i) =>
-        i === idx ? { ...it, file_url, file_name: file.name } : it
-      );
-      setForm({ ...form, needed_items: items });
-      saveField({ needed_items: items });
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setUploadingIdx(null);
-    }
-  };
-
-  const openPreview = (item) => {
-    if (item.file_url) {
-      setPreviewDoc({ url: item.file_url, name: item.file_name || "Document" });
-    }
-  };
 
   return (
     <>
@@ -123,7 +68,10 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
           <div className="flex border-b border-border px-6">
             {[
               { key: "info", label: "Borrower & Property Info" },
-              { key: "docs", label: "Document Requirements" },
+              { key: "docs", label: "Pre UnderWrite Documents" },
+              ...(loan.stage === "under_contract"
+                ? [{ key: "uw", label: "UW Conditions" }]
+                : []),
             ].map((t) => (
               <button
                 key={t.key}
@@ -171,8 +119,13 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
                   <select
                     value={form.stage}
                     onChange={(e) => {
-                      setForm({ ...form, stage: e.target.value });
-                      saveField({ stage: e.target.value });
+                      const newStage = e.target.value;
+                      setForm({ ...form, stage: newStage });
+                      const patch = { stage: newStage };
+                      if (newStage === "under_contract" && (!loan.uw_conditions || loan.uw_conditions.length === 0)) {
+                        patch.uw_conditions = DEFAULT_UW_CONDITIONS.map((label) => ({ label, completed: false }));
+                      }
+                      onUpdate(loan.id, patch);
                     }}
                     className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
                   >
@@ -275,100 +228,25 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
             )}
 
             {tab === "docs" && (
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <div className="text-sm font-semibold">Needed Items</div>
-                  <span className="text-xs text-muted-foreground tabular-nums">
-                    {needed.done} of {needed.total} complete
-                  </span>
-                </div>
+              <ChecklistTab
+                loan={loan}
+                field="needed_items"
+                title="Pre UnderWrite Documents"
+                onUpdate={onUpdate}
+              />
+            )}
 
-                <div className="space-y-1.5">
-                  {form.needed_items.length === 0 && (
-                    <div className="text-sm text-muted-foreground py-4 text-center border border-dashed border-border rounded-lg">
-                      No items yet — add one below.
-                    </div>
-                  )}
-                  {form.needed_items.map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="group rounded-md border border-border px-3 py-2 hover:bg-muted/40 transition-colors"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <Checkbox
-                          checked={item.completed}
-                          onCheckedChange={() => toggleItem(idx)}
-                        />
-                        <span className={`flex-1 text-sm ${item.completed ? "line-through text-muted-foreground" : "text-foreground"}`}>
-                          {item.label}
-                        </span>
-                        {item.completed && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
-                        <button
-                          onClick={() => removeItem(idx)}
-                          className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-
-                      {/* Document upload / preview row */}
-                      <div className="mt-2 pl-7 flex items-center gap-2">
-                        {uploadingIdx === idx ? (
-                          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                            <Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading...
-                          </span>
-                        ) : item.file_url ? (
-                          <button
-                            onClick={() => openPreview(item)}
-                            className="flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
-                          >
-                            <FileText className="w-3.5 h-3.5" />
-                            <span className="truncate max-w-[200px]">{item.file_name || "View document"}</span>
-                            <Eye className="w-3.5 h-3.5 ml-1" />
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => fileRefs.current[idx]?.click()}
-                            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition"
-                          >
-                            <Paperclip className="w-3.5 h-3.5" /> Upload PDF
-                          </button>
-                        )}
-                        <input
-                          ref={(el) => (fileRefs.current[idx] = el)}
-                          type="file"
-                          accept="application/pdf"
-                          className="hidden"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) handleUpload(idx, file);
-                            e.target.value = "";
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="flex items-center gap-2 mt-3">
-                  <Input
-                    value={newItem}
-                    onChange={(e) => setNewItem(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && addItem()}
-                    placeholder="Add a needed item..."
-                    className="text-sm"
-                  />
-                  <Button type="button" size="sm" onClick={addItem}>
-                    <Plus className="w-4 h-4 mr-1" /> Add
-                  </Button>
-                </div>
-              </div>
+            {tab === "uw" && loan.stage === "under_contract" && (
+              <ChecklistTab
+                loan={loan}
+                field="uw_conditions"
+                title="UW Conditions"
+                onUpdate={onUpdate}
+              />
             )}
           </div>
         </SheetContent>
       </Sheet>
-
-      <DocPreview doc={previewDoc} onClose={() => setPreviewDoc(null)} />
     </>
   );
 }

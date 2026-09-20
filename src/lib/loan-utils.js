@@ -55,3 +55,12 @@ export const DEFAULT_CHECKLISTS = {
   under_contract: ["Purchase contract", "Appraisal ordered", "Title commitment", "Homeowners insurance", "Final loan approval"],
   follow_up: ["Re-contact borrower", "Updated documents", "Decision on resubmission"]
 };
+
+export const DEFAULT_UW_CONDITIONS = [
+  "Satisfactory appraisal",
+  "Verification of employment",
+  "Updated asset statements",
+  "Title clearance",
+  "Insurance binder",
+  "Closing disclosure acknowledged"
+];
