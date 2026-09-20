@@ -1,7 +1,6 @@
 import React from "react";
 import { MoreHorizontal, ChevronRight } from "lucide-react";
 import { STAGE_MAP, fullName, daysRemaining, slaColor, slaLabel, neededSummary } from "@/lib/loan-utils";
-import RealtorCell from "./RealtorCell";
 import ContactsCell from "./ContactsCell";
 
 function StageBadge({ stage }) {
@@ -47,17 +46,13 @@ export default function LoanRow({ loan, onOpen }) {
           <span className="text-sm text-foreground/80">{loan.property_address}</span>
         )}
       </td>
-      {/* Realtor */}
+      {/* Contacts */}
       <td className="px-4 py-3">
-        <RealtorCell loan={loan} />
+        <ContactsCell loan={loan} />
       </td>
       {/* Stage */}
       <td className="px-4 py-3">
         <StageBadge stage={loan.stage} />
-      </td>
-      {/* Contacts */}
-      <td className="px-4 py-3">
-        <ContactsCell loan={loan} />
       </td>
       {/* Needed items */}
       <td className="px-4 py-3">
