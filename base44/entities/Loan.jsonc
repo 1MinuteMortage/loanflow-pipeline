@@ -10,6 +10,27 @@
       "type": "string",
       "description": "Borrower's last name"
     },
+    "date_of_birth": {
+      "type": "string",
+      "format": "date",
+      "description": "Borrower's date of birth"
+    },
+    "ssn": {
+      "type": "string",
+      "description": "Borrower's Social Security Number"
+    },
+    "employment": {
+      "type": "string",
+      "description": "Borrower employer / position"
+    },
+    "income": {
+      "type": "number",
+      "description": "Borrower annual income"
+    },
+    "credit_score": {
+      "type": "number",
+      "description": "Borrower credit score"
+    },
     "property_address": {
       "type": "string",
       "description": "Property street address"

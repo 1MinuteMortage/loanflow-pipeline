@@ -5,22 +5,54 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { STAGES, STAGE_MAP, fullName, neededSummary, DEFAULT_UW_CONDITIONS } from "@/lib/loan-utils";
-import ChecklistTab from "./ChecklistTab";
+import { STAGE_MAP, fullName, neededSummary, DEFAULT_UW_CONDITIONS } from "@/lib/loan-utils";
+import BorrowerTab from "./BorrowerTab";
+import PropertyTab from "./PropertyTab";
 import ContactsTab from "./ContactsTab";
+import ChecklistTab from "./ChecklistTab";
+import DraggableTabs from "./DraggableTabs";
+import ContactsPromptDialog from "./ContactsPromptDialog";
+
+const DEFAULT_TAB_ORDER = ["borrower", "property", "contacts", "docs", "uw"];
+const TAB_LABELS = {
+  borrower: "Borrower",
+  property: "Property Info",
+  contacts: "Contacts",
+  docs: "Pre UnderWrite Documents",
+  uw: "UW Conditions",
+};
+
+function loadTabOrder() {
+  try {
+    const saved = localStorage.getItem("loanflow_tab_order");
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      const known = parsed.filter((k) => DEFAULT_TAB_ORDER.includes(k));
+      DEFAULT_TAB_ORDER.forEach((k) => {
+        if (!known.includes(k)) known.push(k);
+      });
+      return known;
+    }
+  } catch {}
+  return DEFAULT_TAB_ORDER;
+}
 
 export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
-  const [tab, setTab] = useState("info");
+  const [tab, setTab] = useState("borrower");
+  const [tabOrder, setTabOrder] = useState(loadTabOrder);
   const [form, setForm] = useState(null);
+  const [contactsPromptOpen, setContactsPromptOpen] = useState(false);
 
   useEffect(() => {
     if (loan) {
       setForm({
         first_name: loan.first_name || "",
         last_name: loan.last_name || "",
+        date_of_birth: loan.date_of_birth || "",
+        ssn: loan.ssn || "",
+        employment: loan.employment || "",
+        income: loan.income ?? "",
+        credit_score: loan.credit_score ?? "",
         property_address: loan.property_address || "",
         address_tbd: !!loan.address_tbd,
         stage: loan.stage || "pending",
@@ -34,6 +66,16 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
     }
   }, [loan]);
 
+  useEffect(() => {
+    if (loan) setTab("borrower");
+  }, [loan?.id]);
+
+  useEffect(() => {
+    if (tab === "uw" && loan && loan.stage !== "under_contract") {
+      setTab("borrower");
+    }
+  }, [loan, tab]);
+
   if (!form) return null;
 
   const needed = neededSummary(loan);
@@ -41,11 +83,42 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
 
   const saveField = (patch) => onUpdate(loan.id, patch);
 
+  function handleReorder(from, to) {
+    setTabOrder((prev) => {
+      const next = [...prev];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      localStorage.setItem("loanflow_tab_order", JSON.stringify(next));
+      return next;
+    });
+  }
+
+  function handleStageChange(newStage) {
+    if (newStage === "under_contract") {
+      const patch = { stage: newStage };
+      if (!loan.uw_conditions || loan.uw_conditions.length === 0) {
+        patch.uw_conditions = DEFAULT_UW_CONDITIONS.map((label) => ({ label, completed: false }));
+      }
+      onUpdate(loan.id, patch);
+      setContactsPromptOpen(true);
+    } else {
+      onUpdate(loan.id, { stage: newStage });
+    }
+  }
+
+  function handleContactsSave(contacts) {
+    onUpdate(loan.id, contacts);
+    setContactsPromptOpen(false);
+  }
+
+  const visibleTabs = tabOrder
+    .map((key) => ({ key, label: TAB_LABELS[key] }))
+    .filter((t) => t.key !== "uw" || loan.stage === "under_contract");
+
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent className="w-full sm:max-w-[560px] p-0 flex flex-col" side="right">
-          {/* Header */}
           <SheetHeader className="px-6 pt-6 pb-4 border-b border-border">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
@@ -65,174 +138,28 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
             </div>
           </SheetHeader>
 
-          {/* Tabs */}
-          <div className="flex border-b border-border px-6">
-            {[
-              { key: "info", label: "Borrower & Property Info" },
-              { key: "contacts", label: "Contacts" },
-              { key: "docs", label: "Pre UnderWrite Documents" },
-              ...(loan.stage === "under_contract"
-                ? [{ key: "uw", label: "UW Conditions" }]
-                : []),
-            ].map((t) => (
-              <button
-                key={t.key}
-                onClick={() => setTab(t.key)}
-                className={`px-1 py-3 mr-6 text-sm font-medium border-b-2 transition-colors ${
-                  tab === t.key
-                    ? "border-primary text-foreground"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
+          <DraggableTabs
+            tabs={visibleTabs}
+            activeTab={tab}
+            onSelect={setTab}
+            onReorder={handleReorder}
+          />
 
-          {/* Body */}
           <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
-            {tab === "info" && (
-              <>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">First Name</Label>
-                    <Input
-                      value={form.first_name}
-                      onChange={(e) => {
-                        setForm({ ...form, first_name: e.target.value });
-                        saveField({ first_name: e.target.value });
-                      }}
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Last Name</Label>
-                    <Input
-                      value={form.last_name}
-                      onChange={(e) => {
-                        setForm({ ...form, last_name: e.target.value });
-                        saveField({ last_name: e.target.value });
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Pipeline Stage</Label>
-                  <select
-                    value={form.stage}
-                    onChange={(e) => {
-                      const newStage = e.target.value;
-                      setForm({ ...form, stage: newStage });
-                      const patch = { stage: newStage };
-                      if (newStage === "under_contract" && (!loan.uw_conditions || loan.uw_conditions.length === 0)) {
-                        patch.uw_conditions = DEFAULT_UW_CONDITIONS.map((label) => ({ label, completed: false }));
-                      }
-                      onUpdate(loan.id, patch);
-                    }}
-                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
-                  >
-                    {STAGES.map((s) => (
-                      <option key={s.key} value={s.key}>{s.label}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Property Address</Label>
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor="tbd" className="text-xs text-muted-foreground">TBD / Pre-approval</Label>
-                      <Switch
-                        id="tbd"
-                        checked={form.address_tbd}
-                        onCheckedChange={(v) => {
-                          setForm({ ...form, address_tbd: v });
-                          saveField({ address_tbd: v });
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <Input
-                    value={form.property_address}
-                    disabled={form.address_tbd}
-                    onChange={(e) => {
-                      setForm({ ...form, property_address: e.target.value });
-                      saveField({ property_address: e.target.value });
-                    }}
-                    placeholder={form.address_tbd ? "No property under contract yet" : "123 Main St, Austin, TX 78701"}
-                  />
-                </div>
-
-                <div className="space-y-2.5 rounded-lg border border-border p-3">
-                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Realtor (Referral)</div>
-                  <Input
-                    placeholder="Realtor full name"
-                    value={form.realtor_name}
-                    onChange={(e) => {
-                      setForm({ ...form, realtor_name: e.target.value });
-                      saveField({ realtor_name: e.target.value });
-                    }}
-                  />
-                  <div className="grid grid-cols-2 gap-3">
-                    <Input
-                      placeholder="Phone"
-                      value={form.realtor_phone}
-                      onChange={(e) => {
-                        setForm({ ...form, realtor_phone: e.target.value });
-                        saveField({ realtor_phone: e.target.value });
-                      }}
-                    />
-                    <Input
-                      placeholder="Email"
-                      value={form.realtor_email}
-                      onChange={(e) => {
-                        setForm({ ...form, realtor_email: e.target.value });
-                        saveField({ realtor_email: e.target.value });
-                      }}
-                    />
-                  </div>
-                  <Input
-                    placeholder="Brokerage"
-                    value={form.realtor_brokerage}
-                    onChange={(e) => {
-                      setForm({ ...form, realtor_brokerage: e.target.value });
-                      saveField({ realtor_brokerage: e.target.value });
-                    }}
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">SLA Due Date</Label>
-                  <Input
-                    type="date"
-                    value={form.due_date}
-                    onChange={(e) => {
-                      setForm({ ...form, due_date: e.target.value });
-                      saveField({ due_date: e.target.value });
-                    }}
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Notes</Label>
-                  <textarea
-                    value={form.notes}
-                    onChange={(e) => {
-                      setForm({ ...form, notes: e.target.value });
-                      saveField({ notes: e.target.value });
-                    }}
-                    rows={3}
-                    className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring resize-none"
-                    placeholder="Add any notes about this borrower..."
-                  />
-                </div>
-              </>
+            {tab === "borrower" && (
+              <BorrowerTab form={form} setForm={setForm} saveField={saveField} />
             )}
-
+            {tab === "property" && (
+              <PropertyTab
+                form={form}
+                setForm={setForm}
+                saveField={saveField}
+                onStageChange={handleStageChange}
+              />
+            )}
             {tab === "contacts" && (
               <ContactsTab loan={loan} onUpdate={onUpdate} />
             )}
-
             {tab === "docs" && (
               <ChecklistTab
                 loan={loan}
@@ -241,7 +168,6 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
                 onUpdate={onUpdate}
               />
             )}
-
             {tab === "uw" && loan.stage === "under_contract" && (
               <ChecklistTab
                 loan={loan}
@@ -253,6 +179,13 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
           </div>
         </SheetContent>
       </Sheet>
+
+      <ContactsPromptDialog
+        open={contactsPromptOpen}
+        onOpenChange={setContactsPromptOpen}
+        loan={loan}
+        onSave={handleContactsSave}
+      />
     </>
   );
 }
