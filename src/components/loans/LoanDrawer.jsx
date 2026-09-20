@@ -5,7 +5,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { STAGE_MAP, fullName, neededSummary, DEFAULT_UW_CONDITIONS } from "@/lib/loan-utils";
+import { STAGES, STAGE_MAP, fullName, neededSummary, DEFAULT_UW_CONDITIONS } from "@/lib/loan-utils";
 import BorrowerTab from "./BorrowerTab";
 import PropertyTab from "./PropertyTab";
 import ContactsTab from "./ContactsTab";
@@ -118,23 +118,29 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent className="w-full sm:max-w-[560px] p-0 flex flex-col" side="right">
+        <SheetContent className="w-full sm:max-w-[1100px] p-0 flex flex-col" side="right">
           <SheetHeader className="px-6 pt-6 pb-4 border-b border-border">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <SheetTitle className="font-heading text-2xl truncate">{fullName(loan)}</SheetTitle>
-                <div className="mt-2 flex flex-wrap items-center gap-2">
-                  <span
-                    className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold"
-                    style={{ backgroundColor: stage.bg, color: stage.text }}
-                  >
-                    {stage.label}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {needed.remaining} item{needed.remaining !== 1 ? "s" : ""} needed
-                  </span>
-                </div>
-              </div>
+            <div className="flex items-center justify-between gap-3">
+              <SheetTitle className="font-heading text-2xl truncate">{fullName(loan)}</SheetTitle>
+              <select
+                value={form.stage}
+                onChange={(e) => {
+                  const newStage = e.target.value;
+                  setForm({ ...form, stage: newStage });
+                  handleStageChange(newStage);
+                }}
+                style={{ backgroundColor: stage.bg, color: stage.text }}
+                className="shrink-0 rounded-md border border-border px-2.5 py-1.5 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-ring cursor-pointer"
+              >
+                {STAGES.map((s) => (
+                  <option key={s.key} value={s.key}>{s.label}</option>
+                ))}
+              </select>
+            </div>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <span className="text-xs text-muted-foreground">
+                {needed.remaining} item{needed.remaining !== 1 ? "s" : ""} needed
+              </span>
             </div>
           </SheetHeader>
 
@@ -154,7 +160,6 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
                 form={form}
                 setForm={setForm}
                 saveField={saveField}
-                onStageChange={handleStageChange}
               />
             )}
             {tab === "contacts" && (

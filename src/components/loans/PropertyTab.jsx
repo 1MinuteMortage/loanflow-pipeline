@@ -2,28 +2,10 @@ import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { STAGES } from "@/lib/loan-utils";
 
-export default function PropertyTab({ form, setForm, saveField, onStageChange }) {
+export default function PropertyTab({ form, setForm, saveField }) {
   return (
     <>
-      <div className="space-y-1.5">
-        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Pipeline Stage</Label>
-        <select
-          value={form.stage}
-          onChange={(e) => {
-            const newStage = e.target.value;
-            setForm({ ...form, stage: newStage });
-            onStageChange(newStage);
-          }}
-          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
-        >
-          {STAGES.map((s) => (
-            <option key={s.key} value={s.key}>{s.label}</option>
-          ))}
-        </select>
-      </div>
-
       <div className="space-y-1.5">
         <div className="flex items-center justify-between">
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Property Address</Label>
