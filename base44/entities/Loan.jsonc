@@ -31,6 +31,32 @@
       "type": "number",
       "description": "Borrower credit score"
     },
+    "current_residence": {
+      "type": "string",
+      "description": "Borrower's current residence address"
+    },
+    "residence_two_years": {
+      "type": "boolean",
+      "default": false,
+      "description": "True when borrower has lived in current residence two years or more"
+    },
+    "marital_status": {
+      "type": "string",
+      "enum": [
+        "single",
+        "married"
+      ],
+      "description": "Borrower marital status"
+    },
+    "us_citizen": {
+      "type": "boolean",
+      "default": false,
+      "description": "True when borrower is a US citizen"
+    },
+    "estimated_available_funds": {
+      "type": "number",
+      "description": "Borrower estimated available funds for transaction"
+    },
     "property_address": {
       "type": "string",
       "description": "Property street address"
@@ -182,6 +208,16 @@
       "type": "string",
       "format": "date",
       "description": "SLA target date for the current stage"
+    },
+    "finance_contingency_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Finance contingency date"
+    },
+    "closing_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Closing date"
     },
     "notes": {
       "type": "string",

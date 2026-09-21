@@ -71,18 +71,6 @@ export default function PropertyTab({ form, setForm, saveField }) {
       </div>
 
       <div className="space-y-1.5">
-        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">SLA Due Date</Label>
-        <Input
-          type="date"
-          value={form.due_date}
-          onChange={(e) => {
-            setForm({ ...form, due_date: e.target.value });
-            saveField({ due_date: e.target.value });
-          }}
-        />
-      </div>
-
-      <div className="space-y-1.5">
         <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Notes</Label>
         <textarea
           value={form.notes}

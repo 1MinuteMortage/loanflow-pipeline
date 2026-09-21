@@ -2,6 +2,9 @@ import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+const selectClass =
+  "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring";
+
 export default function BorrowerTab({ form, setForm, saveField }) {
   return (
     <>
@@ -54,10 +57,86 @@ export default function BorrowerTab({ form, setForm, saveField }) {
       </div>
 
       <div className="space-y-1.5">
-        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Employment</Label>
+        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Current Residence</Label>
+        <Input
+          value={form.current_residence || ""}
+          placeholder="Current street address"
+          onChange={(e) => {
+            setForm({ ...form, current_residence: e.target.value });
+            saveField({ current_residence: e.target.value });
+          }}
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Residence Two Years Plus</Label>
+          <select
+            value={form.residence_two_years ? "yes" : "no"}
+            onChange={(e) => {
+              const v = e.target.value === "yes";
+              setForm({ ...form, residence_two_years: v });
+              saveField({ residence_two_years: v });
+            }}
+            className={selectClass}
+          >
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Marital Status</Label>
+          <select
+            value={form.marital_status || ""}
+            onChange={(e) => {
+              setForm({ ...form, marital_status: e.target.value });
+              saveField({ marital_status: e.target.value });
+            }}
+            className={selectClass}
+          >
+            <option value="">Select...</option>
+            <option value="single">Single</option>
+            <option value="married">Married</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">US Citizen</Label>
+          <select
+            value={form.us_citizen ? "yes" : "no"}
+            onChange={(e) => {
+              const v = e.target.value === "yes";
+              setForm({ ...form, us_citizen: v });
+              saveField({ us_citizen: v });
+            }}
+            className={selectClass}
+          >
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Estimated Available Funds</Label>
+          <Input
+            type="number"
+            value={form.estimated_available_funds ?? ""}
+            placeholder="0"
+            onChange={(e) => {
+              const v = e.target.value === "" ? "" : Number(e.target.value);
+              setForm({ ...form, estimated_available_funds: v });
+              saveField({ estimated_available_funds: v });
+            }}
+          />
+        </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Employer Name</Label>
         <Input
           value={form.employment || ""}
-          placeholder="Employer / position"
+          placeholder="Employer name"
           onChange={(e) => {
             setForm({ ...form, employment: e.target.value });
             saveField({ employment: e.target.value });

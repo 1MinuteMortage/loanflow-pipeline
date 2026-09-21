@@ -12,14 +12,16 @@ import ContactsTab from "./ContactsTab";
 import ChecklistTab from "./ChecklistTab";
 import DraggableTabs from "./DraggableTabs";
 import ContactsPromptDialog from "./ContactsPromptDialog";
+import DatesTab from "./DatesTab";
 
-const DEFAULT_TAB_ORDER = ["borrower", "property", "contacts", "docs", "uw"];
+const DEFAULT_TAB_ORDER = ["borrower", "property", "contacts", "docs", "dates", "uw"];
 const TAB_LABELS = {
   borrower: "Borrower",
   property: "Property Info",
   contacts: "Contacts",
   docs: "Pre UnderWrite Documents",
   uw: "UW Conditions",
+  dates: "Finance Contingency / Closing Date",
 };
 
 function loadTabOrder() {
@@ -57,6 +59,13 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
         address_tbd: !!loan.address_tbd,
         stage: loan.stage || "pending",
         due_date: loan.due_date || "",
+        current_residence: loan.current_residence || "",
+        residence_two_years: !!loan.residence_two_years,
+        marital_status: loan.marital_status || "",
+        us_citizen: !!loan.us_citizen,
+        estimated_available_funds: loan.estimated_available_funds ?? "",
+        finance_contingency_date: loan.finance_contingency_date || "",
+        closing_date: loan.closing_date || "",
         notes: loan.notes || "",
         realtor_name: loan.realtor_name || "",
         realtor_phone: loan.realtor_phone || "",
@@ -164,6 +173,9 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
             )}
             {tab === "contacts" && (
               <ContactsTab loan={loan} onUpdate={onUpdate} />
+            )}
+            {tab === "dates" && (
+              <DatesTab form={form} setForm={setForm} saveField={saveField} />
             )}
             {tab === "docs" && (
               <ChecklistTab
