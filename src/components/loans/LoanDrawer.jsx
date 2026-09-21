@@ -12,6 +12,7 @@ import ContactsTab from "./ContactsTab";
 import ChecklistTab from "./ChecklistTab";
 import DraggableTabs from "./DraggableTabs";
 import ContactsPromptDialog from "./ContactsPromptDialog";
+import PreapprovalPromptDialog from "./PreapprovalPromptDialog";
 import DatesTab from "./DatesTab";
 
 const DEFAULT_TAB_ORDER = ["borrower", "property", "contacts", "docs", "dates", "uw"];
@@ -44,6 +45,7 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
   const [tabOrder, setTabOrder] = useState(loadTabOrder);
   const [form, setForm] = useState(null);
   const [contactsPromptOpen, setContactsPromptOpen] = useState(false);
+  const [preapprovalPromptOpen, setPreapprovalPromptOpen] = useState(false);
 
   useEffect(() => {
     if (loan) {
@@ -121,6 +123,9 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
       }
       onUpdate(loan.id, patch);
       setContactsPromptOpen(true);
+    } else if (newStage === "preapproved") {
+      onUpdate(loan.id, { stage: newStage });
+      setPreapprovalPromptOpen(true);
     } else {
       onUpdate(loan.id, { stage: newStage });
     }
@@ -213,6 +218,16 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
         onOpenChange={setContactsPromptOpen}
         loan={loan}
         onSave={handleContactsSave}
+      />
+
+      <PreapprovalPromptDialog
+        open={preapprovalPromptOpen}
+        onOpenChange={setPreapprovalPromptOpen}
+        loan={loan}
+        onSave={(patch) => {
+          onUpdate(loan.id, patch);
+          setPreapprovalPromptOpen(false);
+        }}
       />
     </>
   );

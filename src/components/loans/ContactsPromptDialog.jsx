@@ -13,6 +13,7 @@ import { CONTACT_ROLES } from "@/lib/loan-utils";
 
 export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave }) {
   const [contacts, setContacts] = useState({});
+  const [propertyAddress, setPropertyAddress] = useState("");
 
   useEffect(() => {
     if (!loan) return;
@@ -26,6 +27,7 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
       next[`${r.key}_email`] = loan[`${r.key}_email`] || "";
     });
     setContacts(next);
+    setPropertyAddress(loan.property_address || "");
   }, [loan, open]);
 
   function updateField(key, value) {
@@ -33,7 +35,7 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
   }
 
   function handleSave() {
-    onSave(contacts);
+    onSave({ ...contacts, property_address: propertyAddress });
   }
 
   return (
@@ -42,10 +44,18 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
         <DialogHeader>
           <DialogTitle>Add Transaction Contacts</DialogTitle>
           <DialogDescription>
-            This loan is now Under Contract. Add the contacts involved in this transaction.
+            This loan is now Under Contract. Add the property address and contacts involved in this transaction.
           </DialogDescription>
         </DialogHeader>
         <div className="max-h-[55vh] overflow-y-auto space-y-3 pr-1">
+          <div className="space-y-1.5 rounded-lg border border-border p-3">
+            <div className="text-sm font-semibold text-foreground">Property Address</div>
+            <Input
+              placeholder="123 Main St, Austin, TX 78701"
+              value={propertyAddress}
+              onChange={(e) => setPropertyAddress(e.target.value)}
+            />
+          </div>
           {CONTACT_ROLES.map((r) => (
             <div key={r.key} className="space-y-2 rounded-lg border border-border p-3">
               <div className="text-sm font-semibold text-foreground">{r.label}</div>
