@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { STAGES, DEFAULT_CHECKLISTS, DEFAULT_UW_CONDITIONS } from "@/lib/loan-utils";
+import { STAGES, DEFAULT_PRE_UW_DOCUMENTS, DEFAULT_UW_CONDITIONS } from "@/lib/loan-utils";
 
 export default function NewLoanDialog({ open, onOpenChange, onCreate }) {
   const [form, setForm] = useState({
@@ -34,7 +34,7 @@ export default function NewLoanDialog({ open, onOpenChange, onCreate }) {
     if (!form.first_name.trim() || !form.last_name.trim()) return;
     const payload = {
       ...form,
-      needed_items: (DEFAULT_CHECKLISTS[form.stage] || []).map((label) => ({ label, completed: false })),
+      needed_items: DEFAULT_PRE_UW_DOCUMENTS.map((label) => ({ label, completed: false })),
     };
     if (form.stage === "under_contract") {
       payload.uw_conditions = DEFAULT_UW_CONDITIONS.map((label) => ({ label, completed: false }));
