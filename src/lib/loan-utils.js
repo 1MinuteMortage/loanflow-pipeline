@@ -103,10 +103,15 @@ export const CONTACT_ROLES = [
 ];
 
 export function getContacts(loan) {
-  return CONTACT_ROLES.map((r) => ({
-    role: r.label,
-    name: loan[`${r.key}_name`] || "",
-    phone: loan[`${r.key}_phone`] || "",
-    email: loan[`${r.key}_email`] || ""
-  })).filter((c) => c.name);
+  return CONTACT_ROLES.map((r) => {
+    const name = loan[`${r.key}_name`] || "";
+    const repName = r.key === "closing_attorney" ? (loan[`${r.key}_representative_name`] || "") : "";
+    const displayName = repName ? `${name} — ${repName}` : name;
+    return {
+      role: r.label,
+      name: displayName,
+      phone: loan[`${r.key}_phone`] || "",
+      email: loan[`${r.key}_email`] || ""
+    };
+  }).filter((c) => c.name);
 }

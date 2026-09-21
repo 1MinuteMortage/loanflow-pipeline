@@ -19,6 +19,9 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
     const next = {};
     CONTACT_ROLES.forEach((r) => {
       next[`${r.key}_name`] = loan[`${r.key}_name`] || "";
+      if (r.key === "closing_attorney") {
+        next[`${r.key}_representative_name`] = loan[`${r.key}_representative_name`] || "";
+      }
       next[`${r.key}_phone`] = loan[`${r.key}_phone`] || "";
       next[`${r.key}_email`] = loan[`${r.key}_email`] || "";
     });
@@ -46,11 +49,26 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
           {CONTACT_ROLES.map((r) => (
             <div key={r.key} className="space-y-2 rounded-lg border border-border p-3">
               <div className="text-sm font-semibold text-foreground">{r.label}</div>
-              <Input
-                placeholder="Name"
-                value={contacts[`${r.key}_name`] || ""}
-                onChange={(e) => updateField(`${r.key}_name`, e.target.value)}
-              />
+              {r.key === "closing_attorney" ? (
+                <>
+                  <Input
+                    placeholder="Office Name"
+                    value={contacts[`${r.key}_name`] || ""}
+                    onChange={(e) => updateField(`${r.key}_name`, e.target.value)}
+                  />
+                  <Input
+                    placeholder="Representative Name"
+                    value={contacts[`${r.key}_representative_name`] || ""}
+                    onChange={(e) => updateField(`${r.key}_representative_name`, e.target.value)}
+                  />
+                </>
+              ) : (
+                <Input
+                  placeholder="Name"
+                  value={contacts[`${r.key}_name`] || ""}
+                  onChange={(e) => updateField(`${r.key}_name`, e.target.value)}
+                />
+              )}
               <div className="grid grid-cols-2 gap-2">
                 <Input
                   placeholder="Phone"

@@ -140,7 +140,11 @@
     },
     "closing_attorney_name": {
       "type": "string",
-      "description": "Closing attorney name"
+      "description": "Closing attorney office name"
+    },
+    "closing_attorney_representative_name": {
+      "type": "string",
+      "description": "Closing attorney representative name"
     },
     "closing_attorney_phone": {
       "type": "string",
