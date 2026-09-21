@@ -15,6 +15,10 @@
       "format": "date",
       "description": "Borrower's date of birth"
     },
+    "email": {
+      "type": "string",
+      "description": "Borrower's email address"
+    },
     "ssn": {
       "type": "string",
       "description": "Borrower's Social Security Number"
@@ -22,6 +26,10 @@
     "employment": {
       "type": "string",
       "description": "Borrower employer / position"
+    },
+    "employment_duration": {
+      "type": "string",
+      "description": "How long the borrower has been working with their current employer"
     },
     "income": {
       "type": "number",

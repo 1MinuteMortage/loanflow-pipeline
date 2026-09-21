@@ -44,16 +44,29 @@ export default function BorrowerTab({ form, setForm, saveField }) {
           />
         </div>
         <div className="space-y-1.5">
-          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">SSN</Label>
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Email Address</Label>
           <Input
-            value={form.ssn || ""}
-            placeholder="XXX-XX-XXXX"
+            type="email"
+            value={form.email || ""}
+            placeholder="borrower@example.com"
             onChange={(e) => {
-              setForm({ ...form, ssn: e.target.value });
-              saveField({ ssn: e.target.value });
+              setForm({ ...form, email: e.target.value });
+              saveField({ email: e.target.value });
             }}
           />
         </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Social Security Number</Label>
+        <Input
+          value={form.ssn || ""}
+          placeholder="XXX-XX-XXXX"
+          onChange={(e) => {
+            setForm({ ...form, ssn: e.target.value });
+            saveField({ ssn: e.target.value });
+          }}
+        />
       </div>
 
       <div className="space-y-1.5">
@@ -132,16 +145,29 @@ export default function BorrowerTab({ form, setForm, saveField }) {
         </div>
       </div>
 
-      <div className="space-y-1.5">
-        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Employer Name</Label>
-        <Input
-          value={form.employment || ""}
-          placeholder="Employer name"
-          onChange={(e) => {
-            setForm({ ...form, employment: e.target.value });
-            saveField({ employment: e.target.value });
-          }}
-        />
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Employer Name</Label>
+          <Input
+            value={form.employment || ""}
+            placeholder="Employer name"
+            onChange={(e) => {
+              setForm({ ...form, employment: e.target.value });
+              saveField({ employment: e.target.value });
+            }}
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Employment Duration</Label>
+          <Input
+            value={form.employment_duration || ""}
+            placeholder="e.g. 3 years"
+            onChange={(e) => {
+              setForm({ ...form, employment_duration: e.target.value });
+              saveField({ employment_duration: e.target.value });
+            }}
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
