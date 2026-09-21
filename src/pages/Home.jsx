@@ -19,6 +19,17 @@ export default function Home() {
   const [drawerLoan, setDrawerLoan] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [newOpen, setNewOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    base44.auth.me().then(setCurrentUser).catch(() => setCurrentUser(null));
+  }, []);
+
+  const handleAccept = (loan) => {
+    if (!currentUser) return;
+    const name = currentUser.full_name || currentUser.email || "Team member";
+    handleUpdate(loan.id, { assigned_to_id: currentUser.id, assigned_to_name: name });
+  };
 
   const load = async () => {
     setLoading(true);
@@ -153,7 +164,7 @@ export default function Home() {
           </div>
         ) : (
           <div className="rounded-lg border border-border bg-card overflow-hidden">
-            <LoanTable loans={filtered} onOpen={openDrawer} />
+            <LoanTable loans={filtered} onOpen={openDrawer} currentUser={currentUser} onAccept={handleAccept} />
           </div>
         )}
       </main>

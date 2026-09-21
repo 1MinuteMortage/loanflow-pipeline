@@ -88,6 +88,14 @@
       "default": "pending",
       "description": "Current pipeline stage"
     },
+    "assigned_to_id": {
+      "type": "string",
+      "description": "User id of the team member assigned to this loan"
+    },
+    "assigned_to_name": {
+      "type": "string",
+      "description": "Display name of the team member assigned to this loan"
+    },
     "realtor_name": {
       "type": "string",
       "description": "Name of the realtor who referred the client"

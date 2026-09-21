@@ -2,6 +2,7 @@ import React from "react";
 import { MoreHorizontal, ChevronRight } from "lucide-react";
 import { STAGE_MAP, fullName, documentsNeededSummary, dateCountdown } from "@/lib/loan-utils";
 import ContactsCell from "./ContactsCell";
+import AssignedToCell from "./AssignedToCell";
 
 function StageBadge({ stage }) {
   const s = STAGE_MAP[stage];
@@ -37,7 +38,7 @@ function TbdPill() {
   );
 }
 
-export default function LoanRow({ loan, onOpen }) {
+export default function LoanRow({ loan, onOpen, currentUser, onAccept }) {
   const needed = documentsNeededSummary(loan);
 
   return (
@@ -48,6 +49,10 @@ export default function LoanRow({ loan, onOpen }) {
       {/* Borrower */}
       <td className="px-4 py-3">
         <div className="font-semibold text-foreground text-sm">{fullName(loan)}</div>
+      </td>
+      {/* Assigned To */}
+      <td className="px-4 py-3">
+        <AssignedToCell loan={loan} currentUser={currentUser} onAccept={onAccept} />
       </td>
       {/* Stage */}
       <td className="px-4 py-3">
