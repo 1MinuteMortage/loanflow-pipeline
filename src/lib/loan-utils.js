@@ -75,12 +75,11 @@ export const DEFAULT_PRE_UW_DOCUMENTS = [
 ];
 
 export const DEFAULT_UW_CONDITIONS = [
-  "Satisfactory appraisal",
-  "Verification of employment",
-  "Updated asset statements",
-  "Title clearance",
-  "Insurance binder",
-  "Closing disclosure acknowledged"
+  "Purchase Agreement",
+  "Home Insurance",
+  "VWOE / Work Number",
+  "Title Commitment, CPL, E&O, Tax cert, Wire Instructions, Title Invoice",
+  "Appraisal"
 ];
 
 export const CONTACT_ROLES = [
