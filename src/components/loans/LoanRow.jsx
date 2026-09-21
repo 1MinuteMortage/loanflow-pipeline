@@ -1,6 +1,6 @@
 import React from "react";
 import { MoreHorizontal, ChevronRight } from "lucide-react";
-import { STAGE_MAP, fullName, daysRemaining, slaColor, slaLabel, neededSummary } from "@/lib/loan-utils";
+import { STAGE_MAP, fullName, neededSummary } from "@/lib/loan-utils";
 import ContactsCell from "./ContactsCell";
 
 function StageBadge({ stage }) {
@@ -25,9 +25,7 @@ function TbdPill() {
 }
 
 export default function LoanRow({ loan, onOpen }) {
-  const days = daysRemaining(loan);
   const needed = neededSummary(loan);
-  const color = slaColor(days);
 
   return (
     <tr
@@ -74,15 +72,6 @@ export default function LoanRow({ loan, onOpen }) {
             </span>
           )}
         </div>
-      </td>
-      {/* SLA */}
-      <td className="px-4 py-3">
-        <span
-          className="inline-flex items-center px-2 py-1 rounded-md text-xs font-semibold font-mono tabular-nums"
-          style={{ backgroundColor: `${color}14`, color }}
-        >
-          {slaLabel(days)}
-        </span>
       </td>
       {/* Actions */}
       <td className="px-4 py-3 text-right">

@@ -1,14 +1,12 @@
 import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
-import { STAGE_MAP, fullName, daysRemaining, slaColor, slaLabel, neededSummary } from "@/lib/loan-utils";
+import { STAGE_MAP, fullName, neededSummary } from "@/lib/loan-utils";
 import ContactsCell from "./ContactsCell";
 import { getContacts } from "@/lib/loan-utils";
 
 export default function LoanCard({ loan, onOpen }) {
   const [expanded, setExpanded] = useState(false);
-  const days = daysRemaining(loan);
   const needed = neededSummary(loan);
-  const color = slaColor(days);
   const stage = STAGE_MAP[loan.stage];
 
   return (
@@ -34,12 +32,6 @@ export default function LoanCard({ loan, onOpen }) {
             </div>
           )}
         </div>
-        <span
-          className="inline-flex items-center px-2 py-1 rounded-md text-xs font-semibold font-mono tabular-nums shrink-0"
-          style={{ backgroundColor: `${color}14`, color }}
-        >
-          {slaLabel(days)}
-        </span>
       </div>
 
       <div className="mt-3 flex items-center justify-between">
