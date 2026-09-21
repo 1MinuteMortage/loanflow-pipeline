@@ -42,6 +42,17 @@ export function slaLabel(days) {
   return `${days}d left`;
 }
 
+// Days-remaining countdown for a date string (e.g. "9 days", "Today", "3d overdue")
+export function dateCountdown(dateStr) {
+  if (!dateStr) return null;
+  const due = new Date(dateStr + "T23:59:59");
+  const now = new Date();
+  const days = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
+  if (days < 0) return `${Math.abs(days)}d overdue`;
+  if (days === 0) return "Today";
+  return `${days} days`;
+}
+
 export function neededSummary(loan) {
   const items = loan.needed_items || [];
   if (items.length === 0) return { total: 0, done: 0, remaining: 0, labels: [] };

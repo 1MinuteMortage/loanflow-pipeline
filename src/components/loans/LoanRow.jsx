@@ -1,6 +1,6 @@
 import React from "react";
 import { MoreHorizontal, ChevronRight } from "lucide-react";
-import { STAGE_MAP, fullName, neededSummary } from "@/lib/loan-utils";
+import { STAGE_MAP, fullName, neededSummary, dateCountdown } from "@/lib/loan-utils";
 import ContactsCell from "./ContactsCell";
 
 function StageBadge({ stage }) {
@@ -12,6 +12,19 @@ function StageBadge({ stage }) {
       style={{ backgroundColor: s.bg, color: s.text }}
     >
       {s.label}
+    </span>
+  );
+}
+
+function DatesCell({ loan }) {
+  const fc = dateCountdown(loan.finance_contingency_date);
+  const close = dateCountdown(loan.closing_date);
+  if (!fc && !close) {
+    return <span className="text-xs text-muted-foreground">—</span>;
+  }
+  return (
+    <span className="text-xs font-semibold text-foreground/80 whitespace-nowrap">
+      {fc || "—"}{fc && close ? " / " : ""}{close || ""}
     </span>
   );
 }
@@ -51,6 +64,10 @@ export default function LoanRow({ loan, onOpen }) {
       {/* Stage */}
       <td className="px-4 py-3">
         <StageBadge stage={loan.stage} />
+      </td>
+      {/* Finance Contingency / Closing */}
+      <td className="px-4 py-3">
+        <DatesCell loan={loan} />
       </td>
       {/* Needed items */}
       <td className="px-4 py-3">
