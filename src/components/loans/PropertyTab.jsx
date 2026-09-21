@@ -32,46 +32,8 @@ export default function PropertyTab({ form, setForm, saveField }) {
         />
       </div>
 
-      <div className="space-y-2.5 rounded-lg border border-border p-3">
-        <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Realtor (Referral)</div>
-        <Input
-          placeholder="Realtor full name"
-          value={form.realtor_name}
-          onChange={(e) => {
-            setForm({ ...form, realtor_name: e.target.value });
-            saveField({ realtor_name: e.target.value });
-          }}
-        />
-        <div className="grid grid-cols-2 gap-3">
-          <Input
-            placeholder="Phone"
-            value={form.realtor_phone}
-            onChange={(e) => {
-              setForm({ ...form, realtor_phone: e.target.value });
-              saveField({ realtor_phone: e.target.value });
-            }}
-          />
-          <Input
-            placeholder="Email"
-            value={form.realtor_email}
-            onChange={(e) => {
-              setForm({ ...form, realtor_email: e.target.value });
-              saveField({ realtor_email: e.target.value });
-            }}
-          />
-        </div>
-        <Input
-          placeholder="Brokerage"
-          value={form.realtor_brokerage}
-          onChange={(e) => {
-            setForm({ ...form, realtor_brokerage: e.target.value });
-            saveField({ realtor_brokerage: e.target.value });
-          }}
-        />
-      </div>
-
       <div className="space-y-1.5">
-        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Notes</Label>
+        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Loan Officer Remarks</Label>
         <textarea
           value={form.notes}
           onChange={(e) => {
