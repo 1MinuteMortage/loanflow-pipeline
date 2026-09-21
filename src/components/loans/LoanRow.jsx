@@ -1,6 +1,6 @@
 import React from "react";
 import { MoreHorizontal, ChevronRight } from "lucide-react";
-import { STAGE_MAP, fullName, neededSummary, dateCountdown } from "@/lib/loan-utils";
+import { STAGE_MAP, fullName, documentsNeededSummary, dateCountdown } from "@/lib/loan-utils";
 import ContactsCell from "./ContactsCell";
 
 function StageBadge({ stage }) {
@@ -38,7 +38,7 @@ function TbdPill() {
 }
 
 export default function LoanRow({ loan, onOpen }) {
-  const needed = neededSummary(loan);
+  const needed = documentsNeededSummary(loan);
 
   return (
     <tr

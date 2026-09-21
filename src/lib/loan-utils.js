@@ -53,6 +53,19 @@ export function dateCountdown(dateStr) {
   return `${days} days`;
 }
 
+// Outstanding documents to reach out about — UW conditions when under contract, else pre-UW documents
+export function documentsNeededSummary(loan) {
+  const items = loan.stage === "under_contract" ? (loan.uw_conditions || []) : (loan.needed_items || []);
+  if (items.length === 0) return { total: 0, done: 0, remaining: 0, labels: [] };
+  const done = items.filter((i) => i.completed).length;
+  return {
+    total: items.length,
+    done,
+    remaining: items.length - done,
+    labels: items.filter((i) => !i.completed).map((i) => i.label)
+  };
+}
+
 export function neededSummary(loan) {
   const items = loan.needed_items || [];
   if (items.length === 0) return { total: 0, done: 0, remaining: 0, labels: [] };

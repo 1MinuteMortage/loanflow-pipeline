@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
-import { STAGE_MAP, fullName, neededSummary } from "@/lib/loan-utils";
+import { STAGE_MAP, fullName, documentsNeededSummary } from "@/lib/loan-utils";
 import ContactsCell from "./ContactsCell";
 import { getContacts } from "@/lib/loan-utils";
 
 export default function LoanCard({ loan, onOpen }) {
   const [expanded, setExpanded] = useState(false);
-  const needed = neededSummary(loan);
+  const needed = documentsNeededSummary(loan);
   const stage = STAGE_MAP[loan.stage];
 
   return (
@@ -55,7 +55,7 @@ export default function LoanCard({ loan, onOpen }) {
           className="mt-3 flex items-center gap-1 text-xs text-muted-foreground w-full"
         >
           <ChevronDown className={`w-3.5 h-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} />
-          Pre-UW docs needed
+          Documents needed
         </button>
       )}
       {expanded && needed.labels.length > 0 && (
