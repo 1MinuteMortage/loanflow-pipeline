@@ -49,6 +49,10 @@ export default function LoanRow({ loan, onOpen }) {
       <td className="px-4 py-3">
         <div className="font-semibold text-foreground text-sm">{fullName(loan)}</div>
       </td>
+      {/* Stage */}
+      <td className="px-4 py-3">
+        <StageBadge stage={loan.stage} />
+      </td>
       {/* Property */}
       <td className="px-4 py-3">
         {loan.address_tbd || !loan.property_address ? (
@@ -56,14 +60,6 @@ export default function LoanRow({ loan, onOpen }) {
         ) : (
           <span className="text-sm text-foreground/80">{loan.property_address}</span>
         )}
-      </td>
-      {/* Contacts */}
-      <td className="px-4 py-3">
-        <ContactsCell loan={loan} />
-      </td>
-      {/* Stage */}
-      <td className="px-4 py-3">
-        <StageBadge stage={loan.stage} />
       </td>
       {/* Finance Contingency / Closing */}
       <td className="px-4 py-3">
@@ -89,6 +85,10 @@ export default function LoanRow({ loan, onOpen }) {
             </span>
           )}
         </div>
+      </td>
+      {/* Contacts */}
+      <td className="px-4 py-3">
+        <ContactsCell loan={loan} />
       </td>
       {/* Actions */}
       <td className="px-4 py-3 text-right">

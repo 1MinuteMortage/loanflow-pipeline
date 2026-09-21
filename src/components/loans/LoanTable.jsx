@@ -3,11 +3,11 @@ import LoanRow from "./LoanRow";
 
 const COLUMNS = [
   { key: "borrower", label: "Borrower Name", className: "w-[15%]" },
-  { key: "property", label: "Property Address", className: "w-[18%]" },
-  { key: "contacts", label: "Contacts", className: "w-[13%]" },
   { key: "stage", label: "Stage", className: "w-[10%]" },
+  { key: "property", label: "Property Address", className: "w-[18%]" },
   { key: "dates", label: "FC / Closing", className: "w-[12%]" },
   { key: "needed", label: "Pre-UW Documents", className: "w-[22%]" },
+  { key: "contacts", label: "Contacts", className: "w-[13%]" },
   { key: "actions", label: "", className: "w-[8%]" }
 ];
 
