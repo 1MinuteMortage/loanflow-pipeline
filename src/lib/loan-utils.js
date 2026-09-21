@@ -97,9 +97,9 @@ export const DEFAULT_UW_CONDITIONS = [
 export const CONTACT_ROLES = [
   { key: "buyer_agent", label: "Buyer Agent" },
   { key: "selling_agent", label: "Selling Agent" },
-  { key: "appraiser", label: "Appraiser" },
+  { key: "underwriter", label: "Underwriter" },
   { key: "closing_attorney", label: "Closing Attorney" },
-  { key: "underwriter", label: "Underwriter" }
+  { key: "appraiser", label: "Appraiser" }
 ];
 
 export function getContacts(loan) {
