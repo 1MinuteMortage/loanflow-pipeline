@@ -149,7 +149,7 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
                   setForm({ ...form, stage: newStage });
                   handleStageChange(newStage);
                 }}
-                style={{ backgroundColor: stage.bg, color: stage.text }}
+                style={{ backgroundColor: stage.bg, color: stage.text, marginLeft: "-0.5in" }}
                 className="shrink-0 rounded-md border border-border px-2.5 py-1.5 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-ring cursor-pointer"
               >
                 {STAGES.map((s) => (
