@@ -1,13 +1,18 @@
-// Stage metadata for the loan pipeline
+// Stage metadata for the loan pipeline (active stages shown in folders & dropdown)
 export const STAGES = [
   { key: "pending", label: "App Pending", color: "#f59e0b", bg: "#fef3c7", text: "#92400e" },
   { key: "preapproved", label: "Pre-approved", color: "#10b981", bg: "#d1fae5", text: "#065f46" },
-  { key: "under_contract", label: "Under Contract", color: "#8b5cf6", bg: "#ede9fe", text: "#5b21b6" },
-  { key: "needs_review", label: "Needs Review", color: "#f43f5e", bg: "#ffe4e6", text: "#9f1239" },
-  { key: "follow_up", label: "Follow-up", color: "#0284c7", bg: "#e0f2fe", text: "#075985" }
+  { key: "under_contract", label: "Under Contract", color: "#8b5cf6", bg: "#ede9fe", text: "#5b21b6" }
 ];
 
-export const STAGE_MAP = Object.fromEntries(STAGES.map((s) => [s.key, s]));
+// Full map (includes retired stages so existing loans still render their badge)
+export const STAGE_MAP = {
+  pending: { key: "pending", label: "App Pending", color: "#f59e0b", bg: "#fef3c7", text: "#92400e" },
+  preapproved: { key: "preapproved", label: "Pre-approved", color: "#10b981", bg: "#d1fae5", text: "#065f46" },
+  under_contract: { key: "under_contract", label: "Under Contract", color: "#8b5cf6", bg: "#ede9fe", text: "#5b21b6" },
+  needs_review: { key: "needs_review", label: "Needs Review", color: "#f43f5e", bg: "#ffe4e6", text: "#9f1239" },
+  follow_up: { key: "follow_up", label: "Follow-up", color: "#0284c7", bg: "#e0f2fe", text: "#075985" }
+};
 
 export function fullName(loan) {
   return `${loan.first_name || ""} ${loan.last_name || ""}`.trim() || "Unnamed borrower";
