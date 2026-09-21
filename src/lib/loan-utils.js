@@ -84,10 +84,12 @@ export function neededSummary(loan) {
 
 // Pre UnderWrite documents — same default set for every profile
 export const DEFAULT_PRE_UW_DOCUMENTS = [
-  "ID verification",
-  "Income verification",
-  "Bank statements",
-  "Credit report"
+  "ID Verification",
+  "Income Documents",
+  "W-2",
+  "Pay Stubs / Tax Returns",
+  "Bank Statements",
+  "Credit Report"
 ];
 
 export const DEFAULT_UW_CONDITIONS = [
