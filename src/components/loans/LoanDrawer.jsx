@@ -85,6 +85,15 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
     }
   }, [loan, tab]);
 
+  // Auto-seed standard UW conditions for under-contract loans that have none
+  useEffect(() => {
+    if (loan && loan.stage === "under_contract" && (!loan.uw_conditions || loan.uw_conditions.length === 0)) {
+      onUpdate(loan.id, {
+        uw_conditions: DEFAULT_UW_CONDITIONS.map((label) => ({ label, completed: false })),
+      });
+    }
+  }, [loan?.id, loan?.stage, loan?.uw_conditions?.length]);
+
   if (!form) return null;
 
   const needed = neededSummary(loan);
