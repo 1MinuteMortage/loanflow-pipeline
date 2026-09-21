@@ -80,6 +80,8 @@
         "pending",
         "preapproved",
         "under_contract",
+        "ctc",
+        "closed",
         "needs_review",
         "follow_up"
       ],
