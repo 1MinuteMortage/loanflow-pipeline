@@ -1,7 +1,6 @@
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 
 export default function PropertyTab({ form, setForm, saveField }) {
   return (
@@ -19,29 +18,56 @@ export default function PropertyTab({ form, setForm, saveField }) {
       </div>
 
       <div className="space-y-1.5">
-        <div className="flex items-center justify-between">
-          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Property Address</Label>
-          <div className="flex items-center gap-2">
-            <Label htmlFor="tbd" className="text-xs text-muted-foreground">TBD / Pre-approval</Label>
-            <Switch
-              id="tbd"
-              checked={form.address_tbd}
-              onCheckedChange={(v) => {
-                setForm({ ...form, address_tbd: v });
-                saveField({ address_tbd: v });
-              }}
-            />
-          </div>
-        </div>
+        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Property Address</Label>
         <Input
-          value={form.property_address}
-          disabled={form.address_tbd}
+          value={form.property_address || ""}
           onChange={(e) => {
             setForm({ ...form, property_address: e.target.value });
             saveField({ property_address: e.target.value });
           }}
-          placeholder={form.address_tbd ? "No property under contract yet" : "123 Main St, Austin, TX 78701"}
+          placeholder="123 Main St, Austin, TX 78701"
         />
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Sales Price</Label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
+            <Input
+              type="number"
+              min="0"
+              step="1000"
+              value={form.sales_price ?? ""}
+              onChange={(e) => {
+                const val = e.target.value === "" ? "" : Number(e.target.value);
+                setForm({ ...form, sales_price: val });
+                saveField({ sales_price: val });
+              }}
+              placeholder="350000"
+              className="pl-7"
+            />
+          </div>
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Sellers Concession</Label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
+            <Input
+              type="number"
+              min="0"
+              step="500"
+              value={form.sellers_concession ?? ""}
+              onChange={(e) => {
+                const val = e.target.value === "" ? "" : Number(e.target.value);
+                setForm({ ...form, sellers_concession: val });
+                saveField({ sellers_concession: val });
+              }}
+              placeholder="5000"
+              className="pl-7"
+            />
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
@@ -65,39 +91,19 @@ export default function PropertyTab({ form, setForm, saveField }) {
           </div>
         </div>
         <div className="space-y-1.5">
-          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Lock Date</Label>
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">LTV (%)</Label>
           <Input
-            type="date"
-            value={form.lock_date || ""}
+            type="number"
+            min="0"
+            max="100"
+            step="0.5"
+            value={form.ltv ?? ""}
             onChange={(e) => {
-              setForm({ ...form, lock_date: e.target.value });
-              saveField({ lock_date: e.target.value });
+              const val = e.target.value === "" ? "" : Number(e.target.value);
+              setForm({ ...form, ltv: val });
+              saveField({ ltv: val });
             }}
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1.5">
-          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Finance Contingency Date</Label>
-          <Input
-            type="date"
-            value={form.finance_contingency_date || ""}
-            onChange={(e) => {
-              setForm({ ...form, finance_contingency_date: e.target.value });
-              saveField({ finance_contingency_date: e.target.value });
-            }}
-          />
-        </div>
-        <div className="space-y-1.5">
-          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Closing Date</Label>
-          <Input
-            type="date"
-            value={form.closing_date || ""}
-            onChange={(e) => {
-              setForm({ ...form, closing_date: e.target.value });
-              saveField({ closing_date: e.target.value });
-            }}
+            placeholder="80"
           />
         </div>
       </div>
@@ -121,6 +127,48 @@ export default function PropertyTab({ form, setForm, saveField }) {
           <option value="Jumbo">Jumbo</option>
           <option value="DSCR">DSCR</option>
         </select>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Lock Date</Label>
+          <Input
+            type="date"
+            value={form.lock_date || ""}
+            onChange={(e) => {
+              setForm({ ...form, lock_date: e.target.value });
+              saveField({ lock_date: e.target.value });
+            }}
+            className="h-11 text-base"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Finance Contingency Date</Label>
+          <Input
+            type="date"
+            value={form.finance_contingency_date || ""}
+            onChange={(e) => {
+              setForm({ ...form, finance_contingency_date: e.target.value });
+              saveField({ finance_contingency_date: e.target.value });
+            }}
+            className="h-11 text-base"
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Closing Date</Label>
+          <Input
+            type="date"
+            value={form.closing_date || ""}
+            onChange={(e) => {
+              setForm({ ...form, closing_date: e.target.value });
+              saveField({ closing_date: e.target.value });
+            }}
+            className="h-11 text-base"
+          />
+        </div>
       </div>
 
       <div className="space-y-1.5">

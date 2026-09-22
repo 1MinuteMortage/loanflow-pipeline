@@ -116,6 +116,18 @@
       "type": "number",
       "description": "Pre-approved loan dollar amount"
     },
+    "ltv": {
+      "type": "number",
+      "description": "Loan-to-value ratio (percentage)"
+    },
+    "sales_price": {
+      "type": "number",
+      "description": "Property sales price"
+    },
+    "sellers_concession": {
+      "type": "number",
+      "description": "Seller concession amount"
+    },
     "lock_date": {
       "type": "string",
       "format": "date",
