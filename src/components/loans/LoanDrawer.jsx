@@ -11,18 +11,17 @@ import PropertyTab from "./PropertyTab";
 import ContactsTab from "./ContactsTab";
 import ChecklistTab from "./ChecklistTab";
 import DraggableTabs from "./DraggableTabs";
+import { Button } from "@/components/ui/button";
 import ContactsPromptDialog from "./ContactsPromptDialog";
 import PreapprovalPromptDialog from "./PreapprovalPromptDialog";
-import DatesTab from "./DatesTab";
 
-const DEFAULT_TAB_ORDER = ["borrower", "property", "contacts", "docs", "dates", "uw"];
+const DEFAULT_TAB_ORDER = ["borrower", "property", "contacts", "docs", "uw"];
 const TAB_LABELS = {
   borrower: "Borrower's Information",
   property: "Loan Information",
   contacts: "Contacts",
   docs: "Pre UnderWrite Documents",
   uw: "UW Conditions",
-  dates: "Finance Contingency / Closing Date",
 };
 
 function loadTabOrder() {
@@ -193,9 +192,6 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
             {tab === "contacts" && (
               <ContactsTab loan={loan} onUpdate={onUpdate} />
             )}
-            {tab === "dates" && (
-              <DatesTab form={form} setForm={setForm} saveField={saveField} />
-            )}
             {tab === "docs" && (
               <ChecklistTab
                 loan={loan}
@@ -212,6 +208,12 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
                 onUpdate={onUpdate}
               />
             )}
+          </div>
+
+          <div className="border-t border-border px-6 py-3 flex justify-start">
+            <Button onClick={() => onOpenChange(false)} className="bg-primary text-primary-foreground">
+              Save
+            </Button>
           </div>
         </SheetContent>
       </Sheet>
