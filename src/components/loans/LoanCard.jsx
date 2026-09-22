@@ -33,12 +33,19 @@ export default function LoanCard({ loan, onOpen }) {
       </div>
 
       <div className="mt-3 flex items-center justify-between">
-        <span
-          className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold"
-          style={{ backgroundColor: stage.bg, color: stage.text }}
-        >
-          {stage.label}
-        </span>
+        <div>
+          <span
+            className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold"
+            style={{ backgroundColor: stage.bg, color: stage.text }}
+          >
+            {stage.label}
+          </span>
+          {loan.stage === "preapproved" && loan.preapproval_amount != null && (
+            <div className="mt-1 text-xs font-semibold text-emerald-700 tabular-nums">
+              ${Number(loan.preapproval_amount).toLocaleString()}
+            </div>
+          )}
+        </div>
         <span className="text-xs text-muted-foreground tabular-nums">
           {needed.remaining} docs needed · {needed.done}/{needed.total} done
         </span>
