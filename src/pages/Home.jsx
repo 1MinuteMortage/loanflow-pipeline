@@ -25,10 +25,26 @@ export default function Home() {
     base44.auth.me().then(setCurrentUser).catch(() => setCurrentUser(null));
   }, []);
 
-  const handleAccept = (loan) => {
+  const handleAccept = (loan, role) => {
     if (!currentUser) return;
     const name = currentUser.full_name || currentUser.email || "Team member";
-    handleUpdate(loan.id, { assigned_to_id: currentUser.id, assigned_to_name: name });
+    if (role === "officer") {
+      handleUpdate(loan.id, {
+        loan_officer_id: currentUser.id,
+        loan_officer_name: name,
+        assigned_to_id: currentUser.id,
+        assigned_to_name: name,
+      });
+    } else if (role === "processor") {
+      handleUpdate(loan.id, {
+        loan_processor_id: currentUser.id,
+        loan_processor_name: name,
+        assigned_to_id: currentUser.id,
+        assigned_to_name: name,
+      });
+    } else {
+      handleUpdate(loan.id, { assigned_to_id: currentUser.id, assigned_to_name: name });
+    }
   };
 
   const load = async () => {

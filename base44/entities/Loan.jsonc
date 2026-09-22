@@ -96,6 +96,22 @@
       "type": "string",
       "description": "Display name of the team member assigned to this loan"
     },
+    "loan_officer_id": {
+      "type": "string",
+      "description": "User id of the assigned loan officer"
+    },
+    "loan_officer_name": {
+      "type": "string",
+      "description": "Display name of the assigned loan officer"
+    },
+    "loan_processor_id": {
+      "type": "string",
+      "description": "User id of the assigned loan processor"
+    },
+    "loan_processor_name": {
+      "type": "string",
+      "description": "Display name of the assigned loan processor"
+    },
     "preapproval_amount": {
       "type": "number",
       "description": "Pre-approved loan dollar amount"
