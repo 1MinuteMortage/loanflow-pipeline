@@ -44,7 +44,10 @@ function loadTabOrder() {
       DEFAULT_TAB_ORDER.forEach((k) => {
         if (!known.includes(k)) known.push(k);
       });
-      return known;
+      // AI Assist is always pinned to the far right
+      const withoutAi = known.filter((k) => k !== "ai_assist");
+      withoutAi.push("ai_assist");
+      return withoutAi;
     }
   } catch {}
   return DEFAULT_TAB_ORDER;
@@ -136,6 +139,8 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
 
   function handleReorder(from, to) {
     setTabOrder((prev) => {
+      // Never allow reordering AI Assist — it stays pinned to the far right
+      if (prev[from] === "ai_assist" || prev[to] === "ai_assist") return prev;
       const next = [...prev];
       const [moved] = next.splice(from, 1);
       next.splice(to, 0, moved);

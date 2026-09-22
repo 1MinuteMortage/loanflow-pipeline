@@ -18,7 +18,7 @@ export default function DraggableTabs({ tabs, activeTab, onSelect, onReorder }) 
             {...provided.droppableProps}
           >
             {tabs.map((t, index) => (
-              <Draggable key={t.key} draggableId={t.key} index={index} isDragDisabled={!!t.disabled}>
+              <Draggable key={t.key} draggableId={t.key} index={index} isDragDisabled={!!t.disabled || t.key === "ai_assist"}>
                 {(prov) => (
                   <div
                     ref={prov.innerRef}
