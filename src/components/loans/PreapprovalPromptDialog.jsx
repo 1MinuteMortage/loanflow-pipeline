@@ -52,7 +52,7 @@ export default function PreapprovalPromptDialog({ open, onOpenChange, loan, onSa
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Skip for now
           </Button>
-          <Button onClick={handleSave}>Save Amount</Button>
+          <Button onClick={handleSave}>Save</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

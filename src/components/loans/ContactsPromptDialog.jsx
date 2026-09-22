@@ -140,7 +140,7 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Skip for now
           </Button>
-          <Button onClick={handleSave}>Save Details</Button>
+          <Button onClick={handleSave}>Save</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
