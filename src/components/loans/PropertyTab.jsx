@@ -2,6 +2,19 @@ import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+const LOAN_TYPES = [
+  "DPA FHA",
+  "DPA Conventional",
+  "30 Year FHA",
+  "FHA 203k",
+  "30 Year Conventional",
+  "Jumbo",
+  "DSCR",
+];
+
+const selectClass =
+  "flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-50 disabled:cursor-not-allowed";
+
 export default function PropertyTab({ form, setForm, saveField, stage }) {
   const isUnderContract = ["under_contract", "ctc", "closed"].includes(stage);
   const isPreapproved = stage === "preapproved";
@@ -12,27 +25,63 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
       ? (Number(form.sales_price) * Number(form.ltv)) / 100
       : null;
 
-  const fmtCurrency = (n) =>
-    n != null && !isNaN(n)
-      ? n.toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0, maximumFractionDigits: 0 })
-      : "—";
-
   return (
     <>
+      {/* === Pre-approval section — available in Pre-approved stage === */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Pre-Approved Amount</Label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
+            <Input
+              type="number"
+              min="0"
+              step="1000"
+              disabled={!preapprovalEnabled}
+              value={form.preapproval_amount ?? ""}
+              onChange={(e) => {
+                const val = e.target.value === "" ? "" : Number(e.target.value);
+                setForm({ ...form, preapproval_amount: val });
+                saveField({ preapproval_amount: val });
+              }}
+              placeholder="Enter text"
+              className="pl-7"
+            />
+          </div>
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Loan Type</Label>
+          <select
+            disabled={!preapprovalEnabled}
+            value={form.loan_type || ""}
+            onChange={(e) => {
+              setForm({ ...form, loan_type: e.target.value });
+              saveField({ loan_type: e.target.value });
+            }}
+            className={selectClass}
+          >
+            <option value="">Select loan type…</option>
+            {LOAN_TYPES.map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
       <div className="space-y-1.5">
-        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Pre-Approved Amount</Label>
+        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Sellers Concession</Label>
         <div className="relative">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
           <Input
             type="number"
             min="0"
-            step="1000"
+            step="500"
             disabled={!preapprovalEnabled}
-            value={form.preapproval_amount ?? ""}
+            value={form.sellers_concession ?? ""}
             onChange={(e) => {
               const val = e.target.value === "" ? "" : Number(e.target.value);
-              setForm({ ...form, preapproval_amount: val });
-              saveField({ preapproval_amount: val });
+              setForm({ ...form, sellers_concession: val });
+              saveField({ sellers_concession: val });
             }}
             placeholder="Enter text"
             className="pl-7"
@@ -40,6 +89,9 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
         </div>
       </div>
 
+      <hr className="border-border" />
+
+      {/* === Under-contract fields — locked until Under Contract === */}
       <div className="space-y-1.5">
         <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Loan Number</Label>
         <Input
@@ -68,27 +120,6 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Loan Type</Label>
-          <select
-            disabled={!isUnderContract}
-            value={form.loan_type || ""}
-            onChange={(e) => {
-              setForm({ ...form, loan_type: e.target.value });
-              saveField({ loan_type: e.target.value });
-            }}
-            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <option value="">Select loan type…</option>
-            <option value="DPA FHA">DPA FHA</option>
-            <option value="DPA Conventional">DPA Conventional</option>
-            <option value="30 Year FHA">30 Year FHA</option>
-            <option value="FHA 203k">FHA 203k</option>
-            <option value="30 Year Conventional">30 Year Conventional</option>
-            <option value="Jumbo">Jumbo</option>
-            <option value="DSCR">DSCR</option>
-          </select>
-        </div>
-        <div className="space-y-1.5">
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Property Type</Label>
           <select
             disabled={!isUnderContract}
@@ -97,7 +128,7 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
               setForm({ ...form, property_type: e.target.value });
               saveField({ property_type: e.target.value });
             }}
-            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-50 disabled:cursor-not-allowed"
+            className={selectClass}
           >
             <option value="">Select…</option>
             <option value="Detached Home">Detached Home</option>
@@ -105,9 +136,6 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
             <option value="Condominium">Condominium</option>
           </select>
         </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Number of Units</Label>
           <select
@@ -117,7 +145,7 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
               setForm({ ...form, unit_count: e.target.value });
               saveField({ unit_count: e.target.value });
             }}
-            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-50 disabled:cursor-not-allowed"
+            className={selectClass}
           >
             <option value="">Select…</option>
             <option value="Single-Family">Single-Family (1)</option>
@@ -126,6 +154,9 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
             <option value="Fourplex">Fourplex (4)</option>
           </select>
         </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">HOA Monthly Dues</Label>
           <div className="relative">
@@ -146,79 +177,58 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
             />
           </div>
         </div>
-      </div>
-
-      <div className="space-y-1.5">
-        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Sales Price</Label>
-        <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
-          <Input
-            type="number"
-            min="0"
-            step="1000"
-            disabled={!isUnderContract}
-            value={form.sales_price ?? ""}
-            onChange={(e) => {
-              const val = e.target.value === "" ? "" : Number(e.target.value);
-              setForm({ ...form, sales_price: val });
-              saveField({ sales_price: val });
-            }}
-            placeholder="Enter text"
-            className="pl-7"
-          />
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Sales Price</Label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
+            <Input
+              type="number"
+              min="0"
+              step="1000"
+              disabled={!isUnderContract}
+              value={form.sales_price ?? ""}
+              onChange={(e) => {
+                const val = e.target.value === "" ? "" : Number(e.target.value);
+                setForm({ ...form, sales_price: val });
+                saveField({ sales_price: val });
+              }}
+              placeholder="Enter text"
+              className="pl-7"
+            />
+          </div>
         </div>
       </div>
 
-      <div className="space-y-1.5">
-        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">LTV (%)</Label>
-        <Input
-          type="number"
-          min="0"
-          max="100"
-          step="0.5"
-          disabled={!isUnderContract}
-          value={form.ltv ?? ""}
-          onChange={(e) => {
-            const val = e.target.value === "" ? "" : Number(e.target.value);
-            setForm({ ...form, ltv: val });
-            saveField({ ltv: val });
-          }}
-          placeholder="Enter text"
-        />
-      </div>
-
-      <div className="space-y-1.5">
-        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Loan Amount</Label>
-        <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
-          <Input
-            readOnly
-            disabled={!isUnderContract}
-            value={calculatedLoanAmount != null ? calculatedLoanAmount.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : ""}
-            placeholder="Auto-calculated"
-            className="pl-7 bg-muted/50 cursor-not-allowed font-semibold"
-          />
-        </div>
-      </div>
-
-      <div className="space-y-1.5">
-        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Sellers Concession</Label>
-        <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">LTV (%)</Label>
           <Input
             type="number"
             min="0"
-            step="500"
+            max="100"
+            step="0.5"
             disabled={!isUnderContract}
-            value={form.sellers_concession ?? ""}
+            value={form.ltv ?? ""}
             onChange={(e) => {
               const val = e.target.value === "" ? "" : Number(e.target.value);
-              setForm({ ...form, sellers_concession: val });
-              saveField({ sellers_concession: val });
+              setForm({ ...form, ltv: val });
+              saveField({ ltv: val });
             }}
             placeholder="Enter text"
-            className="pl-7"
           />
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Loan Amount</Label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
+            <Input
+              readOnly
+              disabled={!isUnderContract}
+              value={calculatedLoanAmount != null ? calculatedLoanAmount.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : ""}
+              placeholder="Auto-calculated"
+              className="pl-7 bg-muted/50 cursor-not-allowed font-semibold"
+            />
+          </div>
         </div>
       </div>
 
@@ -236,32 +246,33 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
         />
       </div>
 
-      <div className="space-y-1.5">
-        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Closing Date</Label>
-        <Input
-          type="date"
-          disabled={!isUnderContract}
-          value={form.closing_date || ""}
-          onChange={(e) => {
-            setForm({ ...form, closing_date: e.target.value });
-            saveField({ closing_date: e.target.value });
-          }}
-          className="h-[3.85rem] text-xl"
-        />
-      </div>
-
-      <div className="space-y-1.5">
-        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Lock Date</Label>
-        <Input
-          type="date"
-          disabled={!isUnderContract}
-          value={form.lock_date || ""}
-          onChange={(e) => {
-            setForm({ ...form, lock_date: e.target.value });
-            saveField({ lock_date: e.target.value });
-          }}
-          className="h-[3.85rem] text-xl"
-        />
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Closing Date</Label>
+          <Input
+            type="date"
+            disabled={!isUnderContract}
+            value={form.closing_date || ""}
+            onChange={(e) => {
+              setForm({ ...form, closing_date: e.target.value });
+              saveField({ closing_date: e.target.value });
+            }}
+            className="h-[3.85rem] text-xl"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Lock Date</Label>
+          <Input
+            type="date"
+            disabled={!isUnderContract}
+            value={form.lock_date || ""}
+            onChange={(e) => {
+              setForm({ ...form, lock_date: e.target.value });
+              saveField({ lock_date: e.target.value });
+            }}
+            className="h-[3.85rem] text-xl"
+          />
+        </div>
       </div>
 
       <div className="space-y-1.5">

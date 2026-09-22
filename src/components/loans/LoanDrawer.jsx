@@ -109,7 +109,10 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
     if (tab === "uw" && loan && loan.stage !== "under_contract") {
       setTab("borrower");
     }
-    if ((tab === "contacts" || tab === "property") && loan && !["under_contract", "ctc", "closed"].includes(loan.stage)) {
+    if (tab === "contacts" && loan && !["under_contract", "ctc", "closed"].includes(loan.stage)) {
+      setTab("borrower");
+    }
+    if (tab === "property" && loan && !["preapproved", "under_contract", "ctc", "closed"].includes(loan.stage)) {
       setTab("borrower");
     }
   }, [loan, tab]);
@@ -169,11 +172,13 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
     setContactsPromptOpen(false);
   }
 
-  const stageLocked = !["under_contract", "ctc", "closed"].includes(loan.stage);
+  const propertyLocked = !["preapproved", "under_contract", "ctc", "closed"].includes(loan.stage);
+  const contactsLocked = !["under_contract", "ctc", "closed"].includes(loan.stage);
   const visibleTabs = tabOrder
     .map((key) => {
       const tab = { key, label: TAB_LABELS[key] };
-      if (key === "contacts" || key === "property") tab.disabled = stageLocked;
+      if (key === "contacts") tab.disabled = contactsLocked;
+      if (key === "property") tab.disabled = propertyLocked;
       return tab;
     })
     .filter((t) => t.key !== "uw" || loan.stage === "under_contract");
