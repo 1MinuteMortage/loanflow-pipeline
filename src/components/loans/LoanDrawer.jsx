@@ -109,6 +109,9 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
     if (tab === "uw" && loan && loan.stage !== "under_contract") {
       setTab("borrower");
     }
+    if ((tab === "contacts" || tab === "property") && loan && !["under_contract", "ctc", "closed"].includes(loan.stage)) {
+      setTab("borrower");
+    }
   }, [loan, tab]);
 
   // Auto-seed standard UW conditions for under-contract loans that have none
@@ -166,11 +169,11 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
     setContactsPromptOpen(false);
   }
 
-  const contactsDisabled = !["under_contract", "ctc", "closed"].includes(loan.stage);
+  const stageLocked = !["under_contract", "ctc", "closed"].includes(loan.stage);
   const visibleTabs = tabOrder
     .map((key) => {
       const tab = { key, label: TAB_LABELS[key] };
-      if (key === "contacts") tab.disabled = contactsDisabled;
+      if (key === "contacts" || key === "property") tab.disabled = stageLocked;
       return tab;
     })
     .filter((t) => t.key !== "uw" || loan.stage === "under_contract");

@@ -25,7 +25,7 @@ export default function DraggableTabs({ tabs, activeTab, onSelect, onReorder }) 
                     {...prov.draggableProps}
                     {...(t.disabled ? {} : prov.dragHandleProps)}
                     onClick={() => { if (!t.disabled) onSelect(t.key); }}
-                    title={t.disabled ? "Available once loan is Under Contract" : "Drag to reorder"}
+                    title={t.disabled ? "Available once the loan is Under Contract" : "Drag to reorder"}
                     className={`flex items-center gap-1 px-1 py-3 mr-6 text-sm font-medium border-b-2 transition-colors select-none ${
                       t.disabled
                         ? "border-transparent text-muted-foreground/40 cursor-not-allowed"
