@@ -7,8 +7,35 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
   const isPreapproved = stage === "preapproved";
   const preapprovalEnabled = isPreapproved || isUnderContract;
 
+  const calculatedLoanAmount =
+    form.sales_price && form.ltv
+      ? (Number(form.sales_price) * Number(form.ltv)) / 100
+      : null;
+
+  const fmtCurrency = (n) =>
+    n != null && !isNaN(n)
+      ? n.toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0, maximumFractionDigits: 0 })
+      : "—";
+
   return (
     <>
+      {isUnderContract && (
+        <div className="sticky top-0 z-10 -mx-6 px-6 py-3 mb-2 bg-primary/10 border border-primary/30 rounded-lg flex items-center justify-between">
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-wide text-primary">Calculated Loan Amount</div>
+            <div className="text-2xl font-bold text-primary font-heading">
+              {fmtCurrency(calculatedLoanAmount)}
+            </div>
+          </div>
+          <div className="text-right text-xs text-muted-foreground">
+            <div>Sales Price × LTV</div>
+            <div className="font-medium text-foreground">
+              {form.sales_price ? fmtCurrency(Number(form.sales_price)) : "—"} × {form.ltv ? `${form.ltv}%` : "—"}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="space-y-1.5">
         <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Pre-Approved Amount</Label>
         <div className="relative">
@@ -24,7 +51,7 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
               setForm({ ...form, preapproval_amount: val });
               saveField({ preapproval_amount: val });
             }}
-            placeholder="350000"
+            placeholder="Enter text"
             className="pl-7"
           />
         </div>
@@ -54,6 +81,44 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
           }}
           placeholder="Enter text"
         />
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Property Type</Label>
+          <select
+            disabled={!isUnderContract}
+            value={form.property_type || ""}
+            onChange={(e) => {
+              setForm({ ...form, property_type: e.target.value });
+              saveField({ property_type: e.target.value });
+            }}
+            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <option value="">Select…</option>
+            <option value="Detached Home">Detached Home</option>
+            <option value="Attached Home">Attached Home</option>
+            <option value="Condominium">Condominium</option>
+          </select>
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Number of Units</Label>
+          <select
+            disabled={!isUnderContract}
+            value={form.unit_count || ""}
+            onChange={(e) => {
+              setForm({ ...form, unit_count: e.target.value });
+              saveField({ unit_count: e.target.value });
+            }}
+            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <option value="">Select…</option>
+            <option value="Single-Family">Single-Family (1)</option>
+            <option value="Duplex">Duplex (2)</option>
+            <option value="Triplex">Triplex (3)</option>
+            <option value="Fourplex">Fourplex (4)</option>
+          </select>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
@@ -150,7 +215,7 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
             setForm({ ...form, finance_contingency_date: e.target.value });
             saveField({ finance_contingency_date: e.target.value });
           }}
-          className="h-11 text-base"
+          className="h-[3.2rem] text-lg"
         />
       </div>
 
@@ -164,7 +229,7 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
             setForm({ ...form, closing_date: e.target.value });
             saveField({ closing_date: e.target.value });
           }}
-          className="h-11 text-base"
+          className="h-[3.2rem] text-lg"
         />
       </div>
 
@@ -178,7 +243,7 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
             setForm({ ...form, lock_date: e.target.value });
             saveField({ lock_date: e.target.value });
           }}
-          className="h-11 text-base"
+          className="h-[3.2rem] text-lg"
         />
       </div>
 
