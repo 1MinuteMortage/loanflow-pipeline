@@ -6,11 +6,22 @@ import { Plus, Trash2, CheckCircle2, Paperclip, FileText, Loader2, Eye } from "l
 import { base44 } from "@/api/base44Client";
 import DocPreview from "./DocPreview";
 import InitialConditionsUpload from "./InitialConditionsUpload";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 
 export default function ChecklistTab({ loan, field, title, onUpdate }) {
   const [newItem, setNewItem] = useState("");
   const [uploadingIdx, setUploadingIdx] = useState(null);
   const [previewDoc, setPreviewDoc] = useState(null);
+  const [confirmDeleteIdx, setConfirmDeleteIdx] = useState(null);
   const fileRefs = useRef([]);
 
   const items = loan[field] || [];
@@ -46,6 +57,11 @@ export default function ChecklistTab({ loan, field, title, onUpdate }) {
     if (item.file_url) setPreviewDoc({ url: item.file_url, name: item.file_name || "Document" });
   };
 
+  const removeFile = (idx) => {
+    save(items.map((it, i) => (i === idx ? { ...it, file_url: undefined, file_name: undefined } : it)));
+    setConfirmDeleteIdx(null);
+  };
+
   return (
     <div>
       {field === "uw_conditions" && (
@@ -78,6 +94,7 @@ export default function ChecklistTab({ loan, field, title, onUpdate }) {
               <button
                 onClick={() => removeItem(idx)}
                 className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition"
+                title="Delete condition"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -89,14 +106,23 @@ export default function ChecklistTab({ loan, field, title, onUpdate }) {
                   <Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading...
                 </span>
               ) : item.file_url ? (
-                <button
-                  onClick={() => openPreview(item)}
-                  className="flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
-                >
-                  <FileText className="w-3.5 h-3.5" />
-                  <span className="truncate max-w-[200px]">{item.file_name || "View document"}</span>
-                  <Eye className="w-3.5 h-3.5 ml-1" />
-                </button>
+                <>
+                  <button
+                    onClick={() => openPreview(item)}
+                    className="flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
+                  >
+                    <FileText className="w-3.5 h-3.5" />
+                    <span className="truncate max-w-[200px]">{item.file_name || "View document"}</span>
+                    <Eye className="w-3.5 h-3.5 ml-1" />
+                  </button>
+                  <button
+                    onClick={() => setConfirmDeleteIdx(idx)}
+                    className="text-muted-foreground hover:text-destructive transition"
+                    title="Delete file"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </>
               ) : (
                 <button
                   onClick={() => fileRefs.current[idx]?.click()}
@@ -135,6 +161,26 @@ export default function ChecklistTab({ loan, field, title, onUpdate }) {
       </div>
 
       <DocPreview doc={previewDoc} onClose={() => setPreviewDoc(null)} />
+
+      <AlertDialog open={confirmDeleteIdx !== null} onOpenChange={(open) => !open && setConfirmDeleteIdx(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this file?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this document? The condition will remain, but the uploaded file will be removed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => confirmDeleteIdx !== null && removeFile(confirmDeleteIdx)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
