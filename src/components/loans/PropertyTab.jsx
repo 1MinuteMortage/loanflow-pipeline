@@ -44,6 +44,39 @@ export default function PropertyTab({ form, setForm, saveField }) {
         />
       </div>
 
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Pre-Approved Amount</Label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
+            <Input
+              type="number"
+              min="0"
+              step="1000"
+              value={form.preapproval_amount ?? ""}
+              onChange={(e) => {
+                const val = e.target.value === "" ? "" : Number(e.target.value);
+                setForm({ ...form, preapproval_amount: val });
+                saveField({ preapproval_amount: val });
+              }}
+              placeholder="350000"
+              className="pl-7"
+            />
+          </div>
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Lock Date</Label>
+          <Input
+            type="date"
+            value={form.lock_date || ""}
+            onChange={(e) => {
+              setForm({ ...form, lock_date: e.target.value });
+              saveField({ lock_date: e.target.value });
+            }}
+          />
+        </div>
+      </div>
+
       <div className="space-y-1.5">
         <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Loan Officer Remarks</Label>
         <textarea

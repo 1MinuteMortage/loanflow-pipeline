@@ -69,6 +69,8 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
         us_citizen: !!loan.us_citizen,
         estimated_available_funds: loan.estimated_available_funds ?? "",
         loan_number: loan.loan_number || "",
+        preapproval_amount: loan.preapproval_amount ?? "",
+        lock_date: loan.lock_date || "",
         finance_contingency_date: loan.finance_contingency_date || "",
         closing_date: loan.closing_date || "",
         notes: loan.notes || "",
