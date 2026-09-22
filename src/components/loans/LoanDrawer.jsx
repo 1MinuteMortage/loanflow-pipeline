@@ -18,7 +18,7 @@ import DatesTab from "./DatesTab";
 const DEFAULT_TAB_ORDER = ["borrower", "property", "contacts", "docs", "dates", "uw"];
 const TAB_LABELS = {
   borrower: "Borrower's Information",
-  property: "Property Info",
+  property: "Loan Information",
   contacts: "Contacts",
   docs: "Pre UnderWrite Documents",
   uw: "UW Conditions",
@@ -68,6 +68,7 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
         marital_status: loan.marital_status || "",
         us_citizen: !!loan.us_citizen,
         estimated_available_funds: loan.estimated_available_funds ?? "",
+        loan_number: loan.loan_number || "",
         finance_contingency_date: loan.finance_contingency_date || "",
         closing_date: loan.closing_date || "",
         notes: loan.notes || "",

@@ -7,6 +7,18 @@ export default function PropertyTab({ form, setForm, saveField }) {
   return (
     <>
       <div className="space-y-1.5">
+        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Loan Number</Label>
+        <Input
+          value={form.loan_number || ""}
+          onChange={(e) => {
+            setForm({ ...form, loan_number: e.target.value });
+            saveField({ loan_number: e.target.value });
+          }}
+          placeholder="e.g. 1234567890"
+        />
+      </div>
+
+      <div className="space-y-1.5">
         <div className="flex items-center justify-between">
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Property Address</Label>
           <div className="flex items-center gap-2">

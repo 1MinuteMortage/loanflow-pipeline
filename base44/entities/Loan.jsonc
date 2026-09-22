@@ -100,6 +100,10 @@
       "type": "number",
       "description": "Pre-approved loan dollar amount"
     },
+    "loan_number": {
+      "type": "string",
+      "description": "Lender/Loan number"
+    },
     "realtor_name": {
       "type": "string",
       "description": "Name of the realtor who referred the client"
