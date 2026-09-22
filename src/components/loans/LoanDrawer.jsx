@@ -25,12 +25,13 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-const DEFAULT_TAB_ORDER = ["borrower", "property", "contacts", "docs", "uw"];
+const DEFAULT_TAB_ORDER = ["borrower", "property", "contacts", "docs", "ai_assist", "uw"];
 const TAB_LABELS = {
   borrower: "Borrower's Information",
   property: "Loan Information",
   contacts: "Contacts",
   docs: "Pre UnderWrite Documents",
+  ai_assist: "AI Assist",
   uw: "UW Conditions",
 };
 
@@ -239,6 +240,11 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
                 title="Pre UnderWrite Documents"
                 onUpdate={onUpdate}
               />
+            )}
+            {tab === "ai_assist" && (
+              <div className="flex items-center justify-center min-h-[300px] text-muted-foreground">
+                <p className="text-sm">AI Assist coming soon</p>
+              </div>
             )}
             {tab === "uw" && loan.stage === "under_contract" && (
               <ChecklistTab
