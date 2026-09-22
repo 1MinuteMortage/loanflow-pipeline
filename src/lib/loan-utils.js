@@ -94,8 +94,9 @@ export const DEFAULT_PRE_UW_DOCUMENTS = [
 export const DEFAULT_UW_CONDITIONS = [
   "1003",
   "Purchase and Sale",
+  "EMD Receipt",
   "Loan Estimate",
-  "Home Insurance",
+  "Home Insurance Declaration",
   "VWOE / Work Number",
   "Title Commitment, CPL, E&O, Tax cert, Wire Instructions, Title Invoice",
   "Lock Confirmation",
