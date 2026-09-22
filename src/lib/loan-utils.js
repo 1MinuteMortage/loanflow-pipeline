@@ -98,6 +98,7 @@ export const DEFAULT_UW_CONDITIONS = [
   "Home Insurance",
   "VWOE / Work Number",
   "Title Commitment, CPL, E&O, Tax cert, Wire Instructions, Title Invoice",
+  "Lock Confirmation",
   "Appraisal"
 ];
 
