@@ -191,6 +191,7 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
                 form={form}
                 setForm={setForm}
                 saveField={saveField}
+                stage={loan.stage}
               />
             )}
             {tab === "contacts" && (

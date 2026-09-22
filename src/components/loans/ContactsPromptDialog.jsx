@@ -14,10 +14,15 @@ import { CONTACT_ROLES } from "@/lib/loan-utils";
 
 export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave }) {
   const [contacts, setContacts] = useState({});
-  const [propertyAddress, setPropertyAddress] = useState("");
   const [loanNumber, setLoanNumber] = useState("");
+  const [propertyAddress, setPropertyAddress] = useState("");
+  const [salesPrice, setSalesPrice] = useState("");
+  const [sellersConcession, setSellersConcession] = useState("");
+  const [ltv, setLtv] = useState("");
+  const [loanType, setLoanType] = useState("");
   const [financeContingencyDate, setFinanceContingencyDate] = useState("");
   const [closingDate, setClosingDate] = useState("");
+  const [lockDate, setLockDate] = useState("");
 
   useEffect(() => {
     if (!loan) return;
@@ -31,10 +36,15 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
       next[`${r.key}_email`] = loan[`${r.key}_email`] || "";
     });
     setContacts(next);
-    setPropertyAddress(loan.property_address || "");
     setLoanNumber(loan.loan_number || "");
+    setPropertyAddress(loan.property_address || "");
+    setSalesPrice(loan.sales_price ?? "");
+    setSellersConcession(loan.sellers_concession ?? "");
+    setLtv(loan.ltv ?? "");
+    setLoanType(loan.loan_type || "");
     setFinanceContingencyDate(loan.finance_contingency_date || "");
     setClosingDate(loan.closing_date || "");
+    setLockDate(loan.lock_date || "");
   }, [loan, open]);
 
   function updateField(key, value) {
@@ -44,20 +54,25 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
   function handleSave() {
     onSave({
       ...contacts,
-      property_address: propertyAddress,
       loan_number: loanNumber,
+      property_address: propertyAddress,
+      sales_price: salesPrice === "" ? null : Number(salesPrice),
+      sellers_concession: sellersConcession === "" ? null : Number(sellersConcession),
+      ltv: ltv === "" ? null : Number(ltv),
+      loan_type: loanType,
       finance_contingency_date: financeContingencyDate,
       closing_date: closingDate,
+      lock_date: lockDate,
     });
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[520px]">
+      <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
           <DialogTitle>Add Transaction Details</DialogTitle>
           <DialogDescription>
-            This loan is now Under Contract. Add the loan number, property address, dates, and contacts involved in this transaction.
+            This loan is now Under Contract. Add the loan details, dates, and contacts involved in this transaction.
           </DialogDescription>
         </DialogHeader>
         <div className="max-h-[55vh] overflow-y-auto space-y-3 pr-1">
@@ -81,21 +96,85 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1.5">
-                <Label className="text-xs uppercase tracking-wide text-muted-foreground">Finance Contingency</Label>
+                <Label className="text-xs uppercase tracking-wide text-muted-foreground">Sales Price</Label>
                 <Input
-                  type="date"
-                  value={financeContingencyDate}
-                  onChange={(e) => setFinanceContingencyDate(e.target.value)}
+                  type="number"
+                  min="0"
+                  step="1000"
+                  placeholder="350000"
+                  value={salesPrice}
+                  onChange={(e) => setSalesPrice(e.target.value)}
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs uppercase tracking-wide text-muted-foreground">Closing Date</Label>
+                <Label className="text-xs uppercase tracking-wide text-muted-foreground">Sellers Concession</Label>
                 <Input
-                  type="date"
-                  value={closingDate}
-                  onChange={(e) => setClosingDate(e.target.value)}
+                  type="number"
+                  min="0"
+                  step="500"
+                  placeholder="5000"
+                  value={sellersConcession}
+                  onChange={(e) => setSellersConcession(e.target.value)}
                 />
               </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1.5">
+                <Label className="text-xs uppercase tracking-wide text-muted-foreground">LTV (%)</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.5"
+                  placeholder="80"
+                  value={ltv}
+                  onChange={(e) => setLtv(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs uppercase tracking-wide text-muted-foreground">Loan Type</Label>
+                <select
+                  value={loanType}
+                  onChange={(e) => setLoanType(e.target.value)}
+                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
+                >
+                  <option value="">Select loan type…</option>
+                  <option value="DPA FHA">DPA FHA</option>
+                  <option value="DPA Conventional">DPA Conventional</option>
+                  <option value="30 Year FHA">30 Year FHA</option>
+                  <option value="FHA 203k">FHA 203k</option>
+                  <option value="30 Year Conventional">30 Year Conventional</option>
+                  <option value="Jumbo">Jumbo</option>
+                  <option value="DSCR">DSCR</option>
+                </select>
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs uppercase tracking-wide text-muted-foreground">Finance Contingency Date</Label>
+              <Input
+                type="date"
+                value={financeContingencyDate}
+                onChange={(e) => setFinanceContingencyDate(e.target.value)}
+                className="h-11 text-base"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs uppercase tracking-wide text-muted-foreground">Closing Date</Label>
+              <Input
+                type="date"
+                value={closingDate}
+                onChange={(e) => setClosingDate(e.target.value)}
+                className="h-11 text-base"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs uppercase tracking-wide text-muted-foreground">Lock Date</Label>
+              <Input
+                type="date"
+                value={lockDate}
+                onChange={(e) => setLockDate(e.target.value)}
+                className="h-11 text-base"
+              />
             </div>
           </div>
           {CONTACT_ROLES.map((r) => (

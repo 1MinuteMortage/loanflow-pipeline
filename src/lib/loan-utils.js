@@ -107,8 +107,7 @@ export const CONTACT_ROLES = [
   { key: "buyer_agent", label: "Buyer Agent" },
   { key: "selling_agent", label: "Selling Agent" },
   { key: "underwriter", label: "Underwriter" },
-  { key: "closing_attorney", label: "Closing Attorney" },
-  { key: "appraiser", label: "Appraiser" }
+  { key: "closing_attorney", label: "Closing Attorney" }
 ];
 
 export function getContacts(loan) {
