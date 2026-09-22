@@ -168,6 +168,27 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
         </div>
       </div>
 
+      <div className="space-y-1.5">
+        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">HOA Monthly Dues</Label>
+        <div className="relative">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
+          <Input
+            type="number"
+            min="0"
+            step="50"
+            disabled={!isUnderContract}
+            value={form.hoa_dues ?? ""}
+            onChange={(e) => {
+              const val = e.target.value === "" ? "" : Number(e.target.value);
+              setForm({ ...form, hoa_dues: val });
+              saveField({ hoa_dues: val });
+            }}
+            placeholder="Enter text"
+            className="pl-7"
+          />
+        </div>
+      </div>
+
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">LTV (%)</Label>
@@ -211,7 +232,7 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
             setForm({ ...form, finance_contingency_date: e.target.value });
             saveField({ finance_contingency_date: e.target.value });
           }}
-          className="h-[3.2rem] text-lg"
+          className="h-[3.85rem] text-xl"
         />
       </div>
 
@@ -225,7 +246,7 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
             setForm({ ...form, closing_date: e.target.value });
             saveField({ closing_date: e.target.value });
           }}
-          className="h-[3.2rem] text-lg"
+          className="h-[3.85rem] text-xl"
         />
       </div>
 
@@ -239,7 +260,7 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
             setForm({ ...form, lock_date: e.target.value });
             saveField({ lock_date: e.target.value });
           }}
-          className="h-[3.2rem] text-lg"
+          className="h-[3.85rem] text-xl"
         />
       </div>
 

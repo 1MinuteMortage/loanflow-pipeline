@@ -73,6 +73,7 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
         ltv: loan.ltv ?? "",
         sales_price: loan.sales_price ?? "",
         sellers_concession: loan.sellers_concession ?? "",
+        hoa_dues: loan.hoa_dues ?? "",
         property_type: loan.property_type || "",
         unit_count: loan.unit_count || "",
         lock_date: loan.lock_date || "",
