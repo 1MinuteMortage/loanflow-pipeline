@@ -203,11 +203,27 @@
           },
           "file_url": {
             "type": "string",
-            "description": "Uploaded document URL"
+            "description": "Uploaded document URL (legacy single-file)"
           },
           "file_name": {
             "type": "string",
-            "description": "Original uploaded file name"
+            "description": "Original uploaded file name (legacy single-file)"
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "file_url": {
+                  "type": "string"
+                },
+                "file_name": {
+                  "type": "string"
+                }
+              }
+            },
+            "default": [],
+            "description": "All uploaded documents for this condition"
           }
         }
       },
@@ -228,11 +244,27 @@
           },
           "file_url": {
             "type": "string",
-            "description": "Uploaded document URL"
+            "description": "Uploaded document URL (legacy single-file)"
           },
           "file_name": {
             "type": "string",
-            "description": "Original uploaded file name"
+            "description": "Original uploaded file name (legacy single-file)"
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "file_url": {
+                  "type": "string"
+                },
+                "file_name": {
+                  "type": "string"
+                }
+              }
+            },
+            "default": [],
+            "description": "All uploaded documents for this condition"
           }
         }
       },
