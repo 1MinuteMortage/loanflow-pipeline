@@ -48,7 +48,7 @@ export default function BorrowerTab({ form, setForm, saveField }) {
           <Input
             type="email"
             value={form.email || ""}
-            placeholder="borrower@example.com"
+            placeholder="Enter text"
             onChange={(e) => {
               setForm({ ...form, email: e.target.value });
               saveField({ email: e.target.value });
@@ -61,7 +61,7 @@ export default function BorrowerTab({ form, setForm, saveField }) {
         <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Social Security Number</Label>
         <Input
           value={form.ssn || ""}
-          placeholder="XXX-XX-XXXX"
+          placeholder="Enter text"
           onChange={(e) => {
             setForm({ ...form, ssn: e.target.value });
             saveField({ ssn: e.target.value });
@@ -73,7 +73,7 @@ export default function BorrowerTab({ form, setForm, saveField }) {
         <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Current Residence</Label>
         <Input
           value={form.current_residence || ""}
-          placeholder="Current street address"
+          placeholder="Enter text"
           onChange={(e) => {
             setForm({ ...form, current_residence: e.target.value });
             saveField({ current_residence: e.target.value });
@@ -135,7 +135,7 @@ export default function BorrowerTab({ form, setForm, saveField }) {
           <Input
             type="number"
             value={form.estimated_available_funds ?? ""}
-            placeholder="0"
+            placeholder="Enter text"
             onChange={(e) => {
               const v = e.target.value === "" ? "" : Number(e.target.value);
               setForm({ ...form, estimated_available_funds: v });
@@ -150,7 +150,7 @@ export default function BorrowerTab({ form, setForm, saveField }) {
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Employer Name</Label>
           <Input
             value={form.employment || ""}
-            placeholder="Employer name"
+            placeholder="Enter text"
             onChange={(e) => {
               setForm({ ...form, employment: e.target.value });
               saveField({ employment: e.target.value });
@@ -161,7 +161,7 @@ export default function BorrowerTab({ form, setForm, saveField }) {
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Employment Duration</Label>
           <Input
             value={form.employment_duration || ""}
-            placeholder="e.g. 3 years"
+            placeholder="Enter text"
             onChange={(e) => {
               setForm({ ...form, employment_duration: e.target.value });
               saveField({ employment_duration: e.target.value });
@@ -176,7 +176,7 @@ export default function BorrowerTab({ form, setForm, saveField }) {
           <Input
             type="number"
             value={form.income ?? ""}
-            placeholder="0"
+            placeholder="Enter text"
             onChange={(e) => {
               const v = e.target.value === "" ? "" : Number(e.target.value);
               setForm({ ...form, income: v });
@@ -189,7 +189,7 @@ export default function BorrowerTab({ form, setForm, saveField }) {
           <Input
             type="number"
             value={form.credit_score ?? ""}
-            placeholder="0"
+            placeholder="Enter text"
             onChange={(e) => {
               const v = e.target.value === "" ? "" : Number(e.target.value);
               setForm({ ...form, credit_score: v });

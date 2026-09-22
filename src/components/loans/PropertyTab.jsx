@@ -39,7 +39,7 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
             setForm({ ...form, loan_number: e.target.value });
             saveField({ loan_number: e.target.value });
           }}
-          placeholder="e.g. 1234567890"
+          placeholder="Enter text"
         />
       </div>
 
@@ -52,7 +52,7 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
             setForm({ ...form, property_address: e.target.value });
             saveField({ property_address: e.target.value });
           }}
-          placeholder="123 Main St, Austin, TX 78701"
+          placeholder="Enter text"
         />
       </div>
 
@@ -72,7 +72,7 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
                 setForm({ ...form, sales_price: val });
                 saveField({ sales_price: val });
               }}
-              placeholder="350000"
+              placeholder="Enter text"
               className="pl-7"
             />
           </div>
@@ -92,7 +92,7 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
                 setForm({ ...form, sellers_concession: val });
                 saveField({ sellers_concession: val });
               }}
-              placeholder="5000"
+              placeholder="Enter text"
               className="pl-7"
             />
           </div>
@@ -114,7 +114,7 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
               setForm({ ...form, ltv: val });
               saveField({ ltv: val });
             }}
-            placeholder="80"
+            placeholder="Enter text"
           />
         </div>
         <div className="space-y-1.5">

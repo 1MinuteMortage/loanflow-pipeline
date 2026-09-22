@@ -81,7 +81,7 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
             <div className="space-y-1.5">
               <Label className="text-xs uppercase tracking-wide text-muted-foreground">Loan Number</Label>
               <Input
-                placeholder="e.g. 1234567890"
+                placeholder="Enter text"
                 value={loanNumber}
                 onChange={(e) => setLoanNumber(e.target.value)}
               />
@@ -89,7 +89,7 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
             <div className="space-y-1.5">
               <Label className="text-xs uppercase tracking-wide text-muted-foreground">Property Address</Label>
               <Input
-                placeholder="123 Main St, Austin, TX 78701"
+                placeholder="Enter text"
                 value={propertyAddress}
                 onChange={(e) => setPropertyAddress(e.target.value)}
               />
@@ -101,7 +101,7 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
                   type="number"
                   min="0"
                   step="1000"
-                  placeholder="350000"
+                  placeholder="Enter text"
                   value={salesPrice}
                   onChange={(e) => setSalesPrice(e.target.value)}
                 />
@@ -112,7 +112,7 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
                   type="number"
                   min="0"
                   step="500"
-                  placeholder="5000"
+                  placeholder="Enter text"
                   value={sellersConcession}
                   onChange={(e) => setSellersConcession(e.target.value)}
                 />
@@ -126,7 +126,7 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
                   min="0"
                   max="100"
                   step="0.5"
-                  placeholder="80"
+                  placeholder="Enter text"
                   value={ltv}
                   onChange={(e) => setLtv(e.target.value)}
                 />
