@@ -41,11 +41,21 @@ function TbdPill() {
 export default function LoanRow({ loan, onOpen, currentUser, onAccept }) {
   const needed = documentsNeededSummary(loan);
 
+  const showTbd =
+    loan.stage === "pending" ||
+    loan.stage === "preapproved" ||
+    loan.address_tbd ||
+    !loan.property_address;
+
   return (
     <tr
       onClick={() => onOpen(loan)}
       className="group border-b border-border last:border-0 hover:bg-muted/40 cursor-pointer transition-colors"
     >
+      {/* Stage */}
+      <td className="px-4 py-3">
+        <StageBadge stage={loan.stage} />
+      </td>
       {/* Borrower */}
       <td className="px-4 py-3">
         <div className="font-semibold text-foreground text-sm">{fullName(loan)}</div>
@@ -54,13 +64,9 @@ export default function LoanRow({ loan, onOpen, currentUser, onAccept }) {
       <td className="px-4 py-3">
         <AssignedToCell loan={loan} currentUser={currentUser} onAccept={onAccept} />
       </td>
-      {/* Stage */}
-      <td className="px-4 py-3">
-        <StageBadge stage={loan.stage} />
-      </td>
       {/* Property */}
       <td className="px-4 py-3">
-        {loan.address_tbd || !loan.property_address ? (
+        {showTbd ? (
           <TbdPill />
         ) : (
           <span className="text-sm text-foreground/80">{loan.property_address}</span>
