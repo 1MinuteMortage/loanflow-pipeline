@@ -18,10 +18,8 @@ export default function LoanCard({ loan, onOpen }) {
         <div className="min-w-0">
           <div className="font-heading text-lg font-bold text-foreground truncate">{fullName(loan)}</div>
           <div className="mt-1.5">
-            {loan.address_tbd || !loan.property_address ? (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-                TBD / Pre-approval
-              </span>
+            {loan.stage === "pending" || loan.stage === "preapproved" || loan.address_tbd || !loan.property_address ? (
+              <span className="text-sm text-foreground/80">TBD</span>
             ) : (
               <span className="text-sm text-muted-foreground line-clamp-1">{loan.property_address}</span>
             )}

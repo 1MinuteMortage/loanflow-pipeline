@@ -32,9 +32,7 @@ function DatesCell({ loan }) {
 
 function TbdPill() {
   return (
-    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200 whitespace-nowrap">
-      TBD / Pre-approval
-    </span>
+    <span className="text-sm text-foreground/80">TBD</span>
   );
 }
 
