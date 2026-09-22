@@ -19,23 +19,6 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
 
   return (
     <>
-      {isUnderContract && (
-        <div className="sticky top-0 z-10 -mx-6 px-6 py-3 mb-2 bg-primary/10 border border-primary/30 rounded-lg flex items-center justify-between">
-          <div>
-            <div className="text-xs font-semibold uppercase tracking-wide text-primary">Calculated Loan Amount</div>
-            <div className="text-2xl font-bold text-primary font-heading">
-              {fmtCurrency(calculatedLoanAmount)}
-            </div>
-          </div>
-          <div className="text-right text-xs text-muted-foreground">
-            <div>Sales Price × LTV</div>
-            <div className="font-medium text-foreground">
-              {form.sales_price ? fmtCurrency(Number(form.sales_price)) : "—"} × {form.ltv ? `${form.ltv}%` : "—"}
-            </div>
-          </div>
-        </div>
-      )}
-
       <div className="space-y-1.5">
         <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Pre-Approved Amount</Label>
         <div className="relative">
@@ -85,6 +68,27 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Loan Type</Label>
+          <select
+            disabled={!isUnderContract}
+            value={form.loan_type || ""}
+            onChange={(e) => {
+              setForm({ ...form, loan_type: e.target.value });
+              saveField({ loan_type: e.target.value });
+            }}
+            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <option value="">Select loan type…</option>
+            <option value="DPA FHA">DPA FHA</option>
+            <option value="DPA Conventional">DPA Conventional</option>
+            <option value="30 Year FHA">30 Year FHA</option>
+            <option value="FHA 203k">FHA 203k</option>
+            <option value="30 Year Conventional">30 Year Conventional</option>
+            <option value="Jumbo">Jumbo</option>
+            <option value="DSCR">DSCR</option>
+          </select>
+        </div>
+        <div className="space-y-1.5">
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Property Type</Label>
           <select
             disabled={!isUnderContract}
@@ -101,6 +105,9 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
             <option value="Condominium">Condominium</option>
           </select>
         </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Number of Units</Label>
           <select
@@ -119,9 +126,6 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
             <option value="Fourplex">Fourplex (4)</option>
           </select>
         </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Sales Price</Label>
           <div className="relative">
@@ -183,25 +187,17 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
           />
         </div>
         <div className="space-y-1.5">
-          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Loan Type</Label>
-          <select
-            disabled={!isUnderContract}
-            value={form.loan_type || ""}
-            onChange={(e) => {
-              setForm({ ...form, loan_type: e.target.value });
-              saveField({ loan_type: e.target.value });
-            }}
-            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <option value="">Select loan type…</option>
-            <option value="DPA FHA">DPA FHA</option>
-            <option value="DPA Conventional">DPA Conventional</option>
-            <option value="30 Year FHA">30 Year FHA</option>
-            <option value="FHA 203k">FHA 203k</option>
-            <option value="30 Year Conventional">30 Year Conventional</option>
-            <option value="Jumbo">Jumbo</option>
-            <option value="DSCR">DSCR</option>
-          </select>
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Loan Amount</Label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
+            <Input
+              readOnly
+              disabled={!isUnderContract}
+              value={calculatedLoanAmount != null ? calculatedLoanAmount.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : ""}
+              placeholder="Auto-calculated"
+              className="pl-7 bg-muted/50 cursor-not-allowed font-semibold"
+            />
+          </div>
         </div>
       </div>
 
