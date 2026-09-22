@@ -103,6 +103,27 @@ export default function PropertyTab({ form, setForm, saveField }) {
       </div>
 
       <div className="space-y-1.5">
+        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Loan Type</Label>
+        <select
+          value={form.loan_type || ""}
+          onChange={(e) => {
+            setForm({ ...form, loan_type: e.target.value });
+            saveField({ loan_type: e.target.value });
+          }}
+          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
+        >
+          <option value="">Select loan type…</option>
+          <option value="DPA FHA">DPA FHA</option>
+          <option value="DPA Conventional">DPA Conventional</option>
+          <option value="30 Year FHA">30 Year FHA</option>
+          <option value="FHA 203k">FHA 203k</option>
+          <option value="30 Year Conventional">30 Year Conventional</option>
+          <option value="Jumbo">Jumbo</option>
+          <option value="DSCR">DSCR</option>
+        </select>
+      </div>
+
+      <div className="space-y-1.5">
         <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Loan Officer Remarks</Label>
         <textarea
           value={form.notes}

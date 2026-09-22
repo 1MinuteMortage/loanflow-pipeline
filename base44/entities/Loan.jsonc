@@ -125,6 +125,19 @@
       "type": "string",
       "description": "Lender/Loan number"
     },
+    "loan_type": {
+      "type": "string",
+      "enum": [
+        "DPA FHA",
+        "DPA Conventional",
+        "30 Year FHA",
+        "FHA 203k",
+        "30 Year Conventional",
+        "Jumbo",
+        "DSCR"
+      ],
+      "description": "Loan program type"
+    },
     "realtor_name": {
       "type": "string",
       "description": "Name of the realtor who referred the client"
