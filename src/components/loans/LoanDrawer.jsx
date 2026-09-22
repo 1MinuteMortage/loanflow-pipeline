@@ -14,6 +14,16 @@ import DraggableTabs from "./DraggableTabs";
 import { Button } from "@/components/ui/button";
 import ContactsPromptDialog from "./ContactsPromptDialog";
 import PreapprovalPromptDialog from "./PreapprovalPromptDialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const DEFAULT_TAB_ORDER = ["borrower", "property", "contacts", "docs", "uw"];
 const TAB_LABELS = {
@@ -45,6 +55,7 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
   const [form, setForm] = useState(null);
   const [contactsPromptOpen, setContactsPromptOpen] = useState(false);
   const [preapprovalPromptOpen, setPreapprovalPromptOpen] = useState(false);
+  const [pendingStage, setPendingStage] = useState(null);
 
   useEffect(() => {
     if (loan) {
@@ -142,13 +153,26 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
     }
   }
 
+  function confirmStageChange() {
+    if (pendingStage) {
+      setForm({ ...form, stage: pendingStage });
+      handleStageChange(pendingStage);
+    }
+    setPendingStage(null);
+  }
+
   function handleContactsSave(contacts) {
     onUpdate(loan.id, contacts);
     setContactsPromptOpen(false);
   }
 
+  const contactsDisabled = !["under_contract", "ctc", "closed"].includes(loan.stage);
   const visibleTabs = tabOrder
-    .map((key) => ({ key, label: TAB_LABELS[key] }))
+    .map((key) => {
+      const tab = { key, label: TAB_LABELS[key] };
+      if (key === "contacts") tab.disabled = contactsDisabled;
+      return tab;
+    })
     .filter((t) => t.key !== "uw" || loan.stage === "under_contract");
 
   return (
@@ -161,9 +185,7 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
               <select
                 value={form.stage}
                 onChange={(e) => {
-                  const newStage = e.target.value;
-                  setForm({ ...form, stage: newStage });
-                  handleStageChange(newStage);
+                  setPendingStage(e.target.value);
                 }}
                 style={{ backgroundColor: stage.bg, color: stage.text, marginRight: "0.5in" }}
                 className="shrink-0 rounded-md border border-border px-2.5 py-1.5 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-ring cursor-pointer"
@@ -244,6 +266,21 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
           setPreapprovalPromptOpen(false);
         }}
       />
+
+      <AlertDialog open={!!pendingStage} onOpenChange={(open) => { if (!open) setPendingStage(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure you want to do this change?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You are about to change the loan stage to "{STAGE_MAP[pendingStage]?.label}".
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmStageChange}>Confirm</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

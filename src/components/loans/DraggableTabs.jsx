@@ -18,21 +18,23 @@ export default function DraggableTabs({ tabs, activeTab, onSelect, onReorder }) 
             {...provided.droppableProps}
           >
             {tabs.map((t, index) => (
-              <Draggable key={t.key} draggableId={t.key} index={index}>
+              <Draggable key={t.key} draggableId={t.key} index={index} isDragDisabled={!!t.disabled}>
                 {(prov) => (
                   <div
                     ref={prov.innerRef}
                     {...prov.draggableProps}
-                    {...prov.dragHandleProps}
-                    onClick={() => onSelect(t.key)}
-                    title="Drag to reorder"
-                    className={`flex items-center gap-1 px-1 py-3 mr-6 text-sm font-medium border-b-2 transition-colors cursor-grab active:cursor-grabbing select-none ${
-                      activeTab === t.key
-                        ? "border-primary text-foreground"
-                        : "border-transparent text-muted-foreground hover:text-foreground"
+                    {...(t.disabled ? {} : prov.dragHandleProps)}
+                    onClick={() => { if (!t.disabled) onSelect(t.key); }}
+                    title={t.disabled ? "Available once loan is Under Contract" : "Drag to reorder"}
+                    className={`flex items-center gap-1 px-1 py-3 mr-6 text-sm font-medium border-b-2 transition-colors select-none ${
+                      t.disabled
+                        ? "border-transparent text-muted-foreground/40 cursor-not-allowed"
+                        : activeTab === t.key
+                          ? "border-primary text-foreground cursor-grab active:cursor-grabbing"
+                          : "border-transparent text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing"
                     }`}
                   >
-                    <GripVertical className="w-3 h-3 text-muted-foreground/50" />
+                    {!t.disabled && <GripVertical className="w-3 h-3 text-muted-foreground/50" />}
                     {t.label}
                   </div>
                 )}
