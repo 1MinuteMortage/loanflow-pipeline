@@ -65,6 +65,7 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
         current_residence: loan.current_residence || "",
         residence_two_years: !!loan.residence_two_years,
         marital_status: loan.marital_status || "",
+        occupancy_type: loan.occupancy_type || "",
         us_citizen: !!loan.us_citizen,
         estimated_available_funds: loan.estimated_available_funds ?? "",
         loan_number: loan.loan_number || "",

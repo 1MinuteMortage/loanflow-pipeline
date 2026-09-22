@@ -81,6 +81,22 @@ export default function BorrowerTab({ form, setForm, saveField }) {
         />
       </div>
 
+      <div className="space-y-1.5">
+        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Occupancy Type</Label>
+        <select
+          value={form.occupancy_type || ""}
+          onChange={(e) => {
+            setForm({ ...form, occupancy_type: e.target.value });
+            saveField({ occupancy_type: e.target.value });
+          }}
+          className={selectClass}
+        >
+          <option value="">Select...</option>
+          <option value="primary">Primary</option>
+          <option value="investment">Investment</option>
+        </select>
+      </div>
+
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Residence Two Years Plus</Label>

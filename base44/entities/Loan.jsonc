@@ -56,6 +56,14 @@
       ],
       "description": "Borrower marital status"
     },
+    "occupancy_type": {
+      "type": "string",
+      "enum": [
+        "primary",
+        "investment"
+      ],
+      "description": "Whether the property will be a primary residence or investment"
+    },
     "us_citizen": {
       "type": "boolean",
       "default": false,
