@@ -22,6 +22,7 @@ export default function ChecklistTab({ loan, field, title, onUpdate }) {
   const [uploadingIdx, setUploadingIdx] = useState(null);
   const [previewDoc, setPreviewDoc] = useState(null);
   const [confirmDeleteIdx, setConfirmDeleteIdx] = useState(null);
+  const [confirmRemoveItemIdx, setConfirmRemoveItemIdx] = useState(null);
   const fileRefs = useRef([]);
 
   const items = loan[field] || [];
@@ -38,7 +39,10 @@ export default function ChecklistTab({ loan, field, title, onUpdate }) {
     setNewItem("");
   };
 
-  const removeItem = (idx) => save(items.filter((_, i) => i !== idx));
+  const removeItem = (idx) => {
+    save(items.filter((_, i) => i !== idx));
+    setConfirmRemoveItemIdx(null);
+  };
 
   const handleUpload = async (idx, file) => {
     if (!file) return;
@@ -92,7 +96,7 @@ export default function ChecklistTab({ loan, field, title, onUpdate }) {
               </span>
               {item.completed && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
               <button
-                onClick={() => removeItem(idx)}
+                onClick={() => setConfirmRemoveItemIdx(idx)}
                 className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition"
                 title="Delete condition"
               >
@@ -174,6 +178,26 @@ export default function ChecklistTab({ loan, field, title, onUpdate }) {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => confirmDeleteIdx !== null && removeFile(confirmDeleteIdx)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={confirmRemoveItemIdx !== null} onOpenChange={(open) => !open && setConfirmRemoveItemIdx(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this condition?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this condition? This will permanently remove the condition and any uploaded file.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => confirmRemoveItemIdx !== null && removeItem(confirmRemoveItemIdx)}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Delete
