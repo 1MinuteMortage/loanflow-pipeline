@@ -5,6 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Trash2, CheckCircle2, Paperclip, FileText, Loader2, Eye } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import DocPreview from "./DocPreview";
+import InitialConditionsUpload from "./InitialConditionsUpload";
 
 export default function ChecklistTab({ loan, field, title, onUpdate }) {
   const [newItem, setNewItem] = useState("");
@@ -47,6 +48,9 @@ export default function ChecklistTab({ loan, field, title, onUpdate }) {
 
   return (
     <div>
+      {field === "uw_conditions" && (
+        <InitialConditionsUpload loan={loan} onUpdate={onUpdate} />
+      )}
       <div className="flex items-center justify-between mb-3">
         <div className="text-sm font-semibold">{title}</div>
         <span className="text-xs text-muted-foreground tabular-nums">

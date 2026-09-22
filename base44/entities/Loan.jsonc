@@ -239,6 +239,14 @@
       "default": [],
       "description": "Underwriting conditions checklist (used once stage is Under Contract)"
     },
+    "initial_conditions_url": {
+      "type": "string",
+      "description": "Uploaded initial UW conditions document URL"
+    },
+    "initial_conditions_name": {
+      "type": "string",
+      "description": "Original uploaded initial conditions file name"
+    },
     "due_date": {
       "type": "string",
       "format": "date",
