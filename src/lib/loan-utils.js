@@ -92,13 +92,13 @@ export const DEFAULT_PRE_UW_DOCUMENTS = [
 ];
 
 export const DEFAULT_UW_CONDITIONS = [
+  "1003",
   "Purchase and Sale",
+  "Loan Estimate",
   "Home Insurance",
   "VWOE / Work Number",
   "Title Commitment, CPL, E&O, Tax cert, Wire Instructions, Title Invoice",
-  "Appraisal",
-  "Loan Estimate",
-  "1003"
+  "Appraisal"
 ];
 
 export const CONTACT_ROLES = [
