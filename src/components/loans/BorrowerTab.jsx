@@ -147,18 +147,34 @@ export default function BorrowerTab({ form, setForm, saveField }) {
           </select>
         </div>
         <div className="space-y-1.5">
-          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Estimated Available Funds</Label>
-          <Input
-            type="number"
-            value={form.estimated_available_funds ?? ""}
-            placeholder="Enter text"
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">VA Status</Label>
+          <select
+            value={form.va_status ? "yes" : "no"}
             onChange={(e) => {
-              const v = e.target.value === "" ? "" : Number(e.target.value);
-              setForm({ ...form, estimated_available_funds: v });
-              saveField({ estimated_available_funds: v });
+              const v = e.target.value === "yes";
+              setForm({ ...form, va_status: v });
+              saveField({ va_status: v });
             }}
-          />
+            className={selectClass}
+          >
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
         </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Estimated Available Funds</Label>
+        <Input
+          type="number"
+          value={form.estimated_available_funds ?? ""}
+          placeholder="Enter text"
+          onChange={(e) => {
+            const v = e.target.value === "" ? "" : Number(e.target.value);
+            setForm({ ...form, estimated_available_funds: v });
+            saveField({ estimated_available_funds: v });
+          }}
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
@@ -175,14 +191,18 @@ export default function BorrowerTab({ form, setForm, saveField }) {
         </div>
         <div className="space-y-1.5">
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Employment Duration</Label>
-          <Input
+          <select
             value={form.employment_duration || ""}
-            placeholder="Enter text"
             onChange={(e) => {
               setForm({ ...form, employment_duration: e.target.value });
               saveField({ employment_duration: e.target.value });
             }}
-          />
+            className={selectClass}
+          >
+            <option value="">Select...</option>
+            <option value="two_years_plus">Two Years Plus</option>
+            <option value="two_years_or_less">Two Years or Less</option>
+          </select>
         </div>
       </div>
 

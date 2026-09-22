@@ -29,6 +29,10 @@
     },
     "employment_duration": {
       "type": "string",
+      "enum": [
+        "two_years_plus",
+        "two_years_or_less"
+      ],
       "description": "How long the borrower has been working with their current employer"
     },
     "income": {
@@ -68,6 +72,11 @@
       "type": "boolean",
       "default": false,
       "description": "True when borrower is a US citizen"
+    },
+    "va_status": {
+      "type": "boolean",
+      "default": false,
+      "description": "True when borrower has VA eligibility"
     },
     "estimated_available_funds": {
       "type": "number",
