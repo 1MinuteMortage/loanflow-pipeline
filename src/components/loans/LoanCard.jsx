@@ -41,7 +41,7 @@ export default function LoanCard({ loan, onOpen }) {
             {stage.label}
           </span>
           {loan.stage === "preapproved" && loan.preapproval_amount != null && (
-            <div className="mt-1 text-xs font-semibold text-emerald-700 tabular-nums">
+            <div className="mt-1 text-xs font-semibold text-emerald-700 tabular-nums text-center">
               ${Number(loan.preapproval_amount).toLocaleString()}
             </div>
           )}

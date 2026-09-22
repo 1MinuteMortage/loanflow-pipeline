@@ -54,7 +54,7 @@ export default function LoanRow({ loan, onOpen, currentUser, onAccept }) {
       <td className="px-4 py-3">
         <StageBadge stage={loan.stage} />
         {loan.stage === "preapproved" && loan.preapproval_amount != null && (
-          <div className="mt-1 text-xs font-semibold text-emerald-700 tabular-nums">
+          <div className="mt-1 text-xs font-semibold text-emerald-700 tabular-nums text-center">
             ${Number(loan.preapproval_amount).toLocaleString()}
           </div>
         )}
