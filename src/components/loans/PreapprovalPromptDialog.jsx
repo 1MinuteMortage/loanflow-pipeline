@@ -65,7 +65,7 @@ export default function PreapprovalPromptDialog({ open, onOpenChange, loan, onSa
                 autoFocus
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                placeholder="350000"
+                placeholder="Enter text"
                 className="pl-7"
               />
             </div>
@@ -77,7 +77,7 @@ export default function PreapprovalPromptDialog({ open, onOpenChange, loan, onSa
               onChange={(e) => setLoanType(e.target.value)}
               className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
             >
-              <option value="">Select loan type…</option>
+              <option value="">Select…</option>
               {LOAN_TYPES.map((t) => (
                 <option key={t} value={t}>{t}</option>
               ))}
@@ -93,7 +93,7 @@ export default function PreapprovalPromptDialog({ open, onOpenChange, loan, onSa
                 step="500"
                 value={concession}
                 onChange={(e) => setConcession(e.target.value)}
-                placeholder="0"
+                placeholder="Enter text"
                 className="pl-7"
               />
             </div>

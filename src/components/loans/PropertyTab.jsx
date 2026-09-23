@@ -60,7 +60,7 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
             }}
             className={selectClass}
           >
-            <option value="">Select loan type…</option>
+            <option value="">Select…</option>
             {LOAN_TYPES.map((t) => (
               <option key={t} value={t}>{t}</option>
             ))}

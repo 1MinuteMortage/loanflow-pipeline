@@ -138,7 +138,7 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
                   onChange={(e) => setLoanType(e.target.value)}
                   className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
                 >
-                  <option value="">Select loan type…</option>
+                  <option value="">Select…</option>
                   <option value="DPA FHA">DPA FHA</option>
                   <option value="DPA Conventional">DPA Conventional</option>
                   <option value="30 Year FHA">30 Year FHA</option>
@@ -183,31 +183,31 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
               {r.key === "closing_attorney" ? (
                 <>
                   <Input
-                    placeholder="Office Name"
+                    placeholder="Enter text"
                     value={contacts[`${r.key}_name`] || ""}
                     onChange={(e) => updateField(`${r.key}_name`, e.target.value)}
                   />
                   <Input
-                    placeholder="Representative Name"
+                    placeholder="Enter text"
                     value={contacts[`${r.key}_representative_name`] || ""}
                     onChange={(e) => updateField(`${r.key}_representative_name`, e.target.value)}
                   />
                 </>
               ) : (
                 <Input
-                  placeholder="Name"
+                  placeholder="Enter text"
                   value={contacts[`${r.key}_name`] || ""}
                   onChange={(e) => updateField(`${r.key}_name`, e.target.value)}
                 />
               )}
               <div className="grid grid-cols-2 gap-2">
                 <Input
-                  placeholder="Phone"
+                  placeholder="Enter text"
                   value={contacts[`${r.key}_phone`] || ""}
                   onChange={(e) => updateField(`${r.key}_phone`, e.target.value)}
                 />
                 <Input
-                  placeholder="Email"
+                  placeholder="Enter text"
                   value={contacts[`${r.key}_email`] || ""}
                   onChange={(e) => updateField(`${r.key}_email`, e.target.value)}
                 />

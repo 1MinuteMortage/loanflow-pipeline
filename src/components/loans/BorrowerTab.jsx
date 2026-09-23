@@ -14,6 +14,7 @@ export default function BorrowerTab({ form, setForm, saveField, loan }) {
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">First Name</Label>
           <Input
             value={form.first_name}
+            placeholder="Enter text"
             onChange={(e) => {
               setForm({ ...form, first_name: e.target.value });
               saveField({ first_name: e.target.value });
@@ -24,6 +25,7 @@ export default function BorrowerTab({ form, setForm, saveField, loan }) {
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Last Name</Label>
           <Input
             value={form.last_name}
+            placeholder="Enter text"
             onChange={(e) => {
               setForm({ ...form, last_name: e.target.value });
               saveField({ last_name: e.target.value });
