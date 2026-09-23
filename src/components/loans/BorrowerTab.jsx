@@ -171,20 +171,6 @@ export default function BorrowerTab({ form, setForm, saveField, loan }) {
         </div>
       </div>
 
-      <div className="space-y-1.5">
-        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Estimated Available Funds</Label>
-        <Input
-          type="number"
-          value={form.estimated_available_funds ?? ""}
-          placeholder="Enter text"
-          onChange={(e) => {
-            const v = e.target.value === "" ? "" : Number(e.target.value);
-            setForm({ ...form, estimated_available_funds: v });
-            saveField({ estimated_available_funds: v });
-          }}
-        />
-      </div>
-
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Employer Name</Label>
