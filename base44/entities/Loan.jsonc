@@ -86,6 +86,10 @@
       "type": "number",
       "description": "Borrower's total available assets/reserves (Loan Officer section)"
     },
+    "total_verified_assets": {
+      "type": "number",
+      "description": "Borrower's verified total assets (Loan Officer section)"
+    },
     "income_calculation": {
       "type": "object",
       "properties": {

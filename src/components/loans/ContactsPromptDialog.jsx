@@ -177,43 +177,50 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
               />
             </div>
           </div>
-          {CONTACT_ROLES.map((r) => (
-            <div key={r.key} className="space-y-2 rounded-lg border border-border p-3">
-              <div className="text-sm font-semibold text-foreground">{r.label}</div>
-              {r.key === "closing_attorney" ? (
-                <>
+          {CONTACT_ROLES.map((r) => {
+            const nameLabel = r.key === "closing_attorney" ? "Closing Office Name" : "Name";
+            return (
+              <div key={r.key} className="space-y-2 rounded-lg border border-border p-3">
+                <div className="text-sm font-semibold text-foreground">{r.label}</div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">{nameLabel}</Label>
                   <Input
                     placeholder="Enter text"
                     value={contacts[`${r.key}_name`] || ""}
                     onChange={(e) => updateField(`${r.key}_name`, e.target.value)}
                   />
-                  <Input
-                    placeholder="Enter text"
-                    value={contacts[`${r.key}_representative_name`] || ""}
-                    onChange={(e) => updateField(`${r.key}_representative_name`, e.target.value)}
-                  />
-                </>
-              ) : (
-                <Input
-                  placeholder="Enter text"
-                  value={contacts[`${r.key}_name`] || ""}
-                  onChange={(e) => updateField(`${r.key}_name`, e.target.value)}
-                />
-              )}
-              <div className="grid grid-cols-2 gap-2">
-                <Input
-                  placeholder="Enter text"
-                  value={contacts[`${r.key}_phone`] || ""}
-                  onChange={(e) => updateField(`${r.key}_phone`, e.target.value)}
-                />
-                <Input
-                  placeholder="Enter text"
-                  value={contacts[`${r.key}_email`] || ""}
-                  onChange={(e) => updateField(`${r.key}_email`, e.target.value)}
-                />
+                </div>
+                {r.key === "closing_attorney" && (
+                  <div className="space-y-1.5">
+                    <Label className="text-xs uppercase tracking-wide text-muted-foreground">Representative Name</Label>
+                    <Input
+                      placeholder="Enter text"
+                      value={contacts[`${r.key}_representative_name`] || ""}
+                      onChange={(e) => updateField(`${r.key}_representative_name`, e.target.value)}
+                    />
+                  </div>
+                )}
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs uppercase tracking-wide text-muted-foreground">Phone Number</Label>
+                    <Input
+                      placeholder="Enter text"
+                      value={contacts[`${r.key}_phone`] || ""}
+                      onChange={(e) => updateField(`${r.key}_phone`, e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs uppercase tracking-wide text-muted-foreground">Email</Label>
+                    <Input
+                      placeholder="Enter text"
+                      value={contacts[`${r.key}_email`] || ""}
+                      onChange={(e) => updateField(`${r.key}_email`, e.target.value)}
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>

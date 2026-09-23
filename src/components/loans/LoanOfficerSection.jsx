@@ -20,7 +20,7 @@ export default function LoanOfficerSection({ form, setForm, saveField, loan }) {
         <h3 className="font-heading text-sm font-semibold text-primary">Loan Officer</h3>
         <span className="text-[10px] font-medium uppercase tracking-wide text-primary/60 bg-primary/10 px-2 py-0.5 rounded">Internal</span>
       </div>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Total Assets</Label>
           <div className="relative">
@@ -39,6 +39,23 @@ export default function LoanOfficerSection({ form, setForm, saveField, loan }) {
           </div>
         </div>
         <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Total Verified Assets</Label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
+            <Input
+              type="number"
+              value={form.total_verified_assets ?? ""}
+              placeholder="Enter text"
+              className="pl-7"
+              onChange={(e) => {
+                const v = e.target.value === "" ? "" : Number(e.target.value);
+                setForm({ ...form, total_verified_assets: v });
+                saveField({ total_verified_assets: v });
+              }}
+            />
+          </div>
+        </div>
+        <div className="space-y-1.5">
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Credit Score</Label>
           <Input
             type="number"
@@ -51,6 +68,8 @@ export default function LoanOfficerSection({ form, setForm, saveField, loan }) {
             }}
           />
         </div>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Monthly Income</Label>
           <div className="relative">

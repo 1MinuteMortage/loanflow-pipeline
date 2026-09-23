@@ -1,6 +1,7 @@
 import React from "react";
 import { Input } from "@/components/ui/input";
-import { User, Phone, Mail } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { User } from "lucide-react";
 import { CONTACT_ROLES } from "@/lib/loan-utils";
 
 export default function ContactsTab({ loan, onUpdate }) {
@@ -10,6 +11,7 @@ export default function ContactsTab({ loan, onUpdate }) {
     <div className="space-y-4">
       {CONTACT_ROLES.map((role) => {
         const p = role.key;
+        const nameLabel = role.key === "closing_attorney" ? "Closing Office Name" : "Name";
         return (
           <div key={role.key} className="rounded-lg border border-border p-3 space-y-2.5">
             <div className="flex items-center gap-2">
@@ -18,29 +20,41 @@ export default function ContactsTab({ loan, onUpdate }) {
               </div>
               <span className="text-sm font-semibold">{role.label}</span>
             </div>
-            <Input
-              placeholder="Enter text"
-              value={loan[`${p}_name`] || ""}
-              onChange={(e) => update(`${p}_name`, e.target.value)}
-            />
-            {role.key === "closing_attorney" && (
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium text-muted-foreground">{nameLabel}</Label>
               <Input
                 placeholder="Enter text"
-                value={loan[`${p}_representative_name`] || ""}
-                onChange={(e) => update(`${p}_representative_name`, e.target.value)}
+                value={loan[`${p}_name`] || ""}
+                onChange={(e) => update(`${p}_name`, e.target.value)}
               />
+            </div>
+            {role.key === "closing_attorney" && (
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-muted-foreground">Representative Name</Label>
+                <Input
+                  placeholder="Enter text"
+                  value={loan[`${p}_representative_name`] || ""}
+                  onChange={(e) => update(`${p}_representative_name`, e.target.value)}
+                />
+              </div>
             )}
             <div className="grid grid-cols-2 gap-3">
-              <Input
-                placeholder="Enter text"
-                value={loan[`${p}_phone`] || ""}
-                onChange={(e) => update(`${p}_phone`, e.target.value)}
-              />
-              <Input
-                placeholder="Enter text"
-                value={loan[`${p}_email`] || ""}
-                onChange={(e) => update(`${p}_email`, e.target.value)}
-              />
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-muted-foreground">Phone Number</Label>
+                <Input
+                  placeholder="Enter text"
+                  value={loan[`${p}_phone`] || ""}
+                  onChange={(e) => update(`${p}_phone`, e.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-muted-foreground">Email</Label>
+                <Input
+                  placeholder="Enter text"
+                  value={loan[`${p}_email`] || ""}
+                  onChange={(e) => update(`${p}_email`, e.target.value)}
+                />
+              </div>
             </div>
           </div>
         );
