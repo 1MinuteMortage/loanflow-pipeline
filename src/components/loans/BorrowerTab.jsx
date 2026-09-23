@@ -217,7 +217,7 @@ export default function BorrowerTab({ form, setForm, saveField, loan }) {
 
       <LoanOfficerSection form={form} setForm={setForm} saveField={saveField} loan={loan} />
 
-      <div className="grid grid-cols-2 gap-4 pt-2">
+      <div className="space-y-4 pt-2">
         <DocumentUploadTab
           loan={loan}
           field="client_id_documents"
