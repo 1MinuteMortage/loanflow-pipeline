@@ -137,6 +137,70 @@
       },
       "description": "Loan Officer income calculation record (source figures, methodology, and audit info)"
     },
+    "client_id_documents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "file_url": {
+            "type": "string"
+          },
+          "file_name": {
+            "type": "string"
+          }
+        }
+      },
+      "default": [],
+      "description": "Uploaded client ID documents"
+    },
+    "pay_stubs_documents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "file_url": {
+            "type": "string"
+          },
+          "file_name": {
+            "type": "string"
+          }
+        }
+      },
+      "default": [],
+      "description": "Uploaded pay stub documents"
+    },
+    "w2_tax_returns_documents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "file_url": {
+            "type": "string"
+          },
+          "file_name": {
+            "type": "string"
+          }
+        }
+      },
+      "default": [],
+      "description": "Uploaded W-2s and tax return documents"
+    },
+    "bank_statements_documents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "file_url": {
+            "type": "string"
+          },
+          "file_name": {
+            "type": "string"
+          }
+        }
+      },
+      "default": [],
+      "description": "Uploaded bank statement documents"
+    },
     "property_address": {
       "type": "string",
       "description": "Property street address"
