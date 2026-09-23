@@ -84,6 +84,7 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
         us_citizen: !!loan.us_citizen,
         va_status: !!loan.va_status,
         estimated_available_funds: loan.estimated_available_funds ?? "",
+        total_assets: loan.total_assets ?? "",
         loan_number: loan.loan_number || "",
         loan_type: loan.loan_type || "",
         preapproval_amount: loan.preapproval_amount ?? "",
@@ -225,7 +226,7 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
 
           <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
             {tab === "borrower" && (
-              <BorrowerTab form={form} setForm={setForm} saveField={saveField} />
+              <BorrowerTab form={form} setForm={setForm} saveField={saveField} loan={loan} />
             )}
             {tab === "property" && (
               <PropertyTab

@@ -37,7 +37,7 @@
     },
     "income": {
       "type": "number",
-      "description": "Borrower annual income"
+      "description": "Borrower annual income (preliminary qualifying income)"
     },
     "credit_score": {
       "type": "number",
@@ -81,6 +81,57 @@
     "estimated_available_funds": {
       "type": "number",
       "description": "Borrower estimated available funds for transaction"
+    },
+    "total_assets": {
+      "type": "number",
+      "description": "Borrower's total available assets/reserves (Loan Officer section)"
+    },
+    "income_calculation": {
+      "type": "object",
+      "properties": {
+        "income_type": {
+          "type": "string",
+          "enum": [
+            "w2",
+            "1099"
+          ]
+        },
+        "year_recent": {
+          "type": "number"
+        },
+        "year_recent_amount": {
+          "type": "number"
+        },
+        "year_prior": {
+          "type": "number"
+        },
+        "year_prior_amount": {
+          "type": "number"
+        },
+        "calculated_income": {
+          "type": "number"
+        },
+        "override_amount": {
+          "type": "number"
+        },
+        "override_reason": {
+          "type": "string"
+        },
+        "final_income": {
+          "type": "number"
+        },
+        "loan_officer_name": {
+          "type": "string"
+        },
+        "completed_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "explanation_text": {
+          "type": "string"
+        }
+      },
+      "description": "Loan Officer income calculation record (source figures, methodology, and audit info)"
     },
     "property_address": {
       "type": "string",

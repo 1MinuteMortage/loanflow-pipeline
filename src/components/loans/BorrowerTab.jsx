@@ -1,11 +1,12 @@
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import LoanOfficerSection from "./LoanOfficerSection";
 
 const selectClass =
   "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring";
 
-export default function BorrowerTab({ form, setForm, saveField }) {
+export default function BorrowerTab({ form, setForm, saveField, loan }) {
   return (
     <>
       <div className="grid grid-cols-2 gap-3">
@@ -206,34 +207,7 @@ export default function BorrowerTab({ form, setForm, saveField }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1.5">
-          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Annual Income</Label>
-          <Input
-            type="number"
-            value={form.income ?? ""}
-            placeholder="Enter text"
-            onChange={(e) => {
-              const v = e.target.value === "" ? "" : Number(e.target.value);
-              setForm({ ...form, income: v });
-              saveField({ income: v });
-            }}
-          />
-        </div>
-        <div className="space-y-1.5">
-          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Credit Score</Label>
-          <Input
-            type="number"
-            value={form.credit_score ?? ""}
-            placeholder="Enter text"
-            onChange={(e) => {
-              const v = e.target.value === "" ? "" : Number(e.target.value);
-              setForm({ ...form, credit_score: v });
-              saveField({ credit_score: v });
-            }}
-          />
-        </div>
-      </div>
+      <LoanOfficerSection form={form} setForm={setForm} saveField={saveField} loan={loan} />
     </>
   );
 }
