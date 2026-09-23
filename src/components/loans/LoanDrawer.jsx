@@ -10,7 +10,6 @@ import BorrowerTab from "./BorrowerTab";
 import PropertyTab from "./PropertyTab";
 import ContactsTab from "./ContactsTab";
 import ChecklistTab from "./ChecklistTab";
-import DocumentUploadTab from "./DocumentUploadTab";
 import DraggableTabs from "./DraggableTabs";
 import { Button } from "@/components/ui/button";
 import ContactsPromptDialog from "./ContactsPromptDialog";
@@ -26,13 +25,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-const DEFAULT_TAB_ORDER = ["borrower", "client_id", "pay_stubs", "w2_tax", "bank_statements", "property", "contacts", "docs", "uw", "ai_assist"];
+const DEFAULT_TAB_ORDER = ["borrower", "property", "contacts", "docs", "uw", "ai_assist"];
 const TAB_LABELS = {
   borrower: "Borrower's Information",
-  client_id: "Client ID",
-  pay_stubs: "Pay Stubs",
-  w2_tax: "W-2s / Tax Returns",
-  bank_statements: "Bank Statements",
   property: "Loan Information",
   contacts: "Contacts",
   docs: "Pre UnderWrite Documents",
@@ -240,38 +235,6 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
           <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
             {tab === "borrower" && (
               <BorrowerTab form={form} setForm={setForm} saveField={saveField} loan={loan} />
-            )}
-            {tab === "client_id" && (
-              <DocumentUploadTab
-                loan={loan}
-                field="client_id_documents"
-                title="Client ID"
-                onUpdate={onUpdate}
-              />
-            )}
-            {tab === "pay_stubs" && (
-              <DocumentUploadTab
-                loan={loan}
-                field="pay_stubs_documents"
-                title="Pay Stubs"
-                onUpdate={onUpdate}
-              />
-            )}
-            {tab === "w2_tax" && (
-              <DocumentUploadTab
-                loan={loan}
-                field="w2_tax_returns_documents"
-                title="W-2s / Tax Returns"
-                onUpdate={onUpdate}
-              />
-            )}
-            {tab === "bank_statements" && (
-              <DocumentUploadTab
-                loan={loan}
-                field="bank_statements_documents"
-                title="Bank Statements"
-                onUpdate={onUpdate}
-              />
             )}
             {tab === "property" && (
               <PropertyTab
