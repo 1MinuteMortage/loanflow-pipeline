@@ -105,6 +105,17 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
                 onChange={(e) => setSalesPrice(e.target.value)}
               />
             </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs uppercase tracking-wide text-muted-foreground">Sellers Concession on Contract</Label>
+              <Input
+                type="number"
+                min="0"
+                step="500"
+                placeholder="Enter text"
+                value={sellersConcessionOnContract}
+                onChange={(e) => setSellersConcessionOnContract(e.target.value)}
+              />
+            </div>
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1.5">
                 <Label className="text-xs uppercase tracking-wide text-muted-foreground">LTV (%)</Label>
@@ -135,17 +146,6 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
                   <option value="DSCR">DSCR</option>
                 </select>
               </div>
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs uppercase tracking-wide text-muted-foreground">Sellers Concession on Contract</Label>
-              <Input
-                type="number"
-                min="0"
-                step="500"
-                placeholder="Enter text"
-                value={sellersConcessionOnContract}
-                onChange={(e) => setSellersConcessionOnContract(e.target.value)}
-              />
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs uppercase tracking-wide text-muted-foreground">Finance Contingency Date</Label>
