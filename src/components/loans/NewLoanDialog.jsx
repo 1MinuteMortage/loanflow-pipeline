@@ -60,7 +60,7 @@ export default function NewLoanDialog({ open, onOpenChange, onCreate }) {
                   id="first_name"
                   value={form.first_name}
                   onChange={(e) => setForm({ ...form, first_name: e.target.value })}
-                  placeholder="Jane"
+                  placeholder="Enter text"
                   required
                 />
               </div>
@@ -72,7 +72,7 @@ export default function NewLoanDialog({ open, onOpenChange, onCreate }) {
                   id="last_name"
                   value={form.last_name}
                   onChange={(e) => setForm({ ...form, last_name: e.target.value })}
-                  placeholder="Doe"
+                  placeholder="Enter text"
                   required
                 />
               </div>
@@ -117,31 +117,31 @@ export default function NewLoanDialog({ open, onOpenChange, onCreate }) {
                 value={form.property_address}
                 disabled={form.address_tbd}
                 onChange={(e) => setForm({ ...form, property_address: e.target.value })}
-                placeholder={form.address_tbd ? "No property under contract yet" : "123 Main St, Austin, TX 78701"}
+                placeholder="Enter text"
               />
             </div>
 
             <div className="space-y-2.5 rounded-lg border border-border p-3">
               <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Realtor (Referral)</div>
               <Input
-                placeholder="Realtor full name"
+                placeholder="Enter text"
                 value={form.realtor_name}
                 onChange={(e) => setForm({ ...form, realtor_name: e.target.value })}
               />
               <div className="grid grid-cols-2 gap-3">
                 <Input
-                  placeholder="Phone"
+                  placeholder="Enter text"
                   value={form.realtor_phone}
                   onChange={(e) => setForm({ ...form, realtor_phone: e.target.value })}
                 />
                 <Input
-                  placeholder="Email"
+                  placeholder="Enter text"
                   value={form.realtor_email}
                   onChange={(e) => setForm({ ...form, realtor_email: e.target.value })}
                 />
               </div>
               <Input
-                placeholder="Brokerage"
+                placeholder="Enter text"
                 value={form.realtor_brokerage}
                 onChange={(e) => setForm({ ...form, realtor_brokerage: e.target.value })}
               />

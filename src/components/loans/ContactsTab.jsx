@@ -19,25 +19,25 @@ export default function ContactsTab({ loan, onUpdate }) {
               <span className="text-sm font-semibold">{role.label}</span>
             </div>
             <Input
-              placeholder={role.key === "closing_attorney" ? "Office Name" : "Name"}
+              placeholder="Enter text"
               value={loan[`${p}_name`] || ""}
               onChange={(e) => update(`${p}_name`, e.target.value)}
             />
             {role.key === "closing_attorney" && (
               <Input
-                placeholder="Representative Name"
+                placeholder="Enter text"
                 value={loan[`${p}_representative_name`] || ""}
                 onChange={(e) => update(`${p}_representative_name`, e.target.value)}
               />
             )}
             <div className="grid grid-cols-2 gap-3">
               <Input
-                placeholder="Phone"
+                placeholder="Enter text"
                 value={loan[`${p}_phone`] || ""}
                 onChange={(e) => update(`${p}_phone`, e.target.value)}
               />
               <Input
-                placeholder="Email"
+                placeholder="Enter text"
                 value={loan[`${p}_email`] || ""}
                 onChange={(e) => update(`${p}_email`, e.target.value)}
               />
