@@ -100,7 +100,8 @@ export const DEFAULT_UW_CONDITIONS = [
   "VWOE / Work Number",
   "Title Commitment, CPL, E&O, Tax cert, Wire Instructions, Title Invoice",
   "Lock Confirmation",
-  "Appraisal"
+  "Appraisal",
+  "Closing Disclosure"
 ];
 
 export const CONTACT_ROLES = [
