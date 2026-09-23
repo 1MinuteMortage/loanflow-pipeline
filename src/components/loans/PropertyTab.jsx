@@ -60,7 +60,7 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
             }}
             className={selectClass}
           >
-            <option value="">Select…</option>
+            <option value="">Select...</option>
             {LOAN_TYPES.map((t) => (
               <option key={t} value={t}>{t}</option>
             ))}
@@ -130,7 +130,7 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
             }}
             className={selectClass}
           >
-            <option value="">Select…</option>
+            <option value="">Select...</option>
             <option value="Detached Home">Detached Home</option>
             <option value="Attached Home">Attached Home</option>
             <option value="Condominium">Condominium</option>
@@ -147,7 +147,7 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
             }}
             className={selectClass}
           >
-            <option value="">Select…</option>
+            <option value="">Select...</option>
             <option value="Single-Family">Single-Family (1)</option>
             <option value="Duplex">Duplex (2)</option>
             <option value="Triplex">Triplex (3)</option>
@@ -225,7 +225,7 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
               readOnly
               disabled={!isUnderContract}
               value={calculatedLoanAmount != null ? calculatedLoanAmount.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : ""}
-              placeholder="Auto-calculated"
+              placeholder="Enter text"
               className="pl-7 bg-muted/50 cursor-not-allowed font-semibold"
             />
           </div>
@@ -286,7 +286,7 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
           }}
           rows={3}
           className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring resize-none disabled:opacity-50 disabled:cursor-not-allowed"
-          placeholder="Add any notes about this borrower..."
+          placeholder="Enter text"
         />
       </div>
     </>

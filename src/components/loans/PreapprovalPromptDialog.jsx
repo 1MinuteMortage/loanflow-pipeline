@@ -77,7 +77,7 @@ export default function PreapprovalPromptDialog({ open, onOpenChange, loan, onSa
               onChange={(e) => setLoanType(e.target.value)}
               className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
             >
-              <option value="">Select…</option>
+              <option value="">Select...</option>
               {LOAN_TYPES.map((t) => (
                 <option key={t} value={t}>{t}</option>
               ))}
