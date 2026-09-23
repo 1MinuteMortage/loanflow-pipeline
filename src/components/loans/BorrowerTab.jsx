@@ -215,8 +215,6 @@ export default function BorrowerTab({ form, setForm, saveField, loan }) {
         </div>
       </div>
 
-      <LoanOfficerSection form={form} setForm={setForm} saveField={saveField} loan={loan} />
-
       <div className="space-y-4 pt-2">
         <DocumentUploadTab
           loan={loan}
@@ -243,6 +241,8 @@ export default function BorrowerTab({ form, setForm, saveField, loan }) {
           onUpdate={(id, patch) => saveField(patch)}
         />
       </div>
+
+      <LoanOfficerSection form={form} setForm={setForm} saveField={saveField} loan={loan} />
     </>
   );
 }
