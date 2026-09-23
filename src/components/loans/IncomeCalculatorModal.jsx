@@ -50,11 +50,12 @@ export default function IncomeCalculatorModal({ open, onOpenChange, loan, existi
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  // Conservative calculation: use the lower of the two years (underwriter standard)
-  const calculatedIncome =
+  // Conservative calculation: use the lower of the two years, then divide by 12 for monthly
+  const annualIncome =
     amountRecent !== "" && amountPrior !== ""
       ? Math.min(Number(amountRecent), Number(amountPrior))
       : null;
+  const calculatedIncome = annualIncome != null ? annualIncome / 12 : null;
 
   function buildCalculation() {
     return {
@@ -64,6 +65,7 @@ export default function IncomeCalculatorModal({ open, onOpenChange, loan, existi
       year_prior: yearPrior,
       year_prior_amount: Number(amountPrior),
       calculated_income: calculatedIncome,
+      annual_income: annualIncome,
       override_amount: null,
       override_reason: "",
       final_income: calculatedIncome,
@@ -167,10 +169,13 @@ export default function IncomeCalculatorModal({ open, onOpenChange, loan, existi
           {calculatedIncome !== null && (
             <div className="rounded-md border border-border bg-muted/40 p-3 text-sm space-y-1">
               <p className="text-muted-foreground">
-                Conservative Qualifying Income = lower of ${Number(amountRecent).toLocaleString()} or ${Number(amountPrior).toLocaleString()}
+                Conservative Annual Income = lower of ${Number(amountRecent).toLocaleString()} or ${Number(amountPrior).toLocaleString()}
+              </p>
+              <p className="text-muted-foreground">
+                Monthly Qualifying Income = ${Math.round(annualIncome).toLocaleString()} ÷ 12
               </p>
               <p className="font-semibold">
-                Preliminary Qualifying Income: ${Math.round(calculatedIncome).toLocaleString()}
+                Preliminary Monthly Qualifying Income: ${Math.round(calculatedIncome).toLocaleString()}/mo
               </p>
             </div>
           )}
