@@ -65,9 +65,14 @@ export default function BorrowerTab({ form, setForm, saveField, loan }) {
         <Input
           value={form.ssn || ""}
           placeholder="Enter text"
+          maxLength={11}
           onChange={(e) => {
-            setForm({ ...form, ssn: e.target.value });
-            saveField({ ssn: e.target.value });
+            const digits = e.target.value.replace(/\D/g, "").slice(0, 9);
+            let formatted = digits;
+            if (digits.length > 3) formatted = digits.slice(0, 3) + "-" + digits.slice(3);
+            if (digits.length > 5) formatted = digits.slice(0, 3) + "-" + digits.slice(3, 5) + "-" + digits.slice(5);
+            setForm({ ...form, ssn: formatted });
+            saveField({ ssn: formatted });
           }}
         />
       </div>
