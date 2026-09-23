@@ -17,7 +17,6 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
   const [loanNumber, setLoanNumber] = useState("");
   const [propertyAddress, setPropertyAddress] = useState("");
   const [salesPrice, setSalesPrice] = useState("");
-  const [sellersConcession, setSellersConcession] = useState("");
   const [sellersConcessionOnContract, setSellersConcessionOnContract] = useState("");
   const [ltv, setLtv] = useState("");
   const [loanType, setLoanType] = useState("");
@@ -40,7 +39,6 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
     setLoanNumber(loan.loan_number || "");
     setPropertyAddress(loan.property_address || "");
     setSalesPrice(loan.sales_price ?? "");
-    setSellersConcession(loan.sellers_concession ?? "");
     setSellersConcessionOnContract(loan.sellers_concession_on_contract ?? "");
     setLtv(loan.ltv ?? "");
     setLoanType(loan.loan_type || "");
@@ -59,7 +57,6 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
       loan_number: loanNumber,
       property_address: propertyAddress,
       sales_price: salesPrice === "" ? null : Number(salesPrice),
-      sellers_concession: sellersConcession === "" ? null : Number(sellersConcession),
       sellers_concession_on_contract: sellersConcessionOnContract === "" ? null : Number(sellersConcessionOnContract),
       ltv: ltv === "" ? null : Number(ltv),
       loan_type: loanType,
@@ -97,29 +94,16 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
                 onChange={(e) => setPropertyAddress(e.target.value)}
               />
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-1.5">
-                <Label className="text-xs uppercase tracking-wide text-muted-foreground">Sales Price</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  step="1000"
-                  placeholder="Enter text"
-                  value={salesPrice}
-                  onChange={(e) => setSalesPrice(e.target.value)}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs uppercase tracking-wide text-muted-foreground">Sellers Concession Needed</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  step="500"
-                  placeholder="Enter text"
-                  value={sellersConcession}
-                  onChange={(e) => setSellersConcession(e.target.value)}
-                />
-              </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs uppercase tracking-wide text-muted-foreground">Sales Price</Label>
+              <Input
+                type="number"
+                min="0"
+                step="1000"
+                placeholder="Enter text"
+                value={salesPrice}
+                onChange={(e) => setSalesPrice(e.target.value)}
+              />
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1.5">
