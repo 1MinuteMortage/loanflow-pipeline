@@ -6,6 +6,7 @@ import { Plus, Trash2, CheckCircle2, FileText, Loader2, Eye, UploadCloud } from 
 import { base44 } from "@/api/base44Client";
 import DocPreview from "./DocPreview";
 import InitialConditionsUpload from "./InitialConditionsUpload";
+import TitleRequestHover from "./TitleRequestHover";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -118,6 +119,7 @@ export default function ChecklistTab({ loan, field, title, onUpdate }) {
                   {item.label}
                 </span>
                 {item.completed && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
+                {item.label.includes("Title Commitment") && <TitleRequestHover loan={loan} />}
                 <button
                   onClick={() => setConfirmRemoveItemIdx(idx)}
                   className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition"
