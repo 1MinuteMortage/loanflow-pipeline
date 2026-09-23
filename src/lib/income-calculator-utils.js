@@ -14,19 +14,13 @@ export function buildExplanationText(loan, calc) {
   lines.push(`${calc.year_prior} ${incomeTypeLabel === "W-2" ? "W-2 Income" : "AGI"}: $${Number(calc.year_prior_amount).toLocaleString()}`);
   lines.push("");
   lines.push(
-    `Qualifying Income Calculation: ($${Number(calc.year_recent_amount).toLocaleString()} + $${Number(calc.year_prior_amount).toLocaleString()}) ÷ 2 = $${Math.round(calc.calculated_income).toLocaleString()}`
+    `Qualifying Income Calculation: The lower of $${Number(calc.year_recent_amount).toLocaleString()} (${calc.year_recent}) or $${Number(calc.year_prior_amount).toLocaleString()} (${calc.year_prior}) = $${Math.round(calc.calculated_income).toLocaleString()}`
   );
   lines.push(`Preliminary Qualifying Income: $${Math.round(calc.calculated_income).toLocaleString()} annually`);
 
-  if (calc.override_amount != null && calc.override_amount !== calc.calculated_income) {
-    lines.push("");
-    lines.push(`Loan Officer Override: $${Math.round(calc.override_amount).toLocaleString()} annually`);
-    lines.push(`Override Reason: ${calc.override_reason}`);
-  }
-
   lines.push("");
   lines.push(
-    `The preliminary qualifying income was calculated using the two most recent applicable ${incomeTypeLabel} income figures entered into the loan processing system. The resulting two-year average was used as the preliminary qualifying income for the Loan Officer's pre-approval analysis. Final income eligibility and qualifying income remain subject to review and approval by the lender/underwriter in accordance with applicable underwriting guidelines and documentation requirements.`
+    `The preliminary qualifying income was calculated using the conservative (lower) of the two most recent applicable ${incomeTypeLabel} income figures entered into the loan processing system, consistent with standard underwriting practice. The resulting figure was used as the preliminary qualifying income for the Loan Officer's pre-approval analysis. Final income eligibility and qualifying income remain subject to review and approval by the lender/underwriter in accordance with applicable underwriting guidelines and documentation requirements.`
   );
   lines.push("");
   lines.push(`Calculation Completed By: ${calc.loan_officer_name || "N/A"}`);

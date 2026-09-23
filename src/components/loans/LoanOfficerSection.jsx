@@ -15,8 +15,11 @@ export default function LoanOfficerSection({ form, setForm, saveField, loan }) {
   }
 
   return (
-    <div className="rounded-lg border border-border p-4 space-y-3">
-      <h3 className="font-heading text-sm font-semibold text-foreground">Loan Officer</h3>
+    <div className="mt-8 rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-3">
+      <div className="flex items-center gap-2">
+        <h3 className="font-heading text-sm font-semibold text-primary">Loan Officer</h3>
+        <span className="text-[10px] font-medium uppercase tracking-wide text-primary/60 bg-primary/10 px-2 py-0.5 rounded">Internal</span>
+      </div>
       <div className="grid grid-cols-3 gap-3">
         <div className="space-y-1.5">
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Total Assets</Label>

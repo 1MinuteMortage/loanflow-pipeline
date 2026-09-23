@@ -25,8 +25,6 @@ export default function IncomeCalculatorModal({ open, onOpenChange, loan, existi
   const [incomeType, setIncomeType] = useState("");
   const [amountRecent, setAmountRecent] = useState("");
   const [amountPrior, setAmountPrior] = useState("");
-  const [overrideValue, setOverrideValue] = useState("");
-  const [overrideReason, setOverrideReason] = useState("");
   const [loanOfficerName, setLoanOfficerName] = useState("");
   const [explanationText, setExplanationText] = useState("");
   const [error, setError] = useState("");
@@ -37,16 +35,12 @@ export default function IncomeCalculatorModal({ open, onOpenChange, loan, existi
       setIncomeType(existingCalculation.income_type || "");
       setAmountRecent(existingCalculation.year_recent_amount != null ? String(existingCalculation.year_recent_amount) : "");
       setAmountPrior(existingCalculation.year_prior_amount != null ? String(existingCalculation.year_prior_amount) : "");
-      setOverrideValue(existingCalculation.final_income != null ? String(existingCalculation.final_income) : "");
-      setOverrideReason(existingCalculation.override_reason || "");
       setLoanOfficerName(existingCalculation.loan_officer_name || "");
       setExplanationText(existingCalculation.explanation_text || "");
     } else {
       setIncomeType("");
       setAmountRecent("");
       setAmountPrior("");
-      setOverrideValue("");
-      setOverrideReason("");
       setExplanationText("");
       base44.auth.me().then((u) => setLoanOfficerName(loan.loan_officer_name || u?.full_name || "")).catch(() => {
         setLoanOfficerName(loan.loan_officer_name || "");
@@ -56,20 +50,13 @@ export default function IncomeCalculatorModal({ open, onOpenChange, loan, existi
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
+  // Conservative calculation: use the lower of the two years (underwriter standard)
   const calculatedIncome =
     amountRecent !== "" && amountPrior !== ""
-      ? (Number(amountRecent) + Number(amountPrior)) / 2
+      ? Math.min(Number(amountRecent), Number(amountPrior))
       : null;
 
-  useEffect(() => {
-    if (calculatedIncome !== null && overrideValue === "") {
-      setOverrideValue(String(Math.round(calculatedIncome)));
-    }
-  }, [calculatedIncome]);
-
   function buildCalculation() {
-    const finalIncome = overrideValue === "" ? calculatedIncome : Number(overrideValue);
-    const isOverride = calculatedIncome !== null && finalIncome !== Math.round(calculatedIncome) && finalIncome !== calculatedIncome;
     return {
       income_type: incomeType,
       year_recent: yearRecent,
@@ -77,9 +64,9 @@ export default function IncomeCalculatorModal({ open, onOpenChange, loan, existi
       year_prior: yearPrior,
       year_prior_amount: Number(amountPrior),
       calculated_income: calculatedIncome,
-      override_amount: isOverride ? finalIncome : null,
-      override_reason: isOverride ? overrideReason : "",
-      final_income: finalIncome,
+      override_amount: null,
+      override_reason: "",
+      final_income: calculatedIncome,
       loan_officer_name: loanOfficerName,
       completed_date: new Date().toISOString().slice(0, 10),
       explanation_text: explanationText,
@@ -89,10 +76,6 @@ export default function IncomeCalculatorModal({ open, onOpenChange, loan, existi
   function validate() {
     if (!incomeType) return "Select whether the borrower has W-2 or 1099 / Self-Employed income.";
     if (amountRecent === "" || amountPrior === "") return `Enter ${yearRecent} and ${yearPrior} income amounts to calculate.`;
-    const finalIncome = overrideValue === "" ? calculatedIncome : Number(overrideValue);
-    if (finalIncome !== calculatedIncome && !overrideReason.trim()) {
-      return "An override reason is required when changing the calculated income.";
-    }
     if (!loanOfficerName.trim()) return "Enter the name of the Loan Officer completing this calculation.";
     return "";
   }
@@ -132,7 +115,7 @@ export default function IncomeCalculatorModal({ open, onOpenChange, loan, existi
         <DialogHeader>
           <DialogTitle>Calculate Income</DialogTitle>
           <DialogDescription>
-            Determine the preliminary qualifying income using two years of source income figures.
+            Determine the preliminary qualifying income using two years of source income figures. The lower of the two years is used as the conservative qualifying income.
           </DialogDescription>
         </DialogHeader>
 
@@ -184,39 +167,11 @@ export default function IncomeCalculatorModal({ open, onOpenChange, loan, existi
           {calculatedIncome !== null && (
             <div className="rounded-md border border-border bg-muted/40 p-3 text-sm space-y-1">
               <p className="text-muted-foreground">
-                Qualifying Income = (${Number(amountRecent).toLocaleString()} + ${Number(amountPrior).toLocaleString()}) ÷ 2
+                Conservative Qualifying Income = lower of ${Number(amountRecent).toLocaleString()} or ${Number(amountPrior).toLocaleString()}
               </p>
               <p className="font-semibold">
-                Calculated Preliminary Qualifying Income: ${Math.round(calculatedIncome).toLocaleString()}
+                Preliminary Qualifying Income: ${Math.round(calculatedIncome).toLocaleString()}
               </p>
-            </div>
-          )}
-
-          {calculatedIncome !== null && (
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Final Income (edit to override the calculated value)
-              </Label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
-                <Input
-                  type="number"
-                  value={overrideValue}
-                  onChange={(e) => setOverrideValue(e.target.value)}
-                  className="pl-7"
-                />
-              </div>
-            </div>
-          )}
-
-          {calculatedIncome !== null && Number(overrideValue) !== Math.round(calculatedIncome) && (
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Override Reason (required)</Label>
-              <Input
-                value={overrideReason}
-                onChange={(e) => setOverrideReason(e.target.value)}
-                placeholder="Explain why the calculated income was adjusted"
-              />
             </div>
           )}
 
