@@ -198,7 +198,11 @@
     },
     "sellers_concession": {
       "type": "number",
-      "description": "Seller concession amount"
+      "description": "Seller concession amount needed (pre-approval estimate)"
+    },
+    "sellers_concession_on_contract": {
+      "type": "number",
+      "description": "Seller concession amount on the actual purchase contract (Under Contract)"
     },
     "hoa_dues": {
       "type": "number",

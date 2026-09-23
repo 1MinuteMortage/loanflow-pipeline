@@ -233,6 +233,27 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
       </div>
 
       <div className="space-y-1.5">
+        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Sellers Concession on Contract</Label>
+        <div className="relative">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
+          <Input
+            type="number"
+            min="0"
+            step="500"
+            disabled={!isUnderContract}
+            value={form.sellers_concession_on_contract ?? ""}
+            onChange={(e) => {
+              const val = e.target.value === "" ? "" : Number(e.target.value);
+              setForm({ ...form, sellers_concession_on_contract: val });
+              saveField({ sellers_concession_on_contract: val });
+            }}
+            placeholder="Enter text"
+            className="pl-7"
+          />
+        </div>
+      </div>
+
+      <div className="space-y-1.5">
         <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Finance Contingency Date</Label>
         <Input
           type="date"
