@@ -55,7 +55,7 @@ export default function IncomeCalculatorModal({ open, onOpenChange, loan, existi
     amountRecent !== "" && amountPrior !== ""
       ? Math.min(Number(amountRecent), Number(amountPrior))
       : null;
-  const calculatedIncome = annualIncome != null ? annualIncome / 12 : null;
+  const calculatedIncome = annualIncome != null ? Math.round((annualIncome / 12) * 100) / 100 : null;
 
   function buildCalculation() {
     return {
@@ -172,7 +172,7 @@ export default function IncomeCalculatorModal({ open, onOpenChange, loan, existi
                 Conservative Annual Income = lower of ${Number(amountRecent).toLocaleString()} or ${Number(amountPrior).toLocaleString()}
               </p>
               <p className="text-muted-foreground">
-                Monthly Qualifying Income = ${Math.round(annualIncome).toLocaleString()} ÷ 12
+                Monthly Qualifying Income = ${annualIncome.toLocaleString()} ÷ 12
               </p>
               <p className="font-semibold">
                 Preliminary Monthly Qualifying Income: ${calculatedIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo

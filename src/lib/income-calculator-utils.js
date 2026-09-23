@@ -13,10 +13,11 @@ export function buildExplanationText(loan, calc) {
   lines.push(`${calc.year_recent} ${incomeTypeLabel === "W-2" ? "W-2 Income" : "AGI"}: $${Number(calc.year_recent_amount).toLocaleString()}`);
   lines.push(`${calc.year_prior} ${incomeTypeLabel === "W-2" ? "W-2 Income" : "AGI"}: $${Number(calc.year_prior_amount).toLocaleString()}`);
   lines.push("");
+  const fmt = (n) => Number(n).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   lines.push(
-    `Qualifying Income Calculation: The lower of $${Number(calc.year_recent_amount).toLocaleString()} (${calc.year_recent}) or $${Number(calc.year_prior_amount).toLocaleString()} (${calc.year_prior}) = $${Math.round(calc.annual_income ?? calc.calculated_income * 12).toLocaleString()} annually`
+    `Qualifying Income Calculation: The lower of $${fmt(calc.year_recent_amount)} (${calc.year_recent}) or $${fmt(calc.year_prior_amount)} (${calc.year_prior}) = $${fmt(calc.annual_income ?? calc.calculated_income * 12)} annually`
   );
-  lines.push(`Monthly Qualifying Income: $${Math.round(calc.calculated_income).toLocaleString()} per month`);
+  lines.push(`Monthly Qualifying Income: $${fmt(calc.calculated_income)} per month`);
 
   lines.push("");
   lines.push(
