@@ -36,6 +36,7 @@ const TAB_LABELS = {
 };
 
 function loadTabOrder() {
+  let order = DEFAULT_TAB_ORDER;
   try {
     const saved = localStorage.getItem("loanflow_tab_order");
     if (saved) {
@@ -44,13 +45,13 @@ function loadTabOrder() {
       DEFAULT_TAB_ORDER.forEach((k) => {
         if (!known.includes(k)) known.push(k);
       });
-      // AI Assist is always pinned to the far right
-      const withoutAi = known.filter((k) => k !== "ai_assist");
-      withoutAi.push("ai_assist");
-      return withoutAi;
+      order = known;
     }
   } catch {}
-  return DEFAULT_TAB_ORDER;
+  // AI Assist is always pinned to the far right
+  const withoutAi = order.filter((k) => k !== "ai_assist");
+  withoutAi.push("ai_assist");
+  return withoutAi;
 }
 
 export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
@@ -122,11 +123,18 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
     }
   }, [loan, tab]);
 
-  // Auto-seed standard UW conditions for under-contract loans that have none
+  // Auto-seed standard UW conditions for under-contract loans, appending any missing defaults (e.g. Closing Disclosure)
   useEffect(() => {
-    if (loan && loan.stage === "under_contract" && (!loan.uw_conditions || loan.uw_conditions.length === 0)) {
+    if (!loan || loan.stage !== "under_contract") return;
+    const conditions = loan.uw_conditions || [];
+    const existingLabels = conditions.map((c) => c.label);
+    const missing = DEFAULT_UW_CONDITIONS.filter((l) => !existingLabels.includes(l));
+    if (missing.length > 0) {
       onUpdate(loan.id, {
-        uw_conditions: DEFAULT_UW_CONDITIONS.map((label) => ({ label, completed: false })),
+        uw_conditions: [
+          ...conditions,
+          ...missing.map((label) => ({ label, completed: false })),
+        ],
       });
     }
   }, [loan?.id, loan?.stage, loan?.uw_conditions?.length]);
