@@ -175,7 +175,7 @@ export default function IncomeCalculatorModal({ open, onOpenChange, loan, existi
                 Monthly Qualifying Income = ${Math.round(annualIncome).toLocaleString()} ÷ 12
               </p>
               <p className="font-semibold">
-                Preliminary Monthly Qualifying Income: ${Math.round(calculatedIncome).toLocaleString()}/mo
+                Preliminary Monthly Qualifying Income: ${calculatedIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo
               </p>
             </div>
           )}
