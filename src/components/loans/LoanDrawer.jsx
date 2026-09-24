@@ -171,13 +171,28 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
   }
 
   function handleStageChange(newStage) {
-    if (newStage === "under_contract") {
+    const stagesWithUW = ["under_contract", "ctc", "closed"];
+    if (stagesWithUW.includes(newStage)) {
+      const existingConditions = loan.uw_conditions || [];
+      const existingLabels = existingConditions.map((c) => c.label);
+      // Prepend pre-underwrite documents that aren't already in the UW conditions
+      const preUWItems = DEFAULT_PRE_UW_DOCUMENTS
+        .filter((label) => !existingLabels.includes(label))
+        .map((label) => ({ label, completed: false }));
+      // Append any missing default UW conditions (e.g. Closing Disclosure)
+      const missingUW = DEFAULT_UW_CONDITIONS
+        .filter((label) => !existingLabels.includes(label))
+        .map((label) => ({ label, completed: false }));
       const patch = { stage: newStage };
-      if (!loan.uw_conditions || loan.uw_conditions.length === 0) {
-        patch.uw_conditions = DEFAULT_UW_CONDITIONS.map((label) => ({ label, completed: false }));
+      if (preUWItems.length > 0 || missingUW.length > 0 || existingConditions.length === 0) {
+        patch.uw_conditions = [
+          ...preUWItems,
+          ...existingConditions,
+          ...missingUW,
+        ];
       }
       onUpdate(loan.id, patch);
-      setContactsPromptOpen(true);
+      if (newStage === "under_contract") setContactsPromptOpen(true);
     } else if (newStage === "preapproved") {
       onUpdate(loan.id, { stage: newStage });
       setPreapprovalPromptOpen(true);
