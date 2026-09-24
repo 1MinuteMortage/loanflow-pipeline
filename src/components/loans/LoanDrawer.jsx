@@ -5,7 +5,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { STAGES, STAGE_MAP, fullName, neededSummary, DEFAULT_UW_CONDITIONS } from "@/lib/loan-utils";
+import { STAGES, STAGE_MAP, fullName, neededSummary, DEFAULT_UW_CONDITIONS, DEFAULT_PRE_UW_DOCUMENTS } from "@/lib/loan-utils";
 import BorrowerTab from "./BorrowerTab";
 import PropertyTab from "./PropertyTab";
 import ContactsTab from "./ContactsTab";
@@ -139,6 +139,17 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
       });
     }
   }, [loan?.id, loan?.stage, loan?.uw_conditions?.length]);
+
+  // Auto-seed pre-underwrite documents for loans that have none yet
+  useEffect(() => {
+    if (!loan) return;
+    const items = loan.needed_items || [];
+    if (items.length === 0) {
+      onUpdate(loan.id, {
+        needed_items: DEFAULT_PRE_UW_DOCUMENTS.map((label) => ({ label, completed: false })),
+      });
+    }
+  }, [loan?.id, loan?.needed_items?.length]);
 
   if (!form) return null;
 
