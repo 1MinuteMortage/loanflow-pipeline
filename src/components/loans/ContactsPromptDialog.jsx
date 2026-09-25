@@ -14,6 +14,7 @@ import { CONTACT_ROLES } from "@/lib/loan-utils";
 
 export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave }) {
   const [contacts, setContacts] = useState({});
+  const [lenderName, setLenderName] = useState("");
   const [loanNumber, setLoanNumber] = useState("");
   const [propertyAddress, setPropertyAddress] = useState("");
   const [salesPrice, setSalesPrice] = useState("");
@@ -39,6 +40,7 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
       next[`${r.key}_email`] = loan[`${r.key}_email`] || "";
     });
     setContacts(next);
+    setLenderName(loan.lender_name || "");
     setLoanNumber(loan.loan_number || "");
     setPropertyAddress(loan.property_address || "");
     setSalesPrice(loan.sales_price ?? "");
@@ -57,6 +59,7 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
   function handleSave() {
     onSave({
       ...contacts,
+      lender_name: lenderName,
       loan_number: loanNumber,
       property_address: propertyAddress,
       sales_price: salesPrice === "" ? null : Number(salesPrice),
@@ -81,6 +84,14 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
         <div className="max-h-[55vh] overflow-y-auto space-y-3 pr-1">
           <div className="space-y-2 rounded-lg border border-border p-3">
             <div className="text-sm font-semibold text-foreground">Loan &amp; Property</div>
+            <div className="space-y-1.5">
+              <Label className="text-xs uppercase tracking-wide text-muted-foreground">Lender's Name</Label>
+              <Input
+                placeholder="Enter text"
+                value={lenderName}
+                onChange={(e) => setLenderName(e.target.value)}
+              />
+            </div>
             <div className="space-y-1.5">
               <Label className="text-xs uppercase tracking-wide text-muted-foreground">Loan Number</Label>
               <Input
