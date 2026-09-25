@@ -1,8 +1,13 @@
 import React from "react";
 import { STAGES } from "@/lib/loan-utils";
+import { AlertTriangle } from "lucide-react";
 
 export default function FolderBar({ active, counts, onChange }) {
-  const tabs = [{ key: "all", label: "All" }, ...STAGES.map((s) => ({ key: s.key, label: s.label, color: s.color }))];
+  const tabs = [
+    { key: "all", label: "All" },
+    { key: "urgent", label: "8 days or less", color: "#ef4444" },
+    ...STAGES.map((s) => ({ key: s.key, label: s.label, color: s.color })),
+  ];
 
   return (
     <div className="sticky top-0 z-20 bg-card/95 backdrop-blur border-b border-border">

@@ -1,6 +1,6 @@
 // Urgency helpers for finance contingency / closing date countdowns.
 // Returns a color object for a date string based on days remaining.
-// Color scale: 12+ days = green/neutral, 7-11 = yellow, 4-6 = orange, 1-3 = red, 0 or overdue = deep red.
+// Color scale (8-day window): 8+ days = green/neutral, 5-7 = yellow, 3-4 = orange, 1-2 = red, 0 or overdue = deep red.
 
 export function daysUntil(dateStr) {
   if (!dateStr) return null;
@@ -22,15 +22,15 @@ export function dateUrgency(dateStr) {
     bg = "#fecaca";
     text = "#7f1d1d";
     label = "Today";
-  } else if (days <= 3) {
+  } else if (days <= 2) {
     bg = "#fecaca";
     text = "#991b1b";
     label = `${days}d left`;
-  } else if (days <= 6) {
+  } else if (days <= 4) {
     bg = "#fed7aa";
     text = "#9a3412";
     label = `${days}d left`;
-  } else if (days <= 11) {
+  } else if (days <= 7) {
     bg = "#fef3c7";
     text = "#92400e";
     label = `${days}d left`;
@@ -40,13 +40,13 @@ export function dateUrgency(dateStr) {
     label = `${days}d left`;
   }
 
-  // Progress: 0% at day 12+ (safe), 100% at day 0 (urgent)
-  const progress = days <= 0 ? 100 : Math.max(0, Math.min(100, ((12 - days) / 12) * 100));
+  // Progress: 0% at day 8+ (safe), 100% at day 0 (urgent)
+  const progress = days <= 0 ? 100 : Math.max(0, Math.min(100, ((8 - days) / 8) * 100));
 
   return { days, bg, text, label, progress };
 }
 
-export function isWithin12Days(dateStr) {
+export function isWithin8Days(dateStr) {
   const days = daysUntil(dateStr);
-  return days !== null && days <= 12;
+  return days !== null && days <= 8;
 }
