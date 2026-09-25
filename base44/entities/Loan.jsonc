@@ -381,6 +381,10 @@
       "type": "string",
       "description": "Closing attorney email"
     },
+    "lender_name": {
+      "type": "string",
+      "description": "Lender name (associated with the underwriter)"
+    },
     "underwriter_name": {
       "type": "string",
       "description": "Underwriter name"

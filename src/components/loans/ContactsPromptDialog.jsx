@@ -29,6 +29,9 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
     const next = {};
     CONTACT_ROLES.forEach((r) => {
       next[`${r.key}_name`] = loan[`${r.key}_name`] || "";
+      if (r.key === "underwriter") {
+        next.lender_name = loan.lender_name || "";
+      }
       if (r.key === "closing_attorney") {
         next[`${r.key}_representative_name`] = loan[`${r.key}_representative_name`] || "";
       }
@@ -176,10 +179,20 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
             </div>
           </div>
           {CONTACT_ROLES.map((r) => {
-            const nameLabel = r.key === "closing_attorney" ? "Closing Office Name" : "Name";
+            const nameLabel = r.key === "closing_attorney" ? "Closing Office Name" : r.key === "underwriter" ? "Underwriter's Name" : "Name";
             return (
               <div key={r.key} className="space-y-2 rounded-lg border border-border p-3">
                 <div className="text-sm font-semibold text-foreground">{r.label}</div>
+                {r.key === "underwriter" && (
+                  <div className="space-y-1.5">
+                    <Label className="text-xs uppercase tracking-wide text-muted-foreground">Lender Name</Label>
+                    <Input
+                      placeholder="Enter text"
+                      value={contacts.lender_name || ""}
+                      onChange={(e) => updateField("lender_name", e.target.value)}
+                    />
+                  </div>
+                )}
                 <div className="space-y-1.5">
                   <Label className="text-xs uppercase tracking-wide text-muted-foreground">{nameLabel}</Label>
                   <Input

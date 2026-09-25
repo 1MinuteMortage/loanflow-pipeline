@@ -11,7 +11,7 @@ export default function ContactsTab({ loan, onUpdate }) {
     <div className="space-y-4">
       {CONTACT_ROLES.map((role) => {
         const p = role.key;
-        const nameLabel = role.key === "closing_attorney" ? "Closing Office Name" : "Name";
+        const nameLabel = role.key === "closing_attorney" ? "Closing Office Name" : role.key === "underwriter" ? "Underwriter's Name" : "Name";
         return (
           <div key={role.key} className="rounded-lg border border-border p-3 space-y-2.5">
             <div className="flex items-center gap-2">
@@ -20,6 +20,16 @@ export default function ContactsTab({ loan, onUpdate }) {
               </div>
               <span className="text-sm font-semibold">{role.label}</span>
             </div>
+            {role.key === "underwriter" && (
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-muted-foreground">Lender Name</Label>
+                <Input
+                  placeholder="Enter text"
+                  value={loan.lender_name || ""}
+                  onChange={(e) => update("lender_name", e.target.value)}
+                />
+              </div>
+            )}
             <div className="space-y-1.5">
               <Label className="text-xs font-medium text-muted-foreground">{nameLabel}</Label>
               <Input
