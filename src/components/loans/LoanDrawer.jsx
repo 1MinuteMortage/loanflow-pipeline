@@ -87,6 +87,7 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
         estimated_available_funds: loan.estimated_available_funds ?? "",
         total_assets: loan.total_assets ?? "",
         total_verified_assets: loan.total_verified_assets ?? "",
+        lender_name: loan.lender_name || "",
         loan_number: loan.loan_number || "",
         loan_type: loan.loan_type || "",
         preapproval_amount: loan.preapproval_amount ?? "",

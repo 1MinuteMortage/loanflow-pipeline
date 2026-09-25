@@ -93,6 +93,19 @@ export default function PropertyTab({ form, setForm, saveField, stage }) {
 
       {/* === Under-contract fields — locked until Under Contract === */}
       <div className="space-y-1.5">
+        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Lender's Name</Label>
+        <Input
+          disabled={!isUnderContract}
+          value={form.lender_name || ""}
+          onChange={(e) => {
+            setForm({ ...form, lender_name: e.target.value });
+            saveField({ lender_name: e.target.value });
+          }}
+          placeholder="Enter text"
+        />
+      </div>
+
+      <div className="space-y-1.5">
         <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Loan Number</Label>
         <Input
           disabled={!isUnderContract}
