@@ -22,20 +22,12 @@ function UrgencyBadge({ dateStr, type }) {
   const u = dateUrgency(dateStr);
   if (!u) return null;
   return (
-    <div className="flex flex-col gap-1 min-w-[90px]">
-      <span
-        className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap w-fit"
-        style={{ backgroundColor: u.bg, color: u.text }}
-      >
-        {type}: {u.label}
-      </span>
-      <div className="h-1 rounded-full bg-muted overflow-hidden w-full">
-        <div
-          className="h-full rounded-full transition-all"
-          style={{ width: `${u.progress}%`, backgroundColor: u.text }}
-        />
-      </div>
-    </div>
+    <span
+      className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap w-fit"
+      style={{ backgroundColor: u.bg, color: u.text }}
+    >
+      {type}: {u.label}
+    </span>
   );
 }
 

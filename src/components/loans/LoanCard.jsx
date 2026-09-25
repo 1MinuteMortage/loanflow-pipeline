@@ -58,40 +58,24 @@ export default function LoanCard({ loan, onOpen }) {
             const u = dateUrgency(loan.finance_contingency_date);
             if (!u) return null;
             return (
-              <div className="flex flex-col gap-1">
-                <span
-                  className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold w-fit"
-                  style={{ backgroundColor: u.bg, color: u.text }}
-                >
-                  FC: {u.label}
-                </span>
-                <div className="h-1 rounded-full bg-muted overflow-hidden w-full">
-                  <div
-                    className="h-full rounded-full transition-all"
-                    style={{ width: `${u.progress}%`, backgroundColor: u.text }}
-                  />
-                </div>
-              </div>
+              <span
+                className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold w-fit"
+                style={{ backgroundColor: u.bg, color: u.text }}
+              >
+                FC: {u.label}
+              </span>
             );
           })()}
           {loan.closing_date && (() => {
             const u = dateUrgency(loan.closing_date);
             if (!u) return null;
             return (
-              <div className="flex flex-col gap-1">
-                <span
-                  className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold w-fit"
-                  style={{ backgroundColor: u.bg, color: u.text }}
-                >
-                  Close: {u.label}
-                </span>
-                <div className="h-1 rounded-full bg-muted overflow-hidden w-full">
-                  <div
-                    className="h-full rounded-full transition-all"
-                    style={{ width: `${u.progress}%`, backgroundColor: u.text }}
-                  />
-                </div>
-              </div>
+              <span
+                className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold w-fit"
+                style={{ backgroundColor: u.bg, color: u.text }}
+              >
+                Close: {u.label}
+              </span>
             );
           })()}
         </div>
