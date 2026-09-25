@@ -76,7 +76,6 @@ export default function Home() {
 
   const filtered = useMemo(() => {
     let list = loans;
-    if (activeFolder !== "all") list = list.filter((l) => l.stage === activeFolder);
     if (activeFolder === "urgent") {
       list = list.filter((l) => isWithin8Days(l.finance_contingency_date));
     } else if (activeFolder !== "all") {
