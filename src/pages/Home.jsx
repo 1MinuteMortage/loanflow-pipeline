@@ -9,12 +9,15 @@ import LoanDrawer from "@/components/loans/LoanDrawer";
 import NewLoanDialog from "@/components/loans/NewLoanDialog";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { STAGES } from "@/lib/loan-utils";
+import { isWithin12Days } from "@/lib/date-urgency";
+import { AlertTriangle } from "lucide-react";
 
 export default function Home() {
   const isMobile = useIsMobile();
   const [loans, setLoans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeFolder, setActiveFolder] = useState("all");
+  const [urgentOnly, setUrgentOnly] = useState(false);
   const [search, setSearch] = useState("");
   const [drawerLoan, setDrawerLoan] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -75,6 +78,11 @@ export default function Home() {
   const filtered = useMemo(() => {
     let list = loans;
     if (activeFolder !== "all") list = list.filter((l) => l.stage === activeFolder);
+    if (urgentOnly) {
+      list = list.filter(
+        (l) => isWithin12Days(l.finance_contingency_date) || isWithin12Days(l.closing_date)
+      );
+    }
     if (search.trim()) {
       const q = search.toLowerCase();
       list = list.filter(
@@ -84,7 +92,7 @@ export default function Home() {
       );
     }
     return list;
-  }, [loans, activeFolder, search]);
+  }, [loans, activeFolder, search, urgentOnly]);
 
   const openDrawer = (loan) => {
     setDrawerLoan(loan);
@@ -158,6 +166,19 @@ export default function Home() {
       {/* Folder Bar */}
       <div className="sticky top-[57px] sm:top-[61px] z-20">
         <FolderBar active={activeFolder} counts={counts} onChange={setActiveFolder} />
+        <div className="flex items-center gap-2 px-4 sm:px-6 py-2 border-b border-border bg-card/95">
+          <button
+            onClick={() => setUrgentOnly((v) => !v)}
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border transition-all ${
+              urgentOnly
+                ? "bg-red-100 text-red-800 border-red-300"
+                : "bg-card text-muted-foreground border-border hover:border-red-300 hover:text-red-700"
+            }`}
+          >
+            <AlertTriangle className="w-3.5 h-3.5" />
+            12 days or less
+          </button>
+        </div>
       </div>
 
       {/* Main content */}

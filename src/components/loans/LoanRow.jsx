@@ -1,6 +1,7 @@
 import React from "react";
 import { MoreHorizontal, ChevronRight } from "lucide-react";
-import { STAGE_MAP, fullName, documentsNeededSummary, dateCountdown } from "@/lib/loan-utils";
+import { STAGE_MAP, fullName, documentsNeededSummary } from "@/lib/loan-utils";
+import { dateUrgency } from "@/lib/date-urgency";
 import ContactsCell from "./ContactsCell";
 import AssignedToCell from "./AssignedToCell";
 
@@ -17,16 +18,38 @@ function StageBadge({ stage }) {
   );
 }
 
+function UrgencyBadge({ dateStr, type }) {
+  const u = dateUrgency(dateStr);
+  if (!u) return null;
+  return (
+    <div className="flex flex-col gap-1 min-w-[90px]">
+      <span
+        className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap w-fit"
+        style={{ backgroundColor: u.bg, color: u.text }}
+      >
+        {type}: {u.label}
+      </span>
+      <div className="h-1 rounded-full bg-muted overflow-hidden w-full">
+        <div
+          className="h-full rounded-full transition-all"
+          style={{ width: `${u.progress}%`, backgroundColor: u.text }}
+        />
+      </div>
+    </div>
+  );
+}
+
 function DatesCell({ loan }) {
-  const fc = dateCountdown(loan.finance_contingency_date);
-  const close = dateCountdown(loan.closing_date);
+  const fc = loan.finance_contingency_date;
+  const close = loan.closing_date;
   if (!fc && !close) {
     return <span className="text-xs text-muted-foreground">—</span>;
   }
   return (
-    <span className="text-xs font-semibold text-foreground/80 whitespace-nowrap">
-      {fc || "—"}{fc && close ? " / " : ""}{close || ""}
-    </span>
+    <div className="flex flex-col gap-1.5">
+      {fc && <UrgencyBadge dateStr={fc} type="FC" />}
+      {close && <UrgencyBadge dateStr={close} type="Close" />}
+    </div>
   );
 }
 

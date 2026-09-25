@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { STAGE_MAP, fullName, documentsNeededSummary } from "@/lib/loan-utils";
+import { dateUrgency } from "@/lib/date-urgency";
 import ContactsCell from "./ContactsCell";
 import { getContacts } from "@/lib/loan-utils";
 
@@ -50,6 +51,51 @@ export default function LoanCard({ loan, onOpen }) {
           {needed.remaining} docs needed · {needed.done}/{needed.total} done
         </span>
       </div>
+
+      {(loan.finance_contingency_date || loan.closing_date) && (
+        <div className="mt-3 flex flex-col gap-1.5">
+          {loan.finance_contingency_date && (() => {
+            const u = dateUrgency(loan.finance_contingency_date);
+            if (!u) return null;
+            return (
+              <div className="flex flex-col gap-1">
+                <span
+                  className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold w-fit"
+                  style={{ backgroundColor: u.bg, color: u.text }}
+                >
+                  FC: {u.label}
+                </span>
+                <div className="h-1 rounded-full bg-muted overflow-hidden w-full">
+                  <div
+                    className="h-full rounded-full transition-all"
+                    style={{ width: `${u.progress}%`, backgroundColor: u.text }}
+                  />
+                </div>
+              </div>
+            );
+          })()}
+          {loan.closing_date && (() => {
+            const u = dateUrgency(loan.closing_date);
+            if (!u) return null;
+            return (
+              <div className="flex flex-col gap-1">
+                <span
+                  className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold w-fit"
+                  style={{ backgroundColor: u.bg, color: u.text }}
+                >
+                  Close: {u.label}
+                </span>
+                <div className="h-1 rounded-full bg-muted overflow-hidden w-full">
+                  <div
+                    className="h-full rounded-full transition-all"
+                    style={{ width: `${u.progress}%`, backgroundColor: u.text }}
+                  />
+                </div>
+              </div>
+            );
+          })()}
+        </div>
+      )}
 
       {needed.labels.length > 0 && (
         <button
