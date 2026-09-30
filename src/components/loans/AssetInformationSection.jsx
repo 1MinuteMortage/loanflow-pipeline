@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Banknote, Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -60,16 +60,13 @@ export default function AssetInformationSection({ form, setForm, saveField }) {
 
   return (
     <div>
-      <Button
+      <button
         type="button"
-        variant="outline"
-        size="sm"
         onClick={openDialog}
-        className="w-full justify-start"
+        className="text-xs font-medium text-primary hover:underline"
       >
-        <Banknote className="w-4 h-4 mr-2" />
         Asset Information
-      </Button>
+      </button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[560px]">
