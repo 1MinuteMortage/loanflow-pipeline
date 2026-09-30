@@ -59,7 +59,7 @@ export default function AssetInformationSection({ form, setForm, saveField }) {
   }
 
   return (
-    <div>
+    <div className="-mt-1">
       <button
         type="button"
         onClick={openDialog}
