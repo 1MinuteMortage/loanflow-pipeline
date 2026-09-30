@@ -156,6 +156,21 @@ export default function BorrowerTab({ form, setForm, saveField, loan }) {
           </select>
         </div>
         <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Bankruptcy in Last Two Years</Label>
+          <select
+            value={form.bankruptcy_last_two_years ? "yes" : "no"}
+            onChange={(e) => {
+              const v = e.target.value === "yes";
+              setForm({ ...form, bankruptcy_last_two_years: v });
+              saveField({ bankruptcy_last_two_years: v });
+            }}
+            className={selectClass}
+          >
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </div>
+        <div className="space-y-1.5">
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">VA Status</Label>
           <select
             value={form.va_status ? "yes" : "no"}

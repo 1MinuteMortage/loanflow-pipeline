@@ -73,6 +73,11 @@
       "default": false,
       "description": "True when borrower is a US citizen"
     },
+    "bankruptcy_last_two_years": {
+      "type": "boolean",
+      "default": false,
+      "description": "True when borrower has had a bankruptcy in the last two years"
+    },
     "va_status": {
       "type": "boolean",
       "default": false,
