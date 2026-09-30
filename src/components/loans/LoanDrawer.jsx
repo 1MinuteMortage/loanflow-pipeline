@@ -85,6 +85,7 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
         us_citizen: !!loan.us_citizen,
         va_status: !!loan.va_status,
         self_employed: !!loan.self_employed,
+        has_cosigner: !!loan.has_cosigner,
         estimated_available_funds: loan.estimated_available_funds ?? "",
         total_assets: loan.total_assets ?? "",
         total_verified_assets: loan.total_verified_assets ?? "",

@@ -88,6 +88,11 @@
       "default": false,
       "description": "True when borrower is self-employed"
     },
+    "has_cosigner": {
+      "type": "boolean",
+      "default": false,
+      "description": "True when borrower has a co-signer"
+    },
     "estimated_available_funds": {
       "type": "number",
       "description": "Borrower estimated available funds for transaction"
