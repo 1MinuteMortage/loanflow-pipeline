@@ -288,6 +288,9 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
                 field="needed_items"
                 title="Pre UnderWrite Documents"
                 onUpdate={onUpdate}
+                form={form}
+                setForm={setForm}
+                saveField={saveField}
               />
             )}
             {tab === "ai_assist" && (

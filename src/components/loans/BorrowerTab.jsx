@@ -1,7 +1,6 @@
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import LoanOfficerSection from "./LoanOfficerSection";
 
 const selectClass =
   "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring";
@@ -259,7 +258,6 @@ export default function BorrowerTab({ form, setForm, saveField, loan }) {
         </div>
       </div>
 
-      <LoanOfficerSection form={form} setForm={setForm} saveField={saveField} loan={loan} />
     </>
   );
 }

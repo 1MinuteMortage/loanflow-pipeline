@@ -7,6 +7,7 @@ import { base44 } from "@/api/base44Client";
 import DocPreview from "./DocPreview";
 import InitialConditionsUpload from "./InitialConditionsUpload";
 import TitleRequestHover from "./TitleRequestHover";
+import LoanOfficerSection from "./LoanOfficerSection";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -18,7 +19,7 @@ import {
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 
-export default function ChecklistTab({ loan, field, title, onUpdate }) {
+export default function ChecklistTab({ loan, field, title, onUpdate, form, setForm, saveField }) {
   const [newItem, setNewItem] = useState("");
   const [uploadingIdx, setUploadingIdx] = useState(null);
   const [previewDoc, setPreviewDoc] = useState(null);
@@ -204,6 +205,10 @@ export default function ChecklistTab({ loan, field, title, onUpdate }) {
           <Plus className="w-4 h-4 mr-1" /> Add
         </Button>
       </div>
+
+      {field === "needed_items" && form && setForm && saveField && (
+        <LoanOfficerSection form={form} setForm={setForm} saveField={saveField} loan={loan} />
+      )}
 
       <DocPreview doc={previewDoc} onClose={() => setPreviewDoc(null)} />
 
