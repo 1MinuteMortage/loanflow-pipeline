@@ -2,7 +2,6 @@ import React from "react";
 import { MoreHorizontal, ChevronRight } from "lucide-react";
 import { STAGE_MAP, fullName, documentsNeededSummary } from "@/lib/loan-utils";
 import { dateUrgency } from "@/lib/date-urgency";
-import ContactsCell from "./ContactsCell";
 import AssignedToCell from "./AssignedToCell";
 
 function StageBadge({ stage }) {
@@ -128,10 +127,6 @@ export default function LoanRow({ loan, onOpen, currentUser, onAccept }) {
             </span>
           )}
         </div>
-      </td>
-      {/* Contacts */}
-      <td className="px-4 py-3">
-        <ContactsCell loan={loan} />
       </td>
       {/* Actions */}
       <td className="px-4 py-3 text-right">

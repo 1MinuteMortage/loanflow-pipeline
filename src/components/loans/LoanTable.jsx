@@ -7,8 +7,7 @@ const COLUMNS = [
   { key: "assigned", label: "Assigned To", className: "w-[11%]" },
   { key: "property", label: "Property Address", className: "w-[17%]" },
   { key: "dates", label: "FC / Closing", className: "w-[11%]" },
-  { key: "needed", label: "Documents Needed", className: "w-[21%]" },
-  { key: "contacts", label: "Contacts", className: "w-[12%]" },
+  { key: "needed", label: "Documents Needed", className: "w-[26%]" },
   { key: "actions", label: "", className: "w-[5%]" }
 ];
 
