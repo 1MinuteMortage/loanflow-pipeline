@@ -7,6 +7,7 @@ import LoanTable from "@/components/loans/LoanTable";
 import LoanCard from "@/components/loans/LoanCard";
 import LoanDrawer from "@/components/loans/LoanDrawer";
 import NewLoanDialog from "@/components/loans/NewLoanDialog";
+import AcceptFileDialog from "@/components/loans/AcceptFileDialog";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { STAGES } from "@/lib/loan-utils";
 import { isWithin8Days } from "@/lib/date-urgency";
@@ -21,6 +22,7 @@ export default function Home() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [newOpen, setNewOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [acceptTarget, setAcceptTarget] = useState(null);
 
   useEffect(() => {
     base44.auth.me().then(setCurrentUser).catch(() => setCurrentUser(null));
@@ -46,6 +48,11 @@ export default function Home() {
     } else {
       handleUpdate(loan.id, { assigned_to_id: currentUser.id, assigned_to_name: name });
     }
+  };
+
+  const requestAccept = (loan, role) => setAcceptTarget({ loan, role });
+  const confirmAccept = () => {
+    if (acceptTarget) handleAccept(acceptTarget.loan, acceptTarget.role);
   };
 
   const load = async () => {
@@ -189,13 +196,13 @@ export default function Home() {
               </div>
             ) : (
               filtered.map((loan) => (
-                <LoanCard key={loan.id} loan={loan} onOpen={openDrawer} />
+                <LoanCard key={loan.id} loan={loan} onOpen={openDrawer} currentUser={currentUser} onAccept={requestAccept} />
               ))
             )}
           </div>
         ) : (
           <div className="rounded-lg border border-border bg-card overflow-hidden">
-            <LoanTable loans={filtered} onOpen={openDrawer} currentUser={currentUser} onAccept={handleAccept} />
+            <LoanTable loans={filtered} onOpen={openDrawer} currentUser={currentUser} onAccept={requestAccept} />
           </div>
         )}
       </main>
@@ -206,6 +213,15 @@ export default function Home() {
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
         onUpdate={handleUpdate}
+      />
+
+      {/* Accept File Dialog */}
+      <AcceptFileDialog
+        open={!!acceptTarget}
+        onOpenChange={(o) => !o && setAcceptTarget(null)}
+        loan={acceptTarget?.loan}
+        role={acceptTarget?.role}
+        onConfirm={confirmAccept}
       />
 
       {/* New Loan Dialog */}

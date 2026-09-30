@@ -5,15 +5,22 @@ import { dateUrgency } from "@/lib/date-urgency";
 import ContactsCell from "./ContactsCell";
 import { getContacts } from "@/lib/loan-utils";
 
-export default function LoanCard({ loan, onOpen }) {
+export default function LoanCard({ loan, onOpen, currentUser, onAccept }) {
   const [expanded, setExpanded] = useState(false);
   const needed = documentsNeededSummary(loan);
   const stage = STAGE_MAP[loan.stage];
 
+  const canOpen =
+    !currentUser ||
+    currentUser.role === "admin" ||
+    loan.loan_officer_id === currentUser.id ||
+    loan.loan_processor_id === currentUser.id ||
+    loan.assigned_to_id === currentUser.id;
+
   return (
     <div
-      onClick={() => onOpen(loan)}
-      className="rounded-lg border border-border bg-card p-4 active:bg-muted/40 transition-colors"
+      onClick={() => canOpen && onOpen(loan)}
+      className={`rounded-lg border border-border bg-card p-4 transition-colors ${canOpen ? "active:bg-muted/40 cursor-pointer" : "opacity-70"}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
