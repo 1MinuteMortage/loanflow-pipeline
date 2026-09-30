@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Banknote } from "lucide-react";
+import { Banknote, Plus, Trash2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -13,8 +13,7 @@ import {
 } from "@/components/ui/dialog";
 
 function normalizeAccounts(arr) {
-  const base = Array.isArray(arr) ? arr.slice(0, 3) : [];
-  while (base.length < 3) base.push({ bank_name: "", statement_balance: "" });
+  const base = Array.isArray(arr) && arr.length > 0 ? arr.slice() : [{ bank_name: "", statement_balance: "" }];
   return base.map((a) => ({
     bank_name: a.bank_name || "",
     statement_balance: a.statement_balance === undefined || a.statement_balance === null ? "" : Number(a.statement_balance),
@@ -41,10 +40,21 @@ export default function AssetInformationSection({ form, setForm, saveField }) {
     setDraft((prev) => prev.map((a, i) => (i === index ? { ...a, ...patch } : a)));
   }
 
+  function addAccount() {
+    setDraft((prev) => [...prev, { bank_name: "", statement_balance: "" }]);
+  }
+
+  function removeAccount(index) {
+    setDraft((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== index) : prev));
+  }
+
   function handleSave() {
     const total = draftTotal();
-    setForm({ ...form, asset_accounts: draft, total_verified_assets: total });
-    saveField({ asset_accounts: draft, total_verified_assets: total });
+    const cleaned = draft
+      .filter((a) => a.bank_name || a.statement_balance !== "")
+      .map((a) => ({ ...a, statement_balance: a.statement_balance === "" ? 0 : Number(a.statement_balance) }));
+    setForm({ ...form, asset_accounts: cleaned, total_verified_assets: total });
+    saveField({ asset_accounts: cleaned, total_verified_assets: total });
     setOpen(false);
   }
 
@@ -62,17 +72,17 @@ export default function AssetInformationSection({ form, setForm, saveField }) {
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[520px]">
+        <DialogContent className="sm:max-w-[560px]">
           <DialogHeader>
             <DialogTitle>Asset Information</DialogTitle>
             <DialogDescription>
-              Enter up to three bank accounts. The balances will total into Total Verified Assets.
+              Enter bank name and last statement balance. The balances will total into Total Verified Assets.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 py-2 max-h-[60vh] overflow-y-auto pr-1">
+          <div className="space-y-4 py-2 max-h-[55vh] overflow-y-auto pr-1">
             {draft.map((acct, i) => (
-              <div key={i} className="grid grid-cols-2 gap-3">
+              <div key={i} className="grid grid-cols-[1fr_1fr_auto] gap-3 items-end">
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium text-muted-foreground">Bank Name</Label>
                   <Input
@@ -97,9 +107,23 @@ export default function AssetInformationSection({ form, setForm, saveField }) {
                     />
                   </div>
                 </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => removeAccount(i)}
+                  className="text-muted-foreground hover:text-destructive"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
               </div>
             ))}
           </div>
+
+          <Button type="button" variant="outline" size="sm" onClick={addAccount} className="w-full">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Bank Account
+          </Button>
 
           <div className="flex items-center justify-between border-t border-border pt-3">
             <span className="text-sm font-semibold text-foreground">
