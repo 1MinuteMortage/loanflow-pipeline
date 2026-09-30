@@ -83,6 +83,11 @@
       "default": false,
       "description": "True when borrower has VA eligibility"
     },
+    "self_employed": {
+      "type": "boolean",
+      "default": false,
+      "description": "True when borrower is self-employed"
+    },
     "estimated_available_funds": {
       "type": "number",
       "description": "Borrower estimated available funds for transaction"

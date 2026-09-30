@@ -185,6 +185,21 @@ export default function BorrowerTab({ form, setForm, saveField, loan }) {
             <option value="yes">Yes</option>
           </select>
         </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Self-Employed</Label>
+          <select
+            value={form.self_employed ? "yes" : "no"}
+            onChange={(e) => {
+              const v = e.target.value === "yes";
+              setForm({ ...form, self_employed: v });
+              saveField({ self_employed: v });
+            }}
+            className={selectClass}
+          >
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </div>
       </div>
 
       <div className="space-y-1.5">
