@@ -9,7 +9,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
 } from "@/components/ui/dialog";
 
 function normalizeAccounts(arr) {
@@ -20,13 +19,12 @@ function normalizeAccounts(arr) {
   }));
 }
 
-export default function AssetInformationSection({ form, setForm, saveField }) {
-  const [open, setOpen] = useState(false);
+export default function AssetInformationSection({ form, setForm, saveField, open, onOpenChange }) {
   const [draft, setDraft] = useState(normalizeAccounts(form.asset_accounts));
 
   function openDialog() {
     setDraft(normalizeAccounts(form.asset_accounts));
-    setOpen(true);
+    onOpenChange(true);
   }
 
   function draftTotal() {
@@ -55,11 +53,11 @@ export default function AssetInformationSection({ form, setForm, saveField }) {
       .map((a) => ({ ...a, statement_balance: a.statement_balance === "" ? 0 : Number(a.statement_balance) }));
     setForm({ ...form, asset_accounts: cleaned, total_verified_assets: total });
     saveField({ asset_accounts: cleaned, total_verified_assets: total });
-    setOpen(false);
+    onOpenChange(false);
   }
 
   return (
-    <div className="-mt-1">
+    <>
       <button
         type="button"
         onClick={openDialog}
@@ -68,7 +66,7 @@ export default function AssetInformationSection({ form, setForm, saveField }) {
         Asset Information
       </button>
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-[560px]">
           <DialogHeader>
             <DialogTitle>Asset Information</DialogTitle>
@@ -127,12 +125,12 @@ export default function AssetInformationSection({ form, setForm, saveField }) {
               Total: ${draftTotal().toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
             </span>
             <div className="flex gap-2">
-              <Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
+              <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
               <Button onClick={handleSave}>Save</Button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }

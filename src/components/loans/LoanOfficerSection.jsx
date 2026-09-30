@@ -7,6 +7,7 @@ import AssetInformationSection from "./AssetInformationSection";
 
 export default function LoanOfficerSection({ form, setForm, saveField, loan }) {
   const [calculatorOpen, setCalculatorOpen] = useState(false);
+  const [assetDialogOpen, setAssetDialogOpen] = useState(false);
   const calc = loan.income_calculation;
 
   function handleConfirm(finalIncome, calculation) {
@@ -38,6 +39,7 @@ export default function LoanOfficerSection({ form, setForm, saveField, loan }) {
               }}
             />
           </div>
+          <AssetInformationSection form={form} setForm={setForm} saveField={saveField} open={assetDialogOpen} onOpenChange={setAssetDialogOpen} />
         </div>
         <div className="space-y-1.5">
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Credit Score</Label>
@@ -77,8 +79,6 @@ export default function LoanOfficerSection({ form, setForm, saveField, loan }) {
           </button>
         </div>
       </div>
-
-      <AssetInformationSection form={form} setForm={setForm} saveField={saveField} />
 
       {calc && (
         <p className="text-xs text-muted-foreground">
