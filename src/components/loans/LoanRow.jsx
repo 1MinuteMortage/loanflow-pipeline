@@ -60,9 +60,23 @@ export default function LoanRow({ loan, onOpen, currentUser, onAccept }) {
     loan.address_tbd ||
     !loan.property_address;
 
+  const isAlreadyAssigned =
+    currentUser &&
+    (loan.loan_officer_id === currentUser.id ||
+      loan.loan_processor_id === currentUser.id ||
+      loan.assigned_to_id === currentUser.id);
+
+  const handleClick = () => {
+    if (loan.stage === "pending" && !isAlreadyAssigned) {
+      onAccept(loan, null);
+      return;
+    }
+    onOpen(loan);
+  };
+
   return (
     <tr
-      onClick={() => onOpen(loan)}
+      onClick={handleClick}
       className="group border-b border-border last:border-0 hover:bg-muted/40 cursor-pointer transition-colors"
     >
       {/* Stage */}

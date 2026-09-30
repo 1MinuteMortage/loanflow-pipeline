@@ -10,17 +10,29 @@ export default function LoanCard({ loan, onOpen, currentUser, onAccept }) {
   const needed = documentsNeededSummary(loan);
   const stage = STAGE_MAP[loan.stage];
 
+  const isAlreadyAssigned =
+    currentUser &&
+    (loan.loan_officer_id === currentUser.id ||
+      loan.loan_processor_id === currentUser.id ||
+      loan.assigned_to_id === currentUser.id);
+
   const canOpen =
     !currentUser ||
     currentUser.role === "admin" ||
-    loan.loan_officer_id === currentUser.id ||
-    loan.loan_processor_id === currentUser.id ||
-    loan.assigned_to_id === currentUser.id;
+    isAlreadyAssigned;
+
+  const handleClick = () => {
+    if (loan.stage === "pending" && !isAlreadyAssigned) {
+      onAccept(loan, null);
+      return;
+    }
+    if (canOpen) onOpen(loan);
+  };
 
   return (
     <div
-      onClick={() => canOpen && onOpen(loan)}
-      className={`rounded-lg border border-border bg-card p-4 transition-colors ${canOpen ? "active:bg-muted/40 cursor-pointer" : "opacity-70"}`}
+      onClick={handleClick}
+      className={`rounded-lg border border-border bg-card p-4 transition-colors ${canOpen || loan.stage === "pending" ? "active:bg-muted/40 cursor-pointer" : "opacity-70"}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">

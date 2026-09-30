@@ -51,8 +51,8 @@ export default function Home() {
   };
 
   const requestAccept = (loan, role) => setAcceptTarget({ loan, role });
-  const confirmAccept = () => {
-    if (acceptTarget) handleAccept(acceptTarget.loan, acceptTarget.role);
+  const confirmAccept = (pickedRole) => {
+    if (acceptTarget) handleAccept(acceptTarget.loan, pickedRole);
   };
 
   const load = async () => {
