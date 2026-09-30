@@ -126,15 +126,19 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
   }, [loan, tab]);
 
   // Auto-seed standard UW conditions for under-contract loans, appending any missing defaults (e.g. Closing Disclosure)
+  // Also standardizes the "Purchase and Sale (Amendments)" label for existing loans
   useEffect(() => {
     if (!loan || loan.stage !== "under_contract") return;
     const conditions = loan.uw_conditions || [];
-    const existingLabels = conditions.map((c) => c.label);
+    const standardized = conditions.map((c) =>
+      c.label === "Purchase and Sale" ? { ...c, label: "Purchase and Sale (Amendments)" } : c
+    );
+    const existingLabels = standardized.map((c) => c.label);
     const missing = DEFAULT_UW_CONDITIONS.filter((l) => !existingLabels.includes(l));
-    if (missing.length > 0) {
+    if (missing.length > 0 || standardized.some((c, i) => c.label !== conditions[i].label)) {
       onUpdate(loan.id, {
         uw_conditions: [
-          ...conditions,
+          ...standardized,
           ...missing.map((label) => ({ label, completed: false })),
         ],
       });
