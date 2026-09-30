@@ -105,6 +105,24 @@
       "type": "number",
       "description": "Borrower's verified total assets (Loan Officer section)"
     },
+    "asset_accounts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "bank_name": {
+            "type": "string",
+            "description": "Bank / financial institution name"
+          },
+          "statement_balance": {
+            "type": "number",
+            "description": "Last statement balance for this account"
+          }
+        }
+      },
+      "default": [],
+      "description": "Up to three bank accounts used to calculate total verified assets"
+    },
     "income_calculation": {
       "type": "object",
       "properties": {

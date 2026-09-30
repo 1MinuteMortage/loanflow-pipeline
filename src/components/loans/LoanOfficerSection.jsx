@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import IncomeCalculatorModal from "./IncomeCalculatorModal";
+import AssetInformationSection from "./AssetInformationSection";
 
 export default function LoanOfficerSection({ form, setForm, saveField, loan }) {
   const [calculatorOpen, setCalculatorOpen] = useState(false);
@@ -76,6 +77,8 @@ export default function LoanOfficerSection({ form, setForm, saveField, loan }) {
           </button>
         </div>
       </div>
+
+      <AssetInformationSection form={form} setForm={setForm} saveField={saveField} />
 
       {calc && (
         <p className="text-xs text-muted-foreground">
