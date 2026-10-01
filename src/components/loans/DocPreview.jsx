@@ -9,6 +9,11 @@ export default function DocPreview({ doc, onClose }) {
   const zoomOut = () => setZoom((z) => Math.max(z - 0.25, 0.5));
   const resetZoom = () => setZoom(1);
 
+  const isImage = /\.(png|jpg|jpeg|gif|webp|bmp|svg)$/i.test(doc.url || "");
+  const pdfUrl = doc.url && doc.url.includes(".pdf") && !doc.url.includes("#")
+    ? `${doc.url}#view=FitH`
+    : doc.url;
+
   return (
     <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
       <div className="flex flex-col w-[75%] h-[85%] rounded-lg overflow-hidden shadow-2xl">
@@ -52,17 +57,31 @@ export default function DocPreview({ doc, onClose }) {
             </button>
           </div>
         </div>
-        <div className="flex-1 overflow-auto bg-white">
-          <iframe
-            src={doc.url}
-            title={doc.name || "Document preview"}
-            style={{
-              width: "100%",
-              height: "100%",
-              border: "none",
-              zoom: zoom,
-            }}
-          />
+        <div className="flex-1 overflow-auto bg-white flex items-center justify-center">
+          {isImage ? (
+            <img
+              src={doc.url}
+              alt={doc.name || "Document"}
+              style={{
+                maxWidth: "100%",
+                maxHeight: "100%",
+                objectFit: "contain",
+                transform: `scale(${zoom})`,
+                transformOrigin: "center center",
+              }}
+            />
+          ) : (
+            <iframe
+              src={pdfUrl}
+              title={doc.name || "Document preview"}
+              style={{
+                width: "100%",
+                height: "100%",
+                border: "none",
+                zoom: zoom,
+              }}
+            />
+          )}
         </div>
       </div>
     </div>
