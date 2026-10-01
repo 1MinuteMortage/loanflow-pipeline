@@ -21,7 +21,7 @@ export default function FolderBar({ active, counts, onChange, unassignedCount = 
             <button
               key={tab.key}
               onClick={() => onChange(tab.key)}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all border ${
+              className={`relative flex items-center gap-2 px-3.5 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all border ${
                 isActive
                   ? "bg-foreground text-background border-foreground"
                   : "bg-card text-muted-foreground border-border hover:border-foreground/30 hover:text-foreground"
@@ -42,7 +42,7 @@ export default function FolderBar({ active, counts, onChange, unassignedCount = 
                 {count}
               </span>
               {tab.key === "pending" && unassignedCount > 0 && (
-                <span className="relative -top-1.5 -right-1 ml-0.5 flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[10px] font-bold leading-none shadow-sm ring-2 ring-card">
+                <span className="absolute -top-2 -left-2 flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[10px] font-bold leading-none shadow-sm ring-2 ring-card">
                   NEW {unassignedCount}
                 </span>
               )}
