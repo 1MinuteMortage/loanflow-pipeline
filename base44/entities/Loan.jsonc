@@ -130,8 +130,26 @@
           "type": "string",
           "enum": [
             "w2",
-            "1099"
+            "1099",
+            "hourly"
           ]
+        },
+        "pay_frequency": {
+          "type": "string",
+          "enum": [
+            "weekly",
+            "biweekly",
+            "semimonthly"
+          ],
+          "description": "Pay frequency for hourly income calculation"
+        },
+        "hours_per_pay_period": {
+          "type": "number",
+          "description": "Hours worked per pay period (hourly income)"
+        },
+        "hourly_rate": {
+          "type": "number",
+          "description": "Hourly pay rate (hourly income)"
         },
         "year_recent": {
           "type": "number"

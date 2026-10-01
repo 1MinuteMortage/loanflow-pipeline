@@ -2,22 +2,36 @@ import { fullName } from "@/lib/loan-utils";
 
 // Builds the professional, underwriter-ready explanation text for a Loan Officer income calculation
 export function buildExplanationText(loan, calc) {
-  const incomeTypeLabel = calc.income_type === "w2" ? "W-2" : "1099 / Self-Employed";
+  const isHourly = calc.income_type === "hourly";
+  const incomeTypeLabel = isHourly ? "Hourly" : calc.income_type === "w2" ? "W-2" : "1099 / Self-Employed";
   const lines = [
     "Income Calculation Summary",
     `Borrower: ${fullName(loan)}`,
   ];
   if (loan.loan_number) lines.push(`Loan Number: ${loan.loan_number}`);
   lines.push(`Income Type: ${incomeTypeLabel}`);
-  lines.push(`Income Years Reviewed: ${calc.year_recent} and ${calc.year_prior}`);
-  lines.push(`${calc.year_recent} ${incomeTypeLabel === "W-2" ? "W-2 Income" : "AGI"}: $${Number(calc.year_recent_amount).toLocaleString()}`);
-  lines.push(`${calc.year_prior} ${incomeTypeLabel === "W-2" ? "W-2 Income" : "AGI"}: $${Number(calc.year_prior_amount).toLocaleString()}`);
-  lines.push("");
   const fmt = (n) => Number(n).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  lines.push(
-    `Qualifying Income Calculation: The lower of $${fmt(calc.year_recent_amount)} (${calc.year_recent}) or $${fmt(calc.year_prior_amount)} (${calc.year_prior}) = $${fmt(calc.annual_income ?? calc.calculated_income * 12)} annually`
-  );
-  lines.push(`Monthly Qualifying Income: $${fmt(calc.calculated_income)} per month`);
+  if (isHourly) {
+    const freqLabel = calc.pay_frequency === "semimonthly" ? "Semimonthly (twice per month)" : calc.pay_frequency === "biweekly" ? "Biweekly" : "Weekly";
+    const periodsPerYear = { weekly: 52, biweekly: 26, semimonthly: 24 }[calc.pay_frequency];
+    lines.push(`Pay Frequency: ${freqLabel} (${periodsPerYear} pay periods/year)`);
+    lines.push(`Hours Per Pay Period: ${calc.hours_per_pay_period}`);
+    lines.push(`Hourly Rate: $${fmt(calc.hourly_rate)}/hr`);
+    lines.push("");
+    const perPayPeriod = Number(calc.hours_per_pay_period) * Number(calc.hourly_rate);
+    lines.push(`Gross Per Pay Period: ${calc.hours_per_pay_period} hrs × $${fmt(calc.hourly_rate)}/hr = $${fmt(perPayPeriod)}`);
+    lines.push(`Annual Income: $${fmt(perPayPeriod)} × ${periodsPerYear} pay periods = $${fmt(calc.annual_income ?? calc.calculated_income * 12)} annually`);
+    lines.push(`Monthly Qualifying Income: $${fmt(calc.calculated_income)} per month`);
+  } else {
+    lines.push(`Income Years Reviewed: ${calc.year_recent} and ${calc.year_prior}`);
+    lines.push(`${calc.year_recent} ${incomeTypeLabel === "W-2" ? "W-2 Income" : "AGI"}: $${Number(calc.year_recent_amount).toLocaleString()}`);
+    lines.push(`${calc.year_prior} ${incomeTypeLabel === "W-2" ? "W-2 Income" : "AGI"}: $${Number(calc.year_prior_amount).toLocaleString()}`);
+    lines.push("");
+    lines.push(
+      `Qualifying Income Calculation: The lower of $${fmt(calc.year_recent_amount)} (${calc.year_recent}) or $${fmt(calc.year_prior_amount)} (${calc.year_prior}) = $${fmt(calc.annual_income ?? calc.calculated_income * 12)} annually`
+    );
+    lines.push(`Monthly Qualifying Income: $${fmt(calc.calculated_income)} per month`);
+  }
 
   lines.push("");
   lines.push(
