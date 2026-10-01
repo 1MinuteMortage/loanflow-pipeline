@@ -79,6 +79,9 @@ export default function Home() {
       if (isWithin8Days(l.finance_contingency_date)) c.urgent++;
     });
     c.unassigned = loans.filter((l) => !l.loan_officer_id).length;
+    c.unassignedProcessor = loans.filter(
+      (l) => l.stage === "under_contract" && !l.loan_processor_id
+    ).length;
     return c;
   }, [loans]);
 
@@ -185,6 +188,7 @@ export default function Home() {
           counts={counts}
           onChange={setActiveFolder}
           unassignedCount={counts.unassigned || 0}
+          unassignedProcessorCount={counts.unassignedProcessor || 0}
         />
       </div>
 

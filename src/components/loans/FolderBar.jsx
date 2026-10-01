@@ -2,7 +2,7 @@ import React from "react";
 import { STAGES } from "@/lib/loan-utils";
 import { AlertTriangle } from "lucide-react";
 
-export default function FolderBar({ active, counts, onChange, unassignedCount = 0 }) {
+export default function FolderBar({ active, counts, onChange, unassignedCount = 0, unassignedProcessorCount = 0 }) {
   const tabs = [
     { key: "all", label: "All" },
     { key: "urgent", label: "8 days or less", color: "#ef4444" },
@@ -44,6 +44,11 @@ export default function FolderBar({ active, counts, onChange, unassignedCount = 
               {tab.key === "pending" && unassignedCount > 0 && (
                 <span className="absolute -top-3.5 -left-2 flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[10px] font-bold leading-none shadow-sm ring-2 ring-card">
                   NEW {unassignedCount}
+                </span>
+              )}
+              {tab.key === "under_contract" && unassignedProcessorCount > 0 && (
+                <span className="absolute -top-3.5 -left-2 flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[10px] font-bold leading-none shadow-sm ring-2 ring-card">
+                  NEW {unassignedProcessorCount}
                 </span>
               )}
             </button>
