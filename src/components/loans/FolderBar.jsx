@@ -42,7 +42,7 @@ export default function FolderBar({ active, counts, onChange, unassignedCount = 
                 {count}
               </span>
               {tab.key === "pending" && unassignedCount > 0 && (
-                <span className="absolute -top-2 -left-2 flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[10px] font-bold leading-none shadow-sm ring-2 ring-card">
+                <span className="absolute -top-3.5 -left-2 flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[10px] font-bold leading-none shadow-sm ring-2 ring-card">
                   NEW {unassignedCount}
                 </span>
               )}
