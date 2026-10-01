@@ -25,12 +25,29 @@ export default function IncomeCalculatorModal({ open, onOpenChange, loan, existi
   const [incomeType, setIncomeType] = useState("");
   const [amountRecent, setAmountRecent] = useState("");
   const [amountPrior, setAmountPrior] = useState("");
-  const [payFrequency, setPayFrequency] = useState("");
+  const [payPeriodStart, setPayPeriodStart] = useState("");
+  const [payPeriodEnd, setPayPeriodEnd] = useState("");
   const [hoursPerPayPeriod, setHoursPerPayPeriod] = useState("");
   const [hourlyRate, setHourlyRate] = useState("");
   const [loanOfficerName, setLoanOfficerName] = useState("");
   const [explanationText, setExplanationText] = useState("");
   const [error, setError] = useState("");
+
+  const PAY_PERIODS_PER_YEAR = { weekly: 52, biweekly: 26, semimonthly: 24 };
+
+  // Derive pay frequency from the date range between start and end of pay period
+  function derivePayFrequency(startDate, endDate) {
+    if (!startDate || !endDate) return null;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    if (isNaN(start) || isNaN(end)) return null;
+    const diffDays = Math.round((end - start) / (1000 * 60 * 60 * 24));
+    if (diffDays <= 10) return "weekly";
+    if (diffDays <= 17) return "biweekly";
+    return "semimonthly";
+  }
+
+  const payFrequency = derivePayFrequency(payPeriodStart, payPeriodEnd);
 
   useEffect(() => {
     if (!open) return;
@@ -38,7 +55,8 @@ export default function IncomeCalculatorModal({ open, onOpenChange, loan, existi
       setIncomeType(existingCalculation.income_type || "");
       setAmountRecent(existingCalculation.year_recent_amount != null ? String(existingCalculation.year_recent_amount) : "");
       setAmountPrior(existingCalculation.year_prior_amount != null ? String(existingCalculation.year_prior_amount) : "");
-      setPayFrequency(existingCalculation.pay_frequency || "");
+      setPayPeriodStart(existingCalculation.pay_period_start_date || "");
+      setPayPeriodEnd(existingCalculation.pay_period_end_date || "");
       setHoursPerPayPeriod(existingCalculation.hours_per_pay_period != null ? String(existingCalculation.hours_per_pay_period) : "");
       setHourlyRate(existingCalculation.hourly_rate != null ? String(existingCalculation.hourly_rate) : "");
       setLoanOfficerName(existingCalculation.loan_officer_name || "");
@@ -47,7 +65,8 @@ export default function IncomeCalculatorModal({ open, onOpenChange, loan, existi
       setIncomeType("");
       setAmountRecent("");
       setAmountPrior("");
-      setPayFrequency("");
+      setPayPeriodStart("");
+      setPayPeriodEnd("");
       setHoursPerPayPeriod("");
       setHourlyRate("");
       setExplanationText("");
@@ -58,8 +77,6 @@ export default function IncomeCalculatorModal({ open, onOpenChange, loan, existi
     setError("");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
-
-  const PAY_PERIODS_PER_YEAR = { weekly: 52, biweekly: 26, semimonthly: 24 };
 
   // Conservative calculation: use the lower of the two years, then divide by 12 for monthly
   const annualIncome =
@@ -76,6 +93,8 @@ export default function IncomeCalculatorModal({ open, onOpenChange, loan, existi
     return {
       income_type: incomeType,
       pay_frequency: incomeType === "hourly" ? payFrequency : null,
+      pay_period_start_date: incomeType === "hourly" ? payPeriodStart : null,
+      pay_period_end_date: incomeType === "hourly" ? payPeriodEnd : null,
       hours_per_pay_period: incomeType === "hourly" ? Number(hoursPerPayPeriod) : null,
       hourly_rate: incomeType === "hourly" ? Number(hourlyRate) : null,
       year_recent: incomeType === "hourly" ? null : yearRecent,
@@ -96,7 +115,8 @@ export default function IncomeCalculatorModal({ open, onOpenChange, loan, existi
   function validate() {
     if (!incomeType) return "Select an income type.";
     if (incomeType === "hourly") {
-      if (!payFrequency) return "Select the pay frequency (weekly, biweekly, or semimonthly).";
+      if (!payPeriodStart || !payPeriodEnd) return "Enter the start and end dates of the pay period.";
+      if (!payFrequency) return "Enter valid pay period dates so the system can determine the pay frequency.";
       if (hoursPerPayPeriod === "") return "Enter the hours worked per pay period.";
       if (hourlyRate === "") return "Enter the hourly rate.";
     } else {
@@ -158,15 +178,29 @@ export default function IncomeCalculatorModal({ open, onOpenChange, loan, existi
 
           {incomeType === "hourly" && (
             <div className="space-y-3">
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Pay Frequency</Label>
-                <select value={payFrequency} onChange={(e) => setPayFrequency(e.target.value)} className={selectClass}>
-                  <option value="">Select...</option>
-                  <option value="weekly">Weekly</option>
-                  <option value="biweekly">Biweekly</option>
-                  <option value="semimonthly">Semimonthly (twice/month)</option>
-                </select>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Pay Period Start</Label>
+                  <Input
+                    type="date"
+                    value={payPeriodStart}
+                    onChange={(e) => setPayPeriodStart(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Pay Period End</Label>
+                  <Input
+                    type="date"
+                    value={payPeriodEnd}
+                    onChange={(e) => setPayPeriodEnd(e.target.value)}
+                  />
+                </div>
               </div>
+              {payFrequency && (
+                <p className="text-xs text-muted-foreground">
+                  Detected pay frequency: <span className="font-semibold text-foreground">{payFrequency === "semimonthly" ? "Semimonthly (twice/month)" : payFrequency === "biweekly" ? "Biweekly" : "Weekly"}</span> ({PAY_PERIODS_PER_YEAR[payFrequency]} pay periods/year)
+                </p>
+              )}
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Hours Per Pay Period</Label>
@@ -234,10 +268,13 @@ export default function IncomeCalculatorModal({ open, onOpenChange, loan, existi
               {incomeType === "hourly" ? (
                 <>
                   <p className="text-muted-foreground">
+                    Pay Period: {payPeriodStart} → {payPeriodEnd} ({payFrequency === "semimonthly" ? "Semimonthly" : payFrequency === "biweekly" ? "Biweekly" : "Weekly"})
+                  </p>
+                  <p className="text-muted-foreground">
                     Gross Per Pay Period = {Number(hoursPerPayPeriod)} hrs × ${Number(hourlyRate).toLocaleString()}/hr = ${(Number(hoursPerPayPeriod) * Number(hourlyRate)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </p>
                   <p className="text-muted-foreground">
-                    Annual Income = ${(Number(hoursPerPayPeriod) * Number(hourlyRate)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} × {PAY_PERIODS_PER_YEAR[payFrequency]} {payFrequency === "semimonthly" ? "pay periods" : "weeks"} / yr
+                    Annual Income = ${(Number(hoursPerPayPeriod) * Number(hourlyRate)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} × {PAY_PERIODS_PER_YEAR[payFrequency]} pay periods / yr
                   </p>
                   <p className="text-muted-foreground">
                     Monthly Qualifying Income = ${annualIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ÷ 12

@@ -14,7 +14,8 @@ export function buildExplanationText(loan, calc) {
   if (isHourly) {
     const freqLabel = calc.pay_frequency === "semimonthly" ? "Semimonthly (twice per month)" : calc.pay_frequency === "biweekly" ? "Biweekly" : "Weekly";
     const periodsPerYear = { weekly: 52, biweekly: 26, semimonthly: 24 }[calc.pay_frequency];
-    lines.push(`Pay Frequency: ${freqLabel} (${periodsPerYear} pay periods/year)`);
+    lines.push(`Pay Period: ${calc.pay_period_start_date} to ${calc.pay_period_end_date}`);
+    lines.push(`Pay Frequency: ${freqLabel} (${periodsPerYear} pay periods/year) — derived from pay period dates`);
     lines.push(`Hours Per Pay Period: ${calc.hours_per_pay_period}`);
     lines.push(`Hourly Rate: $${fmt(calc.hourly_rate)}/hr`);
     lines.push("");

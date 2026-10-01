@@ -141,7 +141,17 @@
             "biweekly",
             "semimonthly"
           ],
-          "description": "Pay frequency for hourly income calculation"
+          "description": "Pay frequency for hourly income calculation (derived from pay period dates)"
+        },
+        "pay_period_start_date": {
+          "type": "string",
+          "format": "date",
+          "description": "Start date of the pay period (hourly income)"
+        },
+        "pay_period_end_date": {
+          "type": "string",
+          "format": "date",
+          "description": "End date of the pay period (hourly income)"
         },
         "hours_per_pay_period": {
           "type": "number",
