@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, Users, LogOut } from "lucide-react";
+import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import FolderBar from "@/components/loans/FolderBar";
 import LoanTable from "@/components/loans/LoanTable";
@@ -11,9 +12,21 @@ import AcceptFileDialog from "@/components/loans/AcceptFileDialog";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { STAGES } from "@/lib/loan-utils";
 import { isWithin8Days } from "@/lib/date-urgency";
+import {
+  canClaimAsOfficer,
+  canClaimAsProcessor,
+  canCreateLoan,
+  canManageUsers,
+  canViewLoan,
+  isAdmin,
+  ROLE_LABELS,
+  normalizeRole,
+} from "@/lib/permissions";
+import { useAuth } from "@/lib/AuthContext";
 
 export default function Home() {
   const isMobile = useIsMobile();
+  const { logout } = useAuth();
   const [loans, setLoans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeFolder, setActiveFolder] = useState("all");
@@ -30,6 +43,8 @@ export default function Home() {
 
   const handleAccept = (loan, role) => {
     if (!currentUser) return;
+    if (role === "officer" && !canClaimAsOfficer(currentUser)) return;
+    if (role === "processor" && !canClaimAsProcessor(currentUser)) return;
     const name = currentUser.full_name || currentUser.email || "Team member";
     if (role === "officer") {
       handleUpdate(loan.id, {
@@ -71,10 +86,16 @@ export default function Home() {
     load();
   }, []);
 
+  const visibleLoans = useMemo(() => {
+    if (!currentUser) return [];
+    if (isAdmin(currentUser)) return loans;
+    return loans.filter((l) => canViewLoan(currentUser, l));
+  }, [loans, currentUser]);
+
   const counts = useMemo(() => {
-    const c = { all: loans.length, urgent: 0 };
+    const c = { all: visibleLoans.length, urgent: 0 };
     STAGES.forEach((s) => (c[s.key] = 0));
-    loans.forEach((l) => {
+    visibleLoans.forEach((l) => {
       if (c[l.stage] !== undefined) c[l.stage]++;
       if (isWithin8Days(l.finance_contingency_date)) c.urgent++;
     });
@@ -83,10 +104,10 @@ export default function Home() {
       (l) => l.stage === "under_contract" && !l.loan_processor_id
     ).length;
     return c;
-  }, [loans]);
+  }, [visibleLoans]);
 
   const filtered = useMemo(() => {
-    let list = loans;
+    let list = visibleLoans;
     if (activeFolder === "urgent") {
       list = list.filter((l) => isWithin8Days(l.finance_contingency_date));
     } else if (activeFolder !== "all") {
@@ -101,7 +122,7 @@ export default function Home() {
       );
     }
     return list;
-  }, [loans, activeFolder, search]);
+  }, [visibleLoans, activeFolder, search]);
 
   const openDrawer = (loan) => {
     setDrawerLoan(loan);
@@ -138,15 +159,21 @@ export default function Home() {
     }
   };
 
+  const roleLabel = ROLE_LABELS[normalizeRole(currentUser)] || "User";
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="sticky top-0 z-30 bg-card/95 backdrop-blur border-b border-border">
         <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 gap-3">
           <div className="min-w-0">
             <h1 className="font-heading text-lg sm:text-2xl font-bold text-foreground truncate">
               Loan Processing Pipeline
             </h1>
+            {currentUser && (
+              <p className="text-[11px] text-muted-foreground truncate">
+                {currentUser.full_name || currentUser.email} · {roleLabel}
+              </p>
+            )}
           </div>
           <div className="flex items-center gap-2">
             <div className="relative hidden sm:block">
@@ -158,16 +185,40 @@ export default function Home() {
                 className="h-9 w-56 rounded-md border border-input bg-background pl-8 pr-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
               />
             </div>
-            <Button onClick={() => setNewOpen(true)} className="hidden sm:inline-flex">
-              <Plus className="w-4 h-4 mr-1.5" /> New Loan Application
-            </Button>
-            <Button onClick={() => setNewOpen(true)} size="icon" className="sm:hidden rounded-full h-11 w-11 shadow-lg">
-              <Plus className="w-5 h-5" />
+            {canManageUsers(currentUser) && (
+              <Button asChild variant="outline" className="hidden sm:inline-flex">
+                <Link to="/team">
+                  <Users className="w-4 h-4 mr-1.5" /> Team
+                </Link>
+              </Button>
+            )}
+            {canCreateLoan(currentUser) && (
+              <Button onClick={() => setNewOpen(true)} className="hidden sm:inline-flex">
+                <Plus className="w-4 h-4 mr-1.5" /> New Loan Application
+              </Button>
+            )}
+            {canCreateLoan(currentUser) && (
+              <Button
+                onClick={() => setNewOpen(true)}
+                size="icon"
+                className="sm:hidden rounded-full h-11 w-11 shadow-lg"
+              >
+                <Plus className="w-5 h-5" />
+              </Button>
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              title="Sign out"
+              onClick={() => logout?.()}
+              className="text-muted-foreground"
+            >
+              <LogOut className="w-4 h-4" />
             </Button>
           </div>
         </div>
         {isMobile && (
-          <div className="px-4 pb-3">
+          <div className="px-4 pb-3 space-y-2">
             <div className="relative">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
@@ -177,11 +228,17 @@ export default function Home() {
                 className="h-9 w-full rounded-md border border-input bg-background pl-8 pr-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
               />
             </div>
+            {canManageUsers(currentUser) && (
+              <Button asChild variant="outline" size="sm" className="w-full">
+                <Link to="/team">
+                  <Users className="w-4 h-4 mr-1.5" /> Team & Permissions
+                </Link>
+              </Button>
+            )}
           </div>
         )}
       </header>
 
-      {/* Folder Bar */}
       <div className="sticky top-[57px] sm:top-[61px] z-20">
         <FolderBar
           active={activeFolder}
@@ -192,7 +249,6 @@ export default function Home() {
         />
       </div>
 
-      {/* Main content */}
       <main className="px-4 sm:px-6 py-4">
         {loading ? (
           <div className="flex items-center justify-center py-24">
@@ -202,7 +258,9 @@ export default function Home() {
           <div className="space-y-3">
             {filtered.length === 0 ? (
               <div className="text-center py-16 text-muted-foreground text-sm">
-                No loans in this folder yet.
+                {isAdmin(currentUser)
+                  ? "No loans in this folder yet."
+                  : "No assigned loans in this folder. Claim a file or ask an admin to assign you."}
               </div>
             ) : (
               filtered.map((loan) => (
@@ -217,15 +275,14 @@ export default function Home() {
         )}
       </main>
 
-      {/* Drawer */}
       <LoanDrawer
         loan={drawerLoan}
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
         onUpdate={handleUpdate}
+        currentUser={currentUser}
       />
 
-      {/* Accept File Dialog */}
       <AcceptFileDialog
         open={!!acceptTarget}
         onOpenChange={(o) => !o && setAcceptTarget(null)}
@@ -234,7 +291,6 @@ export default function Home() {
         onConfirm={confirmAccept}
       />
 
-      {/* New Loan Dialog */}
       <NewLoanDialog open={newOpen} onOpenChange={setNewOpen} onCreate={handleCreate} />
     </div>
   );

@@ -24,6 +24,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  canChangeStage,
+  canEditBorrower,
+  canEditDocuments,
+  canEditPreapproval,
+  canEditUwConditions,
+  isAdmin,
+} from "@/lib/permissions";
 
 const DEFAULT_TAB_ORDER = ["borrower", "property", "contacts", "docs", "uw", "ai_assist"];
 const TAB_LABELS = {
@@ -54,7 +62,7 @@ function loadTabOrder() {
   return withoutAi;
 }
 
-export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
+export default function LoanDrawer({ loan, open, onOpenChange, onUpdate, currentUser }) {
   const [tab, setTab] = useState("borrower");
   const [tabOrder, setTabOrder] = useState(loadTabOrder);
   const [form, setForm] = useState(null);
@@ -163,12 +171,42 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
 
   const needed = neededSummary(loan);
   const stage = STAGE_MAP[loan.stage];
+  const readOnlyBorrower = !canEditBorrower(currentUser, loan);
+  const readOnlyDocs = !canEditDocuments(currentUser, loan);
+  const readOnlyPreapproval = !canEditPreapproval(currentUser, loan);
+  const readOnlyUw = !canEditUwConditions(currentUser, loan);
+  const stageEditable = isAdmin(currentUser) || canEditBorrower(currentUser, loan) || canEditUwConditions(currentUser, loan);
 
-  const saveField = (patch) => onUpdate(loan.id, patch);
+  const saveField = (patch) => {
+    if (patch.stage && !canChangeStage(currentUser, loan, patch.stage)) return;
+    if (
+      ("preapproval_amount" in patch || "loan_type" in patch || "sellers_concession" in patch) &&
+      readOnlyPreapproval
+    ) {
+      return;
+    }
+    if (readOnlyBorrower) {
+      const borrowerKeys = [
+        "first_name",
+        "last_name",
+        "email",
+        "date_of_birth",
+        "ssn",
+        "employment",
+        "notes",
+        "marital_status",
+        "us_citizen",
+        "va_status",
+        "current_residence",
+        "estimated_available_funds",
+      ];
+      if (borrowerKeys.some((k) => Object.prototype.hasOwnProperty.call(patch, k))) return;
+    }
+    onUpdate(loan.id, patch);
+  };
 
   function handleReorder(from, to) {
     setTabOrder((prev) => {
-      // Never allow reordering AI Assist — it stays pinned to the far right
       if (prev[from] === "ai_assist" || prev[to] === "ai_assist") return prev;
       const next = [...prev];
       const [moved] = next.splice(from, 1);
@@ -179,15 +217,14 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
   }
 
   function handleStageChange(newStage) {
+    if (!canChangeStage(currentUser, loan, newStage)) return;
     const stagesWithUW = ["under_contract", "ctc", "closed"];
     if (stagesWithUW.includes(newStage)) {
       const existingConditions = loan.uw_conditions || [];
       const existingLabels = existingConditions.map((c) => c.label);
-      // Prepend pre-underwrite documents that aren't already in the UW conditions
       const preUWItems = DEFAULT_PRE_UW_DOCUMENTS
         .filter((label) => !existingLabels.includes(label))
         .map((label) => ({ label, completed: false }));
-      // Append any missing default UW conditions (e.g. Closing Disclosure)
       const missingUW = DEFAULT_UW_CONDITIONS
         .filter((label) => !existingLabels.includes(label))
         .map((label) => ({ label, completed: false }));
@@ -242,11 +279,12 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
               <SheetTitle className="font-heading text-2xl truncate">{fullName(loan)}</SheetTitle>
               <select
                 value={form.stage}
+                disabled={!stageEditable}
                 onChange={(e) => {
                   setPendingStage(e.target.value);
                 }}
                 style={{ backgroundColor: stage.bg, color: stage.text, marginRight: "0.5in" }}
-                className="shrink-0 rounded-md border border-border px-2.5 py-1.5 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-ring cursor-pointer"
+                className="shrink-0 rounded-md border border-border px-2.5 py-1.5 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-ring cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {STAGES.map((s) => (
                   <option key={s.key} value={s.key}>{s.label}</option>
@@ -280,14 +318,14 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
               />
             )}
             {tab === "contacts" && (
-              <ContactsTab loan={loan} onUpdate={onUpdate} />
+              <ContactsTab loan={loan} onUpdate={readOnlyBorrower ? () => {} : onUpdate} />
             )}
             {tab === "docs" && (
               <ChecklistTab
                 loan={loan}
                 field="needed_items"
                 title="Pre UnderWrite Documents"
-                onUpdate={onUpdate}
+                onUpdate={readOnlyDocs ? () => {} : onUpdate}
                 form={form}
                 setForm={setForm}
                 saveField={saveField}
@@ -298,12 +336,12 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate }) {
                 <p className="text-sm">AI Assist coming soon</p>
               </div>
             )}
-            {tab === "uw" && loan.stage === "under_contract" && (
+            {tab === "uw" && ["under_contract", "ctc", "closed"].includes(loan.stage) && (
               <ChecklistTab
                 loan={loan}
                 field="uw_conditions"
                 title="UW Conditions"
-                onUpdate={onUpdate}
+                onUpdate={readOnlyUw ? () => {} : onUpdate}
               />
             )}
           </div>

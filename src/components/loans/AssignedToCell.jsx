@@ -1,10 +1,13 @@
 import React from "react";
 import { UserCheck, Hand, Lock } from "lucide-react";
+import { canClaimAsOfficer, canClaimAsProcessor } from "@/lib/permissions";
 
 export default function AssignedToCell({ loan, currentUser, onAccept }) {
   const isUnderContract = loan.stage === "under_contract";
   const officerName = loan.loan_officer_name;
   const processorName = loan.loan_processor_name;
+  const canOfficer = canClaimAsOfficer(currentUser);
+  const canProcessor = canClaimAsProcessor(currentUser);
 
   const renderRole = (role, name, enabled) => {
     if (name) {
@@ -25,11 +28,12 @@ export default function AssignedToCell({ loan, currentUser, onAccept }) {
       );
     }
 
-    if (!enabled) {
+    const allowed = role === "officer" ? canOfficer : canProcessor;
+    if (!enabled || !allowed) {
       return (
         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-muted/60 text-muted-foreground/50 border border-border whitespace-nowrap cursor-not-allowed">
           <Lock className="w-3.5 h-3.5" />
-          Loan Processor
+          {role === "officer" ? "Loan Officer" : "Loan Processor"}
         </span>
       );
     }

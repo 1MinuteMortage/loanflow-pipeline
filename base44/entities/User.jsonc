@@ -2,11 +2,15 @@
   "properties": {
     "role": {
       "type": "string",
-      "description": "The role of the user in the app",
+      "description": "App role controlling LOS permissions",
       "enum": [
         "admin",
+        "loan_officer",
+        "loan_officer_assistant",
+        "processor",
         "user"
-      ]
+      ],
+      "default": "user"
     }
   },
   "required": [
