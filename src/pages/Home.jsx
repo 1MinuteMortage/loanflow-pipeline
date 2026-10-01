@@ -8,7 +8,6 @@ import LoanCard from "@/components/loans/LoanCard";
 import LoanDrawer from "@/components/loans/LoanDrawer";
 import NewLoanDialog from "@/components/loans/NewLoanDialog";
 import AcceptFileDialog from "@/components/loans/AcceptFileDialog";
-import UnassignedBanner from "@/components/loans/UnassignedBanner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { STAGES } from "@/lib/loan-utils";
 import { isWithin8Days } from "@/lib/date-urgency";
@@ -181,11 +180,12 @@ export default function Home() {
 
       {/* Folder Bar */}
       <div className="sticky top-[57px] sm:top-[61px] z-20">
-        <UnassignedBanner
-          count={counts.unassigned || 0}
-          onClick={() => setActiveFolder("pending")}
+        <FolderBar
+          active={activeFolder}
+          counts={counts}
+          onChange={setActiveFolder}
+          unassignedCount={counts.unassigned || 0}
         />
-        <FolderBar active={activeFolder} counts={counts} onChange={setActiveFolder} />
       </div>
 
       {/* Main content */}
