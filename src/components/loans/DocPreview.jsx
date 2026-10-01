@@ -11,7 +11,7 @@ export default function DocPreview({ doc, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-      <div className="flex flex-col w-1/2 h-1/2 rounded-lg overflow-hidden shadow-2xl">
+      <div className="flex flex-col w-[75%] h-[85%] rounded-lg overflow-hidden shadow-2xl">
         <div className="flex items-center justify-between px-4 py-3 bg-foreground text-background shrink-0">
           <span className="text-sm font-medium truncate pr-4">
             {doc.name || "Document"}
