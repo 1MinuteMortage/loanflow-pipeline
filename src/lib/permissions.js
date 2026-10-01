@@ -6,7 +6,7 @@ export const APP_ROLES = [
   "loan_officer_assistant",
   "processor",
   "user", // legacy Base44 default — treated like limited LOA
-] as const;
+];
 
 export const ROLE_LABELS = {
   admin: "Admin",
