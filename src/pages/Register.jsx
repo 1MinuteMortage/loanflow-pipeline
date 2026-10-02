@@ -15,6 +15,7 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [role, setRole] = useState("loan_officer");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showOtp, setShowOtp] = useState(false);
@@ -25,6 +26,10 @@ export default function Register() {
     setError("");
     if (password !== confirmPassword) {
       setError("Passwords do not match");
+      return;
+    }
+    if (!role) {
+      setError("Please select your role");
       return;
     }
     setLoading(true);
@@ -45,6 +50,14 @@ export default function Register() {
       const result = await base44.auth.verifyOtp({ email, otpCode });
       if (result?.access_token) {
         base44.auth.setToken(result.access_token);
+      }
+      try {
+        const me = await base44.auth.me();
+        if (me?.id && role) {
+          await base44.entities.User.update(me.id, { role });
+        }
+      } catch (roleErr) {
+        console.error("Failed to set role after signup:", roleErr);
       }
       window.location.href = safeReturnTo();
     } catch (err) {
@@ -167,6 +180,20 @@ export default function Register() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="role">Your role</Label>
+          <select
+            id="role"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className="flex h-12 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-input"
+            required
+          >
+            <option value="admin">Administration</option>
+            <option value="loan_officer">Loan Officer</option>
+            <option value="processor">Loan Processor</option>
+          </select>
+        </div>
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <div className="relative">
