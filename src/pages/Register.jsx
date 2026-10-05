@@ -189,7 +189,7 @@ export default function Register() {
             className="flex h-12 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-input"
             required
           >
-            <option value="admin">Administration</option>
+            <option value="admin">Admin</option>
             <option value="loan_officer">Loan Officer</option>
             <option value="loan_officer_assistant">Loan Officer Assistant</option>
             <option value="processor">Loan Processor</option>
