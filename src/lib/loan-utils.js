@@ -93,7 +93,7 @@ export const DEFAULT_PRE_UW_DOCUMENTS = [
 
 export const DEFAULT_UW_CONDITIONS = [
   "1003",
-  "Purchase and Sale (Amendments)",
+  "Purchase and Sale (With Amendments)",
   "Loan Estimate",
   "Home Insurance Declaration",
   "EMD Receipt",
