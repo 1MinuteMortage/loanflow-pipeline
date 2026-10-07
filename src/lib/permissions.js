@@ -1,3 +1,4 @@
+/** publish-marker: accept-file-gate f801d5b */
 /** Role helpers for Loan Flow Pipeline (Base44 User.role). */
 
 export const APP_ROLES = [
