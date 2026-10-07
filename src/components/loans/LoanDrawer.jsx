@@ -158,13 +158,36 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate, current
     }
   }, [loan?.id, loan?.stage, loan?.uw_conditions?.length]);
 
-  // Auto-seed pre-underwrite documents for loans that have none yet
+  // Auto-seed pre-underwrite documents for loans that have none yet,
+  // and migrate legacy "W-2s / Tax Returns" into separate items + append "Other / MISC"
   useEffect(() => {
     if (!loan) return;
     const items = loan.needed_items || [];
     if (items.length === 0) {
       onUpdate(loan.id, {
         needed_items: DEFAULT_PRE_UW_DOCUMENTS.map((label) => ({ label, completed: false })),
+      });
+      return;
+    }
+    let migrated = false;
+    let normalized = items.map((item) => {
+      if (item.label === "W-2s / Tax Returns") {
+        migrated = true;
+        return { ...item, label: "W-2s" };
+      }
+      return item;
+    });
+    if (migrated) {
+      normalized = [...normalized, { label: "Tax Returns", completed: false }];
+    }
+    const existingLabels = normalized.map((c) => c.label);
+    const missing = DEFAULT_PRE_UW_DOCUMENTS.filter((l) => !existingLabels.includes(l));
+    if (migrated || missing.length > 0) {
+      onUpdate(loan.id, {
+        needed_items: [
+          ...normalized,
+          ...missing.map((label) => ({ label, completed: false })),
+        ],
       });
     }
   }, [loan?.id, loan?.needed_items?.length]);

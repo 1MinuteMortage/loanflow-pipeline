@@ -86,9 +86,11 @@ export function neededSummary(loan) {
 export const DEFAULT_PRE_UW_DOCUMENTS = [
   "ID",
   "Pay Stubs",
-  "W-2s / Tax Returns",
+  "W-2s",
+  "Tax Returns",
   "Bank Statements",
-  "Credit Report"
+  "Credit Report",
+  "Other / MISC"
 ];
 
 export const DEFAULT_UW_CONDITIONS = [
