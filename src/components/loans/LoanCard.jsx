@@ -4,25 +4,18 @@ import { STAGE_MAP, fullName, documentsNeededSummary } from "@/lib/loan-utils";
 import { dateUrgency } from "@/lib/date-urgency";
 import ContactsCell from "./ContactsCell";
 import { getContacts } from "@/lib/loan-utils";
+import { canOpenLoanDetails, needsFileAccept } from "@/lib/permissions";
 
 export default function LoanCard({ loan, onOpen, currentUser, onAccept }) {
   const [expanded, setExpanded] = useState(false);
   const needed = documentsNeededSummary(loan);
   const stage = STAGE_MAP[loan.stage];
 
-  const isAlreadyAssigned =
-    currentUser &&
-    (loan.loan_officer_id === currentUser.id ||
-      loan.loan_processor_id === currentUser.id ||
-      loan.assigned_to_id === currentUser.id);
-
-  const canOpen =
-    !currentUser ||
-    currentUser.role === "admin" ||
-    isAlreadyAssigned;
+  const canOpen = canOpenLoanDetails(currentUser, loan);
+  const mustAccept = needsFileAccept(currentUser, loan);
 
   const handleClick = () => {
-    if (loan.stage === "pending" && !isAlreadyAssigned) {
+    if (mustAccept) {
       onAccept(loan, null);
       return;
     }
@@ -32,7 +25,11 @@ export default function LoanCard({ loan, onOpen, currentUser, onAccept }) {
   return (
     <div
       onClick={handleClick}
-      className={`rounded-lg border border-border bg-card p-4 transition-colors ${canOpen || loan.stage === "pending" ? "active:bg-muted/40 cursor-pointer" : "opacity-70"}`}
+      className={`rounded-lg border border-border bg-card p-4 transition-colors ${
+        canOpen || mustAccept
+          ? "active:bg-muted/40 cursor-pointer"
+          : "bg-muted/60 opacity-60 cursor-not-allowed"
+      }`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">

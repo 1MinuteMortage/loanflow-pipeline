@@ -30,6 +30,7 @@ import {
   canEditDocuments,
   canEditPreapproval,
   canEditUwConditions,
+  canOpenLoanDetails,
   isAdmin,
 } from "@/lib/permissions";
 
@@ -192,7 +193,15 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate, current
     }
   }, [loan?.id, loan?.needed_items?.length]);
 
+  // Block detail view until Accept File (admins always allowed)
+  useEffect(() => {
+    if (open && loan && currentUser && !canOpenLoanDetails(currentUser, loan)) {
+      onOpenChange(false);
+    }
+  }, [open, loan, currentUser, onOpenChange]);
+
   if (!form) return null;
+  if (currentUser && loan && !canOpenLoanDetails(currentUser, loan)) return null;
 
   const needed = neededSummary(loan);
   const stage = STAGE_MAP[loan.stage];

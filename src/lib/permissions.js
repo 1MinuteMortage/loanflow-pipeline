@@ -45,6 +45,20 @@ export function isAssignedToLoan(user, loan) {
   );
 }
 
+/** Open full file details only after Accept File (or admin). */
+export function canOpenLoanDetails(user, loan) {
+  if (!user || !loan) return false;
+  if (isAdmin(user)) return true;
+  return isAssignedToLoan(user, loan);
+}
+
+/** Unassigned file waiting for LOA/LO accept. */
+export function needsFileAccept(user, loan) {
+  if (!user || !loan) return false;
+  if (isAdmin(user) || isAssignedToLoan(user, loan)) return false;
+  return !loan.loan_officer_id && !loan.assigned_to_id;
+}
+
 /** Whether this user may see the loan in the pipeline list. */
 export function canViewLoan(user, loan) {
   if (!user || !loan) return false;

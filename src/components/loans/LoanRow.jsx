@@ -3,6 +3,7 @@ import { MoreHorizontal, ChevronRight } from "lucide-react";
 import { STAGE_MAP, fullName, documentsNeededSummary } from "@/lib/loan-utils";
 import { dateUrgency } from "@/lib/date-urgency";
 import AssignedToCell from "./AssignedToCell";
+import { canOpenLoanDetails, needsFileAccept } from "@/lib/permissions";
 
 function StageBadge({ stage }) {
   const s = STAGE_MAP[stage];
@@ -59,24 +60,25 @@ export default function LoanRow({ loan, onOpen, currentUser, onAccept }) {
     loan.address_tbd ||
     !loan.property_address;
 
-  const isAlreadyAssigned =
-    currentUser &&
-    (loan.loan_officer_id === currentUser.id ||
-      loan.loan_processor_id === currentUser.id ||
-      loan.assigned_to_id === currentUser.id);
+  const canOpen = canOpenLoanDetails(currentUser, loan);
+  const mustAccept = needsFileAccept(currentUser, loan);
 
   const handleClick = () => {
-    if (loan.stage === "pending" && !isAlreadyAssigned) {
+    if (mustAccept) {
       onAccept(loan, null);
       return;
     }
-    onOpen(loan);
+    if (canOpen) onOpen(loan);
   };
 
   return (
     <tr
       onClick={handleClick}
-      className="group border-b border-border last:border-0 hover:bg-muted/40 cursor-pointer transition-colors"
+      className={`group border-b border-border last:border-0 transition-colors ${
+        canOpen || mustAccept
+          ? "hover:bg-muted/40 cursor-pointer"
+          : "bg-muted/50 opacity-60 cursor-not-allowed"
+      }`}
     >
       {/* Stage */}
       <td className="px-4 py-3">
