@@ -1,4 +1,6 @@
 {
+  "name": "notify-crm-preapproval",
+  "entry": "entry.ts",
   "triggers": {
     "entity": {
       "entity_name": "Loan",
