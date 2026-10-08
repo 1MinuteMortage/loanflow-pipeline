@@ -13,10 +13,15 @@ export default async function(req) {
     if (!loanId) return Response.json({ error: 'loanId is required' }, { status: 400 });
 
     const loan = await base44.entities.Loan.get(loanId);
-    const notes = loan.notes || '';
+    const rawNotes = loan.notes || '';
+    const notes = rawNotes
+      .replace(/^1MM_CLIENT_ID:[0-9a-f-]{36}\n?/i, '')
+      .replace(/^Borrower phone:.*$/gim, '')
+      .replace(/^LOA profile:[\s\S]*?(?=\n\n|$)/i, '')
+      .trim();
 
-    if (!notes.trim()) {
-      return Response.json({ skipped: true, reason: 'no notes on loan' });
+    if (!notes) {
+      return Response.json({ skipped: true, reason: 'no LO remarks to sync' });
     }
 
     const webhookUrl = secrets.get('CRM_LOS_WEBHOOK_URL');
