@@ -22,11 +22,28 @@ export default function LoanCard({ loan, onOpen, currentUser, onAccept }) {
     if (canOpen) onOpen(loan);
   };
 
+  if (mustAccept) {
+    return (
+      <div
+        onClick={handleClick}
+        className="rounded-lg border border-dashed border-border bg-muted/70 opacity-75 p-4 cursor-pointer active:bg-muted/90"
+      >
+        <div className="text-sm font-semibold text-muted-foreground">Unaccepted File</div>
+        <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
+          Accept this file to view borrower details and documents.
+        </p>
+        <div className="mt-3 inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-yellow-100 text-yellow-900">
+          Tap to Accept File
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       onClick={handleClick}
       className={`rounded-lg border border-border bg-card p-4 transition-colors ${
-        canOpen || mustAccept
+        canOpen
           ? "active:bg-muted/40 cursor-pointer"
           : "bg-muted/60 opacity-60 cursor-not-allowed"
       }`}

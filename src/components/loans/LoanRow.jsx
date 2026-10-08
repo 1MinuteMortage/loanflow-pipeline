@@ -71,11 +71,36 @@ export default function LoanRow({ loan, onOpen, currentUser, onAccept }) {
     if (canOpen) onOpen(loan);
   };
 
+  if (mustAccept) {
+    return (
+      <tr
+        onClick={handleClick}
+        className="group border-b border-border last:border-0 bg-muted/60 opacity-75 hover:bg-muted/80 cursor-pointer"
+      >
+        <td className="px-4 py-3">
+          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-muted text-muted-foreground">
+            Unaccepted
+          </span>
+        </td>
+        <td className="px-4 py-3 text-sm text-muted-foreground font-medium">Accept file to view</td>
+        <td className="px-4 py-3">
+          <AssignedToCell loan={loan} currentUser={currentUser} onAccept={onAccept} />
+        </td>
+        <td className="px-4 py-3 text-xs text-muted-foreground">—</td>
+        <td className="px-4 py-3 text-xs text-muted-foreground">—</td>
+        <td className="px-4 py-3 text-xs text-muted-foreground">—</td>
+        <td className="px-4 py-3">
+          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+        </td>
+      </tr>
+    );
+  }
+
   return (
     <tr
       onClick={handleClick}
       className={`group border-b border-border last:border-0 transition-colors ${
-        canOpen || mustAccept
+        canOpen
           ? "hover:bg-muted/40 cursor-pointer"
           : "bg-muted/50 opacity-60 cursor-not-allowed"
       }`}

@@ -137,11 +137,17 @@ export default function Home() {
       if (
         "preapproval_amount" in patch ||
         "loan_type" in patch ||
-        "sellers_concession" in patch
+        "sellers_concession" in patch ||
+        patch.stage === "preapproved"
       ) {
         base44.functions
           .invoke("notify-crm-preapproval", { loanId: id })
-          .catch((e) => console.error("CRM sync failed:", e));
+          .catch((e) => console.error("CRM preapproval sync failed:", e));
+      }
+      if ("notes" in patch) {
+        base44.functions
+          .invoke("notify-crm-lo-notes", { loanId: id })
+          .catch((e) => console.error("CRM notes sync failed:", e));
       }
     } catch (e) {
       console.error(e);

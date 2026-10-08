@@ -1,0 +1,8 @@
+{
+  "triggers": {
+    "entity": {
+      "entity_name": "Loan",
+      "event_types": ["update"]
+    }
+  }
+}
