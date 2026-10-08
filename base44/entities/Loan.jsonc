@@ -566,6 +566,33 @@
     "notes": {
       "type": "string",
       "description": "Free-form notes"
+    },
+    "loan_officer_remarks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Remark text"
+          },
+          "created_date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the remark was added"
+          },
+          "author_name": {
+            "type": "string",
+            "description": "Display name of the user who added the remark"
+          },
+          "author_id": {
+            "type": "string",
+            "description": "User id of the author"
+          }
+        }
+      },
+      "default": [],
+      "description": "Timestamped loan officer remarks log"
     }
   },
   "required": [

@@ -360,6 +360,7 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate, current
                 field="needed_items"
                 title="Pre UnderWrite Documents"
                 onUpdate={readOnlyDocs ? () => {} : onUpdate}
+                currentUser={currentUser}
                 form={form}
                 setForm={setForm}
                 saveField={saveField}

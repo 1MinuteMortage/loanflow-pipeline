@@ -19,7 +19,7 @@ import {
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 
-export default function ChecklistTab({ loan, field, title, onUpdate, form, setForm, saveField }) {
+export default function ChecklistTab({ loan, field, title, onUpdate, form, setForm, saveField, currentUser }) {
   const [newItem, setNewItem] = useState("");
   const [uploadingIdx, setUploadingIdx] = useState(null);
   const [previewDoc, setPreviewDoc] = useState(null);
@@ -207,7 +207,7 @@ export default function ChecklistTab({ loan, field, title, onUpdate, form, setFo
       </div>
 
       {field === "needed_items" && form && setForm && saveField && (
-        <LoanOfficerSection form={form} setForm={setForm} saveField={saveField} loan={loan} />
+        <LoanOfficerSection form={form} setForm={setForm} saveField={saveField} loan={loan} onUpdate={onUpdate} currentUser={currentUser} />
       )}
 
       <DocPreview doc={previewDoc} onClose={() => setPreviewDoc(null)} />
