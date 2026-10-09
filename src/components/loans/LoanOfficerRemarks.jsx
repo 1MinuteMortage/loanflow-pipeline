@@ -1,11 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { MessageSquare, Send } from "lucide-react";
+import { MessageSquare, Send, Save } from "lucide-react";
 
 export default function LoanOfficerRemarks({ loan, onUpdate, currentUser }) {
   const [text, setText] = useState("");
-  const remarks = Array.isArray(loan.loan_officer_remarks) ? loan.loan_officer_remarks : [];
+  const [pending, setPending] = useState([]);
+  const savedRemarks = Array.isArray(loan.loan_officer_remarks) ? loan.loan_officer_remarks : [];
+
+  // Clear pending when the loan changes
+  useEffect(() => {
+    setPending([]);
+  }, [loan?.id]);
 
   function addRemark() {
     const trimmed = text.trim();
@@ -19,23 +25,43 @@ export default function LoanOfficerRemarks({ loan, onUpdate, currentUser }) {
       hour12: true,
       timeZone: "America/New_York",
     });
-    const newRemark = {
-      text: trimmed,
-      created_date: now,
-      author_name: currentUser?.full_name || currentUser?.email || "Unknown",
-      author_id: currentUser?.id || "",
-    };
-    onUpdate(loan.id, {
-      loan_officer_remarks: [...remarks, newRemark],
-    });
+    setPending((prev) => [
+      ...prev,
+      {
+        text: trimmed,
+        created_date: now,
+        author_name: currentUser?.full_name || currentUser?.email || "Unknown",
+        author_id: currentUser?.id || "",
+        _pending: true,
+      },
+    ]);
     setText("");
   }
+
+  function saveRemarks() {
+    if (pending.length === 0) return;
+    onUpdate(loan.id, {
+      loan_officer_remarks: [...savedRemarks, ...pending.map(({ _pending, ...r }) => r)],
+    });
+    setPending([]);
+  }
+
+  function deletePending(idx) {
+    setPending((prev) => prev.filter((_, i) => i !== idx));
+  }
+
+  const hasUnsaved = pending.length > 0;
 
   return (
     <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-3">
       <div className="flex items-center gap-2">
         <MessageSquare className="w-4 h-4 text-primary" />
         <h3 className="font-heading text-sm font-semibold text-primary">Loan Officer Remarks</h3>
+        {hasUnsaved && (
+          <span className="text-[10px] font-medium uppercase tracking-wide text-amber-700 bg-amber-100 px-2 py-0.5 rounded">
+            Unsaved
+          </span>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -52,24 +78,34 @@ export default function LoanOfficerRemarks({ loan, onUpdate, currentUser }) {
             }
           }}
         />
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-2">
           <Button
             type="button"
             size="sm"
+            variant="outline"
             onClick={addRemark}
             disabled={!text.trim()}
           >
             <Send className="w-3.5 h-3.5 mr-1" />
             Add Remark
           </Button>
+          <Button
+            type="button"
+            size="sm"
+            onClick={saveRemarks}
+            disabled={!hasUnsaved}
+          >
+            <Save className="w-3.5 h-3.5 mr-1" />
+            Save
+          </Button>
         </div>
       </div>
 
-      {remarks.length > 0 && (
+      {(savedRemarks.length > 0 || pending.length > 0) && (
         <div className="space-y-2 max-h-[300px] overflow-y-auto">
-          {remarks.map((remark, idx) => (
+          {savedRemarks.map((remark, idx) => (
             <div
-              key={idx}
+              key={`saved-${idx}`}
               className="rounded-md border border-border bg-white p-3 space-y-1"
             >
               <div className="flex items-center justify-between gap-2">
@@ -79,6 +115,29 @@ export default function LoanOfficerRemarks({ loan, onUpdate, currentUser }) {
                 <span className="text-[11px] text-muted-foreground">
                   {remark.created_date}
                 </span>
+              </div>
+              <p className="text-sm text-foreground whitespace-pre-wrap">{remark.text}</p>
+            </div>
+          ))}
+          {pending.map((remark, idx) => (
+            <div
+              key={`pending-${idx}`}
+              className="rounded-md border border-amber-300 bg-amber-50 p-3 space-y-1"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs font-semibold text-foreground">
+                  {remark.author_name || "Unknown"}
+                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-amber-700 font-medium">Unsaved</span>
+                  <button
+                    type="button"
+                    onClick={() => deletePending(idx)}
+                    className="text-[11px] text-muted-foreground hover:text-destructive"
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
               <p className="text-sm text-foreground whitespace-pre-wrap">{remark.text}</p>
             </div>
