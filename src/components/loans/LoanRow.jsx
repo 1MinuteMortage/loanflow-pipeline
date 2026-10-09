@@ -82,7 +82,10 @@ export default function LoanRow({ loan, onOpen, currentUser, onAccept }) {
             Unaccepted
           </span>
         </td>
-        <td className="px-4 py-3 text-sm text-muted-foreground font-medium">Accept file to view</td>
+        <td className="px-4 py-3">
+          <div className="font-semibold text-foreground text-sm">{fullName(loan)}</div>
+          <p className="text-xs text-muted-foreground mt-0.5">Accept file to view details</p>
+        </td>
         <td className="px-4 py-3">
           <AssignedToCell loan={loan} currentUser={currentUser} onAccept={onAccept} />
         </td>

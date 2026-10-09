@@ -134,15 +134,18 @@ export default function Home() {
     setDrawerLoan((prev) => (prev ? { ...prev, ...patch } : prev));
     try {
       await base44.entities.Loan.update(id, patch);
+      const stage = patch.stage;
+      const milestoneStage =
+        stage === "preapproved" || stage === "ctc" || stage === "closed";
       if (
         "preapproval_amount" in patch ||
         "loan_type" in patch ||
         "sellers_concession" in patch ||
-        patch.stage === "preapproved"
+        milestoneStage
       ) {
         base44.functions
           .invoke("notify-crm-preapproval", { loanId: id })
-          .catch((e) => console.error("CRM preapproval sync failed:", e));
+          .catch((e) => console.error("CRM status sync failed:", e));
       }
       if ("notes" in patch) {
         base44.functions

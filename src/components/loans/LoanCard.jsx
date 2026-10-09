@@ -28,7 +28,7 @@ export default function LoanCard({ loan, onOpen, currentUser, onAccept }) {
         onClick={handleClick}
         className="rounded-lg border border-dashed border-border bg-muted/70 opacity-75 p-4 cursor-pointer active:bg-muted/90"
       >
-        <div className="text-sm font-semibold text-muted-foreground">Unaccepted File</div>
+        <div className="font-heading text-lg font-bold text-foreground truncate">{fullName(loan)}</div>
         <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
           Accept this file to view borrower details and documents.
         </p>

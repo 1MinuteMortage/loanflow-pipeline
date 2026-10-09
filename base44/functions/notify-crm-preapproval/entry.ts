@@ -1,6 +1,8 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.49';
 import { secrets } from 'base44:runtime';
 
+const MILESTONE_STAGES = new Set(['preapproved', 'ctc', 'closed']);
+
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
@@ -17,9 +19,17 @@ export default async function(req) {
     const preapprovalAmount = loan.preapproval_amount;
     const loanType = loan.loan_type;
     const sellersConcession = loan.sellers_concession;
+    const stage = loan.stage || null;
+    const isMilestone = MILESTONE_STAGES.has(String(stage || ''));
 
-    if (preapprovalAmount == null && !loanType && sellersConcession == null) {
-      return Response.json({ skipped: true, reason: 'no pre-approval fields set' });
+    // Sync when pre-approval fields exist OR stage hits Pre-Approved / CTC / Closed.
+    if (
+      preapprovalAmount == null &&
+      !loanType &&
+      sellersConcession == null &&
+      !isMilestone
+    ) {
+      return Response.json({ skipped: true, reason: 'no pre-approval fields or milestone stage' });
     }
 
     const webhookUrl = secrets.get('CRM_LOS_WEBHOOK_URL');
@@ -35,7 +45,7 @@ export default async function(req) {
       preapproval_amount: preapprovalAmount ?? null,
       loan_type: loanType || null,
       sellers_concession: sellersConcession ?? null,
-      stage: loan.stage || null,
+      stage,
     };
 
     const crmResponse = await fetch(webhookUrl, {
