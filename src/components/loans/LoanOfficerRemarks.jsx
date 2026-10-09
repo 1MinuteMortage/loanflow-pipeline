@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { MessageSquare, Send, Save } from "lucide-react";
+import { MessageSquare, Send, Save, Mail, Loader2, CheckCircle2 } from "lucide-react";
+import { base44 } from "@/api/base44Client";
 
 export default function LoanOfficerRemarks({ loan, onUpdate, currentUser }) {
   const [text, setText] = useState("");
   const [pending, setPending] = useState([]);
+  const [sending, setSending] = useState(false);
+  const [sentMsg, setSentMsg] = useState(null);
   const savedRemarks = Array.isArray(loan.loan_officer_remarks) ? loan.loan_officer_remarks : [];
 
-  // Clear pending when the loan changes
   useEffect(() => {
     setPending([]);
+    setSentMsg(null);
   }, [loan?.id]);
 
   function addRemark() {
@@ -50,7 +53,43 @@ export default function LoanOfficerRemarks({ loan, onUpdate, currentUser }) {
     setPending((prev) => prev.filter((_, i) => i !== idx));
   }
 
+  async function sendToRealtor() {
+    let remarksToSave = pending;
+    if (remarksToSave.length > 0) {
+      const cleaned = remarksToSave.map(({ _pending, ...r }) => r);
+      onUpdate(loan.id, {
+        loan_officer_remarks: [...savedRemarks, ...cleaned],
+      });
+      setPending([]);
+      remarksToSave = [];
+    }
+
+    if (savedRemarks.length === 0 && pending.length === 0) {
+      setSentMsg({ type: "error", text: "No remarks to send." });
+      setTimeout(() => setSentMsg(null), 3000);
+      return;
+    }
+
+    setSending(true);
+    try {
+      const res = await base44.functions.invoke("send-realtor-remarks", { loanId: loan.id });
+      if (res.data?.sent) {
+        setSentMsg({ type: "success", text: `Sent ${res.data.remarkCount} remark(s) to realtor.` });
+      } else if (res.data?.skipped) {
+        setSentMsg({ type: "error", text: res.data.reason || "No remarks to send." });
+      } else {
+        setSentMsg({ type: "error", text: res.data?.error || "Failed to send." });
+      }
+    } catch (e) {
+      setSentMsg({ type: "error", text: e.message || "Failed to send." });
+    } finally {
+      setSending(false);
+      setTimeout(() => setSentMsg(null), 5000);
+    }
+  }
+
   const hasUnsaved = pending.length > 0;
+  const hasRealtorEmail = !!loan.realtor_email;
 
   return (
     <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-3">
@@ -72,6 +111,7 @@ export default function LoanOfficerRemarks({ loan, onUpdate, currentUser }) {
           rows={3}
           className="bg-white text-sm resize-none"
           onKeyDown={(e) => {
+            e.stopPropagation();
             if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
               e.preventDefault();
               addRemark();
@@ -144,6 +184,47 @@ export default function LoanOfficerRemarks({ loan, onUpdate, currentUser }) {
           ))}
         </div>
       )}
+
+      <div className="pt-2 border-t border-border">
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={sendToRealtor}
+            disabled={sending || (savedRemarks.length === 0 && pending.length === 0) || !hasRealtorEmail}
+            title={!hasRealtorEmail ? "No realtor email on file" : ""}
+            className="w-full"
+          >
+            {sending ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" />
+                Sending...
+              </>
+            ) : (
+              <>
+                <Mail className="w-3.5 h-3.5 mr-1" />
+                Send to Realtor
+              </>
+            )}
+          </Button>
+        </div>
+        {sentMsg && (
+          <div
+            className={`flex items-center gap-1.5 mt-2 text-xs ${
+              sentMsg.type === "success" ? "text-emerald-600" : "text-destructive"
+            }`}
+          >
+            {sentMsg.type === "success" && <CheckCircle2 className="w-3.5 h-3.5" />}
+            {sentMsg.text}
+          </div>
+        )}
+        {!hasRealtorEmail && (
+          <p className="text-[11px] text-muted-foreground mt-1">
+            Add a realtor email in the Contacts tab to enable sending.
+          </p>
+        )}
+      </div>
     </div>
   );
 }
