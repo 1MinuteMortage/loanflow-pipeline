@@ -136,7 +136,10 @@ export default function Home() {
       await base44.entities.Loan.update(id, patch);
       const stage = patch.stage;
       const milestoneStage =
-        stage === "preapproved" || stage === "ctc" || stage === "closed";
+        stage === "preapproved" ||
+        stage === "under_contract" ||
+        stage === "ctc" ||
+        stage === "closed";
       if (
         "preapproval_amount" in patch ||
         "loan_type" in patch ||

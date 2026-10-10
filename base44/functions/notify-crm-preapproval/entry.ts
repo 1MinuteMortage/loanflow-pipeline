@@ -1,7 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.49';
 import { secrets } from 'base44:runtime';
 
-const MILESTONE_STAGES = new Set(['preapproved', 'ctc', 'closed']);
+const MILESTONE_STAGES = new Set(['preapproved', 'under_contract', 'ctc', 'closed']);
 
 export default async function(req) {
   try {
