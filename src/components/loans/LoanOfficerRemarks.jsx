@@ -1,84 +1,54 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { MessageSquare, Send, Save, Mail, Loader2, CheckCircle2 } from "lucide-react";
+import { MessageSquare, Mail, Loader2, CheckCircle2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
-export default function LoanOfficerRemarks({ loan, onUpdate, currentUser }) {
+export default function LoanOfficerRemarks({ loan, onUpdate, currentUser, disabled = false }) {
   const [text, setText] = useState("");
-  const [pending, setPending] = useState([]);
   const [sending, setSending] = useState(false);
   const [sentMsg, setSentMsg] = useState(null);
   const savedRemarks = Array.isArray(loan.loan_officer_remarks) ? loan.loan_officer_remarks : [];
+  const history = [...savedRemarks].slice().reverse();
 
   useEffect(() => {
-    setPending([]);
     setSentMsg(null);
   }, [loan?.id]);
 
-  function addRemark() {
-    const trimmed = text.trim();
-    if (!trimmed) return;
-    const now = new Date().toLocaleString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-      timeZone: "America/New_York",
-    });
-    setPending((prev) => [
-      ...prev,
-      {
-        text: trimmed,
-        created_date: now,
-        author_name: currentUser?.full_name || currentUser?.email || "Unknown",
-        author_id: currentUser?.id || "",
-        _pending: true,
-      },
-    ]);
-    setText("");
-  }
-
-  function saveRemarks() {
-    if (pending.length === 0) return;
-    onUpdate(loan.id, {
-      loan_officer_remarks: [...savedRemarks, ...pending.map(({ _pending, ...r }) => r)],
-    });
-    setPending([]);
-  }
-
-  function deletePending(idx) {
-    setPending((prev) => prev.filter((_, i) => i !== idx));
-  }
-
   async function sendToRealtor() {
-    let remarksToSave = pending;
-    if (remarksToSave.length > 0) {
-      const cleaned = remarksToSave.map(({ _pending, ...r }) => r);
-      onUpdate(loan.id, {
-        loan_officer_remarks: [...savedRemarks, ...cleaned],
-      });
-      setPending([]);
-      remarksToSave = [];
-    }
-
-    if (savedRemarks.length === 0 && pending.length === 0) {
-      setSentMsg({ type: "error", text: "No remarks to send." });
+    const trimmed = text.trim();
+    if (!trimmed) {
+      setSentMsg({ type: "error", text: "Type a remark before sending." });
       setTimeout(() => setSentMsg(null), 3000);
       return;
     }
 
     setSending(true);
+    setSentMsg(null);
     try {
-      const res = await base44.functions.invoke("send-realtor-remarks", { loanId: loan.id });
+      const res = await base44.functions.invoke("send-realtor-remarks", {
+        loanId: loan.id,
+        text: trimmed,
+      });
       if (res.data?.sent) {
-        setSentMsg({ type: "success", text: `Sent ${res.data.remarkCount} remark(s) to realtor.` });
+        setText("");
+        setSentMsg({
+          type: "success",
+          text: res.data.crmSynced
+            ? "Sent to realtor app under Loan Officer Remarks."
+            : res.data.emailSent
+              ? "Emailed realtor (app sync pending)."
+              : "Sent.",
+        });
+        // Refresh loan so history shows the new remark + sent stamp
+        onUpdate(loan.id, {});
       } else if (res.data?.skipped) {
         setSentMsg({ type: "error", text: res.data.reason || "No remarks to send." });
       } else {
-        setSentMsg({ type: "error", text: res.data?.error || "Failed to send." });
+        setSentMsg({
+          type: "error",
+          text: res.data?.error || res.data?.crmError || "Failed to send.",
+        });
       }
     } catch (e) {
       setSentMsg({ type: "error", text: e.message || "Failed to send." });
@@ -88,130 +58,53 @@ export default function LoanOfficerRemarks({ loan, onUpdate, currentUser }) {
     }
   }
 
-  const hasUnsaved = pending.length > 0;
-  const hasRealtorEmail = !!loan.realtor_email;
-
   return (
     <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-3">
       <div className="flex items-center gap-2">
         <MessageSquare className="w-4 h-4 text-primary" />
         <h3 className="font-heading text-sm font-semibold text-primary">Loan Officer Remarks</h3>
-        {hasUnsaved && (
-          <span className="text-[10px] font-medium uppercase tracking-wide text-amber-700 bg-amber-100 px-2 py-0.5 rounded">
-            Unsaved
-          </span>
-        )}
       </div>
 
       <div className="space-y-2">
         <Textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Add a remark..."
+          placeholder="Type a remark for the realtor..."
           rows={3}
-          className="bg-white text-sm resize-none"
+          disabled={disabled || sending}
+          className="bg-white text-sm leading-normal tracking-normal resize-y whitespace-pre-wrap"
+          style={{ wordSpacing: "normal", letterSpacing: "normal" }}
+          spellCheck
           onKeyDown={(e) => {
             e.stopPropagation();
             if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
               e.preventDefault();
-              addRemark();
+              void sendToRealtor();
             }
           }}
         />
-        <div className="flex justify-end gap-2">
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            onClick={addRemark}
-            disabled={!text.trim()}
-          >
-            <Send className="w-3.5 h-3.5 mr-1" />
-            Add Remark
-          </Button>
-          <Button
-            type="button"
-            size="sm"
-            onClick={saveRemarks}
-            disabled={!hasUnsaved}
-          >
-            <Save className="w-3.5 h-3.5 mr-1" />
-            Save
-          </Button>
-        </div>
-      </div>
-
-      {(savedRemarks.length > 0 || pending.length > 0) && (
-        <div className="space-y-2 max-h-[300px] overflow-y-auto">
-          {savedRemarks.map((remark, idx) => (
-            <div
-              key={`saved-${idx}`}
-              className="rounded-md border border-border bg-white p-3 space-y-1"
-            >
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-xs font-semibold text-foreground">
-                  {remark.author_name || "Unknown"}
-                </span>
-                <span className="text-[11px] text-muted-foreground">
-                  {remark.created_date}
-                </span>
-              </div>
-              <p className="text-sm text-foreground whitespace-pre-wrap">{remark.text}</p>
-            </div>
-          ))}
-          {pending.map((remark, idx) => (
-            <div
-              key={`pending-${idx}`}
-              className="rounded-md border border-amber-300 bg-amber-50 p-3 space-y-1"
-            >
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-xs font-semibold text-foreground">
-                  {remark.author_name || "Unknown"}
-                </span>
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] text-amber-700 font-medium">Unsaved</span>
-                  <button
-                    type="button"
-                    onClick={() => deletePending(idx)}
-                    className="text-[11px] text-muted-foreground hover:text-destructive"
-                  >
-                    Remove
-                  </button>
-                </div>
-              </div>
-              <p className="text-sm text-foreground whitespace-pre-wrap">{remark.text}</p>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <div className="pt-2 border-t border-border">
-        <div className="flex items-center gap-2">
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            onClick={sendToRealtor}
-            disabled={sending || (savedRemarks.length === 0 && pending.length === 0) || !hasRealtorEmail}
-            title={!hasRealtorEmail ? "No realtor email on file" : ""}
-            className="w-full"
-          >
-            {sending ? (
-              <>
-                <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" />
-                Sending...
-              </>
-            ) : (
-              <>
-                <Mail className="w-3.5 h-3.5 mr-1" />
-                Send to Realtor
-              </>
-            )}
-          </Button>
-        </div>
+        <Button
+          type="button"
+          size="sm"
+          onClick={() => void sendToRealtor()}
+          disabled={disabled || sending || !text.trim()}
+          className="w-full"
+        >
+          {sending ? (
+            <>
+              <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" />
+              Sending...
+            </>
+          ) : (
+            <>
+              <Mail className="w-3.5 h-3.5 mr-1" />
+              Send to Realtor
+            </>
+          )}
+        </Button>
         {sentMsg && (
           <div
-            className={`flex items-center gap-1.5 mt-2 text-xs ${
+            className={`flex items-center gap-1.5 text-xs ${
               sentMsg.type === "success" ? "text-emerald-600" : "text-destructive"
             }`}
           >
@@ -219,12 +112,51 @@ export default function LoanOfficerRemarks({ loan, onUpdate, currentUser }) {
             {sentMsg.text}
           </div>
         )}
-        {!hasRealtorEmail && (
-          <p className="text-[11px] text-muted-foreground mt-1">
-            Add a realtor email in the Contacts tab to enable sending.
-          </p>
-        )}
+        <p className="text-[11px] text-muted-foreground">
+          Sends the text above to the realtor app under Loan Officer Remarks.
+          {currentUser?.full_name ? ` Signed as ${currentUser.full_name}.` : ""}
+        </p>
       </div>
+
+      {history.length > 0 && (
+        <div className="space-y-2 pt-2 border-t border-border">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+            Remarks history
+          </p>
+          <div className="space-y-2 max-h-[300px] overflow-y-auto">
+            {history.map((remark, idx) => (
+              <div
+                key={`saved-${idx}`}
+                className="rounded-md border border-border bg-white p-3 space-y-1"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-semibold text-foreground">
+                    {remark.author_name || "Unknown"}
+                  </span>
+                  <span className="text-[11px] text-muted-foreground">
+                    {remark.created_date}
+                  </span>
+                </div>
+                <p className="text-sm text-foreground whitespace-pre-wrap">{remark.text}</p>
+                {remark.sent_to_realtor_at && (
+                  <p className="text-[11px] text-emerald-700">
+                    Sent to realtor{" "}
+                    {new Date(remark.sent_to_realtor_at).toLocaleString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                      hour: "numeric",
+                      minute: "2-digit",
+                      hour12: true,
+                      timeZone: "America/New_York",
+                    })}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

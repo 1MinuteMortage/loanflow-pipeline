@@ -23,10 +23,14 @@ export function loRemarksDisplay(notes) {
   return stripInternalNotesTags(notes);
 }
 
-/** Persist LO text while keeping the hidden CRM client-id tag for sync. */
-export function mergeLoRemarks(existingNotes, loRemarkText) {
+/** Persist LO text while keeping the hidden CRM client-id tag for sync.
+ * IMPORTANT: do not trim while the user is typing — trailing spaces must remain
+ * or the remarks box appears to "eat" spaces / break sentence formatting.
+ */
+export function mergeLoRemarks(existingNotes, loRemarkText, { trim = false } = {}) {
   const clientId = extractClientIdFromNotes(existingNotes);
-  const text = String(loRemarkText || "").trim();
+  let text = String(loRemarkText ?? "");
+  if (trim) text = text.trim();
   const tag = clientId ? `${CLIENT_ID_PREFIX}${clientId}` : "";
   if (tag && text) return `${tag}\n${text}`;
   if (tag) return tag;

@@ -160,7 +160,7 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate, current
   }, [loan?.id, loan?.stage, loan?.uw_conditions?.length]);
 
   // Auto-seed pre-underwrite documents for loans that have none yet,
-  // and migrate legacy "W-2s / Tax Returns" into separate items + append "Other / MISC"
+  // and migrate legacy "W-2s / Tax Returns" into separate W-2s + Tax Returns (no duplicates).
   useEffect(() => {
     if (!loan) return;
     const items = loan.needed_items || [];
@@ -170,26 +170,89 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate, current
       });
       return;
     }
-    let migrated = false;
-    let normalized = items.map((item) => {
+    let changed = false;
+    const byLabel = new Map();
+    for (const item of items) {
       if (item.label === "W-2s / Tax Returns") {
-        migrated = true;
-        return { ...item, label: "W-2s" };
+        changed = true;
+        const w2Files = (item.files || []).filter((f) => !/tax[_-]?return|tax_\d/i.test(f.file_name || ""));
+        const taxFiles = (item.files || []).filter((f) => /tax[_-]?return|tax_\d/i.test(f.file_name || ""));
+        const merge = (label, files) => {
+          const prev = byLabel.get(label) || { label, completed: false, files: [] };
+          const seen = new Set((prev.files || []).map((f) => (f.file_url || f.file_name || "").toLowerCase()));
+          const mergedFiles = [...(prev.files || [])];
+          for (const f of files) {
+            const key = (f.file_url || f.file_name || "").toLowerCase();
+            if (key && seen.has(key)) continue;
+            if (key) seen.add(key);
+            mergedFiles.push(f);
+          }
+          byLabel.set(label, {
+            label,
+            completed: prev.completed || mergedFiles.length > 0 || Boolean(item.completed),
+            files: mergedFiles,
+          });
+        };
+        merge("W-2s", w2Files);
+        merge("Tax Returns", taxFiles);
+        continue;
       }
-      return item;
-    });
-    if (migrated) {
-      normalized = [...normalized, { label: "Tax Returns", completed: false }];
+      const prev = byLabel.get(item.label);
+      if (!prev) {
+        byLabel.set(item.label, item);
+      } else {
+        changed = true;
+        const seen = new Set((prev.files || []).map((f) => (f.file_url || f.file_name || "").toLowerCase()));
+        const mergedFiles = [...(prev.files || [])];
+        for (const f of item.files || []) {
+          const key = (f.file_url || f.file_name || "").toLowerCase();
+          if (key && seen.has(key)) continue;
+          if (key) seen.add(key);
+          mergedFiles.push(f);
+        }
+        byLabel.set(item.label, {
+          ...prev,
+          completed: prev.completed || item.completed || mergedFiles.length > 0,
+          files: mergedFiles,
+        });
+      }
     }
+    // Move mis-filed tax_return* files out of W-2s into Tax Returns
+    const w2 = byLabel.get("W-2s");
+    if (w2?.files?.length) {
+      const taxMisfiled = w2.files.filter((f) => /tax[_-]?return|tax_\d/i.test(f.file_name || ""));
+      if (taxMisfiled.length) {
+        changed = true;
+        byLabel.set("W-2s", {
+          ...w2,
+          files: w2.files.filter((f) => !/tax[_-]?return|tax_\d/i.test(f.file_name || "")),
+          completed: w2.files.some((f) => !/tax[_-]?return|tax_\d/i.test(f.file_name || "")),
+        });
+        const tax = byLabel.get("Tax Returns") || { label: "Tax Returns", completed: false, files: [] };
+        const seen = new Set((tax.files || []).map((f) => (f.file_url || f.file_name || "").toLowerCase()));
+        const merged = [...(tax.files || [])];
+        for (const f of taxMisfiled) {
+          const key = (f.file_url || f.file_name || "").toLowerCase();
+          if (key && seen.has(key)) continue;
+          if (key) seen.add(key);
+          merged.push(f);
+        }
+        byLabel.set("Tax Returns", { label: "Tax Returns", completed: true, files: merged });
+      }
+    }
+
+    let normalized = [...byLabel.values()];
     const existingLabels = normalized.map((c) => c.label);
     const missing = DEFAULT_PRE_UW_DOCUMENTS.filter((l) => !existingLabels.includes(l));
-    if (migrated || missing.length > 0) {
-      onUpdate(loan.id, {
-        needed_items: [
-          ...normalized,
-          ...missing.map((label) => ({ label, completed: false })),
-        ],
-      });
+    if (missing.length > 0) {
+      changed = true;
+      normalized = [
+        ...normalized,
+        ...missing.map((label) => ({ label, completed: false, files: [] })),
+      ];
+    }
+    if (changed) {
+      onUpdate(loan.id, { needed_items: normalized });
     }
   }, [loan?.id, loan?.needed_items?.length]);
 
@@ -350,6 +413,9 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate, current
                 saveField={saveField}
                 stage={loan.stage}
                 loanNotes={loan.notes}
+                loan={loan}
+                onUpdate={readOnlyBorrower ? () => {} : onUpdate}
+                currentUser={currentUser}
               />
             )}
             {tab === "contacts" && (

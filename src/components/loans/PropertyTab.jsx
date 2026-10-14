@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { loRemarksDisplay, mergeLoRemarks } from "@/lib/loan-notes";
+import LoanOfficerRemarks from "./LoanOfficerRemarks";
 
 const LOAN_TYPES = [
   "DPA FHA",
@@ -16,11 +17,21 @@ const LOAN_TYPES = [
 const selectClass =
   "flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-50 disabled:cursor-not-allowed";
 
-export default function PropertyTab({ form, setForm, saveField, stage, loanNotes }) {
+export default function PropertyTab({
+  form,
+  setForm,
+  saveField,
+  stage,
+  loanNotes,
+  loan,
+  onUpdate,
+  currentUser,
+}) {
   const isUnderContract = ["under_contract", "ctc", "closed"].includes(stage);
   const isPreapproved = stage === "preapproved";
   const preapprovalEnabled = isPreapproved || isUnderContract;
   const loRemarksEnabled = preapprovalEnabled || isUnderContract;
+  const draftRef = useRef(loRemarksDisplay(form.notes ?? loanNotes ?? ""));
 
   const calculatedLoanAmount =
     form.sales_price && form.ltv
@@ -311,21 +322,42 @@ export default function PropertyTab({ form, setForm, saveField, stage, loanNotes
         </div>
       </div>
 
-      <div className="space-y-1.5">
-        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Loan Officer Remarks</Label>
-        <textarea
+      {loan && onUpdate ? (
+        <LoanOfficerRemarks
+          loan={loan}
+          onUpdate={onUpdate}
+          currentUser={currentUser}
           disabled={!loRemarksEnabled}
-          value={loRemarksDisplay(form.notes ?? loanNotes ?? "")}
-          onChange={(e) => {
-            const merged = mergeLoRemarks(form.notes ?? loanNotes ?? "", e.target.value);
-            setForm({ ...form, notes: merged });
-            saveField({ notes: merged });
-          }}
-          rows={3}
-          className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring resize-none disabled:opacity-50 disabled:cursor-not-allowed"
-          placeholder="Enter remarks for the realtor"
         />
-      </div>
+      ) : (
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Loan Officer Remarks</Label>
+          <textarea
+            disabled={!loRemarksEnabled}
+            defaultValue={draftRef.current}
+            onChange={(e) => {
+              // Preserve spaces while typing; only merge the CRM client-id tag.
+              const merged = mergeLoRemarks(form.notes ?? loanNotes ?? "", e.target.value, {
+                trim: false,
+              });
+              setForm({ ...form, notes: merged });
+            }}
+            onBlur={(e) => {
+              const merged = mergeLoRemarks(form.notes ?? loanNotes ?? "", e.target.value, {
+                trim: true,
+              });
+              setForm({ ...form, notes: merged });
+              saveField({ notes: merged });
+            }}
+            rows={3}
+            className="flex w-full rounded-md border border-input bg-white px-3 py-2 text-sm leading-normal tracking-normal whitespace-pre-wrap shadow-sm focus:outline-none focus:ring-1 focus:ring-ring resize-y disabled:opacity-50 disabled:cursor-not-allowed"
+            placeholder="Enter remarks for the realtor"
+            spellCheck
+            autoCorrect="on"
+            style={{ wordSpacing: "normal", letterSpacing: "normal" }}
+          />
+        </div>
+      )}
     </>
   );
 }
