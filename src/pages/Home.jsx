@@ -146,14 +146,28 @@ export default function Home() {
         "sellers_concession" in patch ||
         milestoneStage
       ) {
-        base44.functions
-          .invoke("notify-crm-preapproval", { loanId: id })
-          .catch((e) => console.error("CRM status sync failed:", e));
+        try {
+          const sync = await base44.functions.invoke("notify-crm-preapproval", { loanId: id });
+          const syncError = sync?.data?.error || sync?.error;
+          if (syncError) {
+            alert(syncError || "Saved in the LOS, but the realtor app did not update.");
+          }
+        } catch (e) {
+          console.error("CRM status sync failed:", e);
+          alert("Saved in the LOS, but the realtor app did not update. Try again.");
+        }
       }
       if ("notes" in patch) {
-        base44.functions
-          .invoke("notify-crm-lo-notes", { loanId: id })
-          .catch((e) => console.error("CRM notes sync failed:", e));
+        try {
+          const notesSync = await base44.functions.invoke("notify-crm-lo-notes", { loanId: id });
+          const notesError = notesSync?.data?.error || notesSync?.error;
+          if (notesError) {
+            alert(notesError || "Notes saved, but the realtor app did not update.");
+          }
+        } catch (e) {
+          console.error("CRM notes sync failed:", e);
+          alert("Notes saved in the LOS, but the realtor app did not update. Try again.");
+        }
       }
     } catch (e) {
       console.error(e);
