@@ -558,6 +558,20 @@
       "format": "date",
       "description": "Finance contingency date"
     },
+    "emd_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Earnest money due date"
+    },
+    "due_diligence_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Due diligence expiration date"
+    },
+    "lead_type": {
+      "type": "string",
+      "description": "Internet lead or referring realtor name (CRM Lead Type column)"
+    },
     "closing_date": {
       "type": "string",
       "format": "date",

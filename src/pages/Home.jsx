@@ -144,6 +144,11 @@ export default function Home() {
         "preapproval_amount" in patch ||
         "loan_type" in patch ||
         "sellers_concession" in patch ||
+        "emd_date" in patch ||
+        "due_diligence_date" in patch ||
+        "finance_contingency_date" in patch ||
+        "closing_date" in patch ||
+        "lead_type" in patch ||
         milestoneStage
       ) {
         try {

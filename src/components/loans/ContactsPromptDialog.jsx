@@ -22,6 +22,8 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
   const [ltv, setLtv] = useState("");
   const [loanType, setLoanType] = useState("");
   const [financeContingencyDate, setFinanceContingencyDate] = useState("");
+  const [emdDate, setEmdDate] = useState("");
+  const [dueDiligenceDate, setDueDiligenceDate] = useState("");
   const [closingDate, setClosingDate] = useState("");
   const [lockDate, setLockDate] = useState("");
 
@@ -48,6 +50,8 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
     setLtv(loan.ltv ?? "");
     setLoanType(loan.loan_type || "");
     setFinanceContingencyDate(loan.finance_contingency_date || "");
+    setEmdDate(loan.emd_date || "");
+    setDueDiligenceDate(loan.due_diligence_date || "");
     setClosingDate(loan.closing_date || "");
     setLockDate(loan.lock_date || "");
   }, [loan, open]);
@@ -67,6 +71,8 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
       ltv: ltv === "" ? null : Number(ltv),
       loan_type: loanType,
       finance_contingency_date: financeContingencyDate,
+      emd_date: emdDate,
+      due_diligence_date: dueDiligenceDate,
       closing_date: closingDate,
       lock_date: lockDate,
     });
@@ -169,6 +175,26 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
                 onChange={(e) => setFinanceContingencyDate(e.target.value)}
                 className="h-11 text-base"
               />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1.5">
+                <Label className="text-xs uppercase tracking-wide text-muted-foreground">EMD Due Date</Label>
+                <Input
+                  type="date"
+                  value={emdDate}
+                  onChange={(e) => setEmdDate(e.target.value)}
+                  className="h-11 text-base"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs uppercase tracking-wide text-muted-foreground">Due Diligence Exp.</Label>
+                <Input
+                  type="date"
+                  value={dueDiligenceDate}
+                  onChange={(e) => setDueDiligenceDate(e.target.value)}
+                  className="h-11 text-base"
+                />
+              </div>
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs uppercase tracking-wide text-muted-foreground">Closing Date</Label>

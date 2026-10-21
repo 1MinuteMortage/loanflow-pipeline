@@ -21,15 +21,23 @@ export default async function(req) {
     const sellersConcession = loan.sellers_concession;
     const stage = loan.stage || null;
     const isMilestone = MILESTONE_STAGES.has(String(stage || ''));
+    const emdDate = loan.emd_date || null;
+    const dueDiligenceDate = loan.due_diligence_date || null;
+    const financeContingencyDate = loan.finance_contingency_date || null;
+    const leadType = loan.lead_type || null;
 
-    // Sync when pre-approval fields exist OR stage hits Pre-Approved / CTC / Closed.
+    // Sync when pre-approval fields, milestone stage, contract dates, or lead type are present.
     if (
       preapprovalAmount == null &&
       !loanType &&
       sellersConcession == null &&
-      !isMilestone
+      !isMilestone &&
+      !emdDate &&
+      !dueDiligenceDate &&
+      !financeContingencyDate &&
+      !leadType
     ) {
-      return Response.json({ skipped: true, reason: 'no pre-approval fields or milestone stage' });
+      return Response.json({ skipped: true, reason: 'no sync fields' });
     }
 
     const webhookUrl = secrets.get('CRM_LOS_WEBHOOK_URL');
@@ -46,6 +54,10 @@ export default async function(req) {
       loan_type: loanType || null,
       sellers_concession: sellersConcession ?? null,
       stage,
+      emd_date: emdDate,
+      due_diligence_date: dueDiligenceDate,
+      finance_contingency_date: financeContingencyDate,
+      lead_type: leadType,
     };
 
     const crmResponse = await fetch(webhookUrl, {

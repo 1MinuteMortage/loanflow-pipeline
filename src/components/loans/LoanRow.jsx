@@ -31,14 +31,30 @@ function UrgencyBadge({ dateStr, type }) {
   );
 }
 
+function LeadTypeCell({ loan }) {
+  const value = (loan.lead_type || "").trim() || (loan.realtor_name || "").trim();
+  if (!value) {
+    return <span className="text-xs text-muted-foreground">—</span>;
+  }
+  return (
+    <span className="text-xs text-foreground/90 line-clamp-2" title={value}>
+      {value}
+    </span>
+  );
+}
+
 function DatesCell({ loan }) {
   const fc = loan.finance_contingency_date;
   const close = loan.closing_date;
-  if (!fc && !close) {
+  const emd = loan.emd_date;
+  const dd = loan.due_diligence_date;
+  if (!fc && !close && !emd && !dd) {
     return <span className="text-xs text-muted-foreground">—</span>;
   }
   return (
     <div className="flex flex-col gap-1.5">
+      {emd && <UrgencyBadge dateStr={emd} type="EMD" />}
+      {dd && <UrgencyBadge dateStr={dd} type="DD" />}
       {fc && <UrgencyBadge dateStr={fc} type="FC" />}
       {close && <UrgencyBadge dateStr={close} type="Close" />}
     </div>
@@ -86,6 +102,7 @@ export default function LoanRow({ loan, onOpen, currentUser, onAccept }) {
           <div className="font-semibold text-foreground text-sm">{fullName(loan)}</div>
           <p className="text-xs text-muted-foreground mt-0.5">Accept file to view details</p>
         </td>
+        <td className="px-4 py-3 text-xs text-muted-foreground">—</td>
         <td className="px-4 py-3">
           <AssignedToCell loan={loan} currentUser={currentUser} onAccept={onAccept} />
         </td>
@@ -120,6 +137,10 @@ export default function LoanRow({ loan, onOpen, currentUser, onAccept }) {
       {/* Borrower */}
       <td className="px-4 py-3">
         <div className="font-semibold text-foreground text-sm">{fullName(loan)}</div>
+      </td>
+      {/* Lead Type */}
+      <td className="px-4 py-3">
+        <LeadTypeCell loan={loan} />
       </td>
       {/* Assigned To */}
       <td className="px-4 py-3">
