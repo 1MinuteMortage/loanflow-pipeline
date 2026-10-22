@@ -256,7 +256,7 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate, current
     }
   }, [loan?.id, loan?.needed_items?.length]);
 
-  // Block detail view until Accept File (admins always allowed)
+  // Block detail view until Accept File (all roles)
   useEffect(() => {
     if (open && loan && currentUser && !canOpenLoanDetails(currentUser, loan)) {
       onOpenChange(false);
