@@ -19,7 +19,6 @@ export default function NewLoanDialog({ open, onOpenChange, onCreate }) {
     property_address: "",
     address_tbd: false,
     stage: "pending",
-    due_date: "",
     realtor_name: "",
     realtor_phone: "",
     realtor_email: "",
@@ -27,7 +26,7 @@ export default function NewLoanDialog({ open, onOpenChange, onCreate }) {
   });
 
   const reset = () =>
-    setForm({ first_name: "", last_name: "", property_address: "", address_tbd: false, stage: "pending", due_date: "", realtor_name: "", realtor_phone: "", realtor_email: "", realtor_brokerage: "" });
+    setForm({ first_name: "", last_name: "", property_address: "", address_tbd: false, stage: "pending", realtor_name: "", realtor_phone: "", realtor_email: "", realtor_brokerage: "" });
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -147,17 +146,6 @@ export default function NewLoanDialog({ open, onOpenChange, onCreate }) {
               />
             </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="due_date" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                SLA Due Date
-              </Label>
-              <Input
-                id="due_date"
-                type="date"
-                value={form.due_date}
-                onChange={(e) => setForm({ ...form, due_date: e.target.value })}
-              />
-            </div>
           </div>
 
           <DialogFooter>
