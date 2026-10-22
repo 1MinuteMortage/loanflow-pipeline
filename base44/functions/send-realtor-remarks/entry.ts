@@ -10,6 +10,12 @@ type Remark = {
   sent_to_realtor_by?: string;
 };
 
+function extractCrmClientId(notes: unknown): string | null {
+  if (typeof notes !== 'string') return null;
+  const m = notes.match(/1MM_CLIENT_ID:([0-9a-f-]{36})/i);
+  return m?.[1] || null;
+}
+
 function formatNow() {
   return new Date().toLocaleString('en-US', {
     month: 'short',
@@ -83,6 +89,7 @@ export default async function (req: Request) {
           },
           body: JSON.stringify({
             loanId,
+            clientId: extractCrmClientId(loan.notes),
             notes: latestText,
             stage: loan.stage || null,
             remarksOnly: true,

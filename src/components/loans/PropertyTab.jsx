@@ -20,15 +20,10 @@ export default function PropertyTab({
   setForm,
   saveField,
   stage,
-  loanNotes,
-  loan,
-  onUpdate,
-  currentUser,
 }) {
   const isUnderContract = ["under_contract", "ctc", "closed"].includes(stage);
   const isPreapproved = stage === "preapproved";
   const preapprovalEnabled = isPreapproved || isUnderContract;
-
 
   const calculatedLoanAmount =
     form.sales_price && form.ltv
@@ -318,7 +313,6 @@ export default function PropertyTab({
           />
         </div>
       </div>
-
     </>
   );
 }
