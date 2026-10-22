@@ -176,6 +176,69 @@
         "calculated_income": {
           "type": "number"
         },
+        "annual_income": {
+          "type": "number"
+        },
+        "has_secondary_income": {
+          "type": "boolean",
+          "default": false,
+          "description": "True when an additional source of income was included in the calculation"
+        },
+        "secondary_income_type": {
+          "type": "string",
+          "enum": [
+            "w2",
+            "1099",
+            "hourly"
+          ]
+        },
+        "secondary_pay_frequency": {
+          "type": "string",
+          "enum": [
+            "weekly",
+            "biweekly",
+            "semimonthly"
+          ],
+          "description": "Pay frequency for secondary hourly income"
+        },
+        "secondary_pay_period_start_date": {
+          "type": "string",
+          "format": "date",
+          "description": "Start date of the pay period (secondary hourly income)"
+        },
+        "secondary_pay_period_end_date": {
+          "type": "string",
+          "format": "date",
+          "description": "End date of the pay period (secondary hourly income)"
+        },
+        "secondary_hours_per_pay_period": {
+          "type": "number",
+          "description": "Hours worked per pay period (secondary hourly income)"
+        },
+        "secondary_hourly_rate": {
+          "type": "number",
+          "description": "Hourly pay rate (secondary hourly income)"
+        },
+        "secondary_year_recent": {
+          "type": "number"
+        },
+        "secondary_year_recent_amount": {
+          "type": "number"
+        },
+        "secondary_year_prior": {
+          "type": "number"
+        },
+        "secondary_year_prior_amount": {
+          "type": "number"
+        },
+        "secondary_calculated_income": {
+          "type": "number",
+          "description": "Monthly qualifying income from the additional source"
+        },
+        "secondary_annual_income": {
+          "type": "number",
+          "description": "Annual income from the additional source"
+        },
         "override_amount": {
           "type": "number"
         },
