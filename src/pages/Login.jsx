@@ -10,10 +10,11 @@ import GoogleIcon from "@/components/GoogleIcon";
 import { safeReturnTo } from "@/lib/authReturnTo";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(() => localStorage.getItem("savedEmail") || "");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(() => localStorage.getItem("rememberEmail") === "true");
   // Post-login destination (e.g. the MCP OAuth consent page sends users here
   // with returnTo so the grant flow can resume). Same-origin paths only.
   const returnTo = safeReturnTo();
@@ -24,7 +25,15 @@ export default function Login() {
     setLoading(true);
     try {
       await base44.auth.loginViaEmailPassword(email, password);
-      window.location.href = returnTo;
+      if (rememberMe) {
+        localStorage.setItem("savedEmail", email);
+        localStorage.setItem("rememberEmail", "true");
+      } else {
+        localStorage.removeItem("savedEmail");
+        localStorage.removeItem("rememberEmail");
+      }
+      const verifyUrl = "/verify-sms" + (returnTo !== "/" ? "?returnTo=" + encodeURIComponent(returnTo) : "");
+      window.location.href = verifyUrl;
     } catch (err) {
       setError(err.message || "Invalid email or password");
     } finally {
@@ -33,7 +42,8 @@ export default function Login() {
   };
 
   const handleGoogle = () => {
-    base44.auth.loginWithProvider("google", returnTo);
+    const verifyUrl = "/verify-sms" + (returnTo !== "/" ? "?returnTo=" + encodeURIComponent(returnTo) : "");
+    base44.auth.loginWithProvider("google", verifyUrl);
   };
 
   return (
@@ -115,6 +125,16 @@ export default function Login() {
               required
             />
           </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            id="remember-me"
+            type="checkbox"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+            className="w-4 h-4 rounded border-input"
+          />
+          <Label htmlFor="remember-me" className="text-sm cursor-pointer">Remember me</Label>
         </div>
         <Button type="submit" className="w-full h-12 font-medium" disabled={loading}>
           {loading ? (

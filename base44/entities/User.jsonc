@@ -11,6 +11,24 @@
         "user"
       ],
       "default": "user"
+    },
+    "phone_number": {
+      "type": "string",
+      "description": "User's phone number for SMS verification (E.164 format preferred)"
+    },
+    "sms_verification_code": {
+      "type": "string",
+      "description": "Temporary 6-digit SMS verification code"
+    },
+    "sms_verification_expires": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the SMS verification code expires"
+    },
+    "first_login_completed": {
+      "type": "boolean",
+      "default": false,
+      "description": "True after the user completes their first login (subsequent logins require SMS verification)"
     }
   },
   "required": [

@@ -1,0 +1,4 @@
+{
+  "name": "send-sms-verification",
+  "entry": "entry.ts"
+}
