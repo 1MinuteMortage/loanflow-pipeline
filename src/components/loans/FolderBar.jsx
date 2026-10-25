@@ -6,6 +6,7 @@ export default function FolderBar({ active, counts, onChange, unassignedCount = 
   const tabs = [
     { key: "all", label: "All" },
     { key: "urgent", label: "8 days or less", color: "#ef4444" },
+    { key: "unaccepted", label: "Unaccepted", color: "#ef4444" },
     ...STAGES.map((s) => ({ key: s.key, label: s.label, color: s.color })),
   ];
 
@@ -16,6 +17,8 @@ export default function FolderBar({ active, counts, onChange, unassignedCount = 
           const isActive = active === tab.key;
           const count = tab.key === "all"
             ? counts.all
+            : tab.key === "unaccepted"
+            ? counts.unassigned || 0
             : counts[tab.key] || 0;
           return (
             <button
@@ -41,11 +44,6 @@ export default function FolderBar({ active, counts, onChange, unassignedCount = 
               >
                 {count}
               </span>
-              {tab.key === "pending" && unassignedCount > 0 && (
-                <span className="absolute -top-3.5 -left-2 flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[10px] font-bold leading-none shadow-sm ring-2 ring-card">
-                  NEW {unassignedCount}
-                </span>
-              )}
               {tab.key === "under_contract" && unassignedProcessorCount > 0 && (
                 <span className="absolute -top-3.5 -left-2 flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[10px] font-bold leading-none shadow-sm ring-2 ring-card">
                   NEW {unassignedProcessorCount}

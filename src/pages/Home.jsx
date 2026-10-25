@@ -110,6 +110,8 @@ export default function Home() {
     let list = visibleLoans;
     if (activeFolder === "urgent") {
       list = list.filter((l) => isWithin8Days(l.finance_contingency_date));
+    } else if (activeFolder === "unaccepted") {
+      list = list.filter((l) => !l.loan_officer_id && !l.assigned_to_id);
     } else if (activeFolder !== "all") {
       list = list.filter((l) => l.stage === activeFolder);
     }
