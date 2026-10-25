@@ -675,5 +675,145 @@
   "required": [
     "first_name",
     "last_name"
-  ]
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "data.loan_officer_id": "{{user.id}}"
+        },
+        {
+          "data.loan_processor_id": "{{user.id}}"
+        },
+        {
+          "data.assigned_to_id": "{{user.id}}"
+        },
+        {
+          "$and": [
+            {
+              "data.loan_officer_id": null
+            },
+            {
+              "user_condition": {
+                "role": "loan_officer"
+              }
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "data.loan_officer_id": null
+            },
+            {
+              "user_condition": {
+                "role": "loan_officer_assistant"
+              }
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "data.stage": "under_contract"
+            },
+            {
+              "data.loan_processor_id": null
+            },
+            {
+              "user_condition": {
+                "role": "processor"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "loan_officer"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "loan_officer_assistant"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "data.loan_officer_id": "{{user.id}}"
+        },
+        {
+          "data.loan_processor_id": "{{user.id}}"
+        },
+        {
+          "data.assigned_to_id": "{{user.id}}"
+        },
+        {
+          "$and": [
+            {
+              "data.loan_officer_id": null
+            },
+            {
+              "user_condition": {
+                "role": "loan_officer"
+              }
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "data.loan_officer_id": null
+            },
+            {
+              "user_condition": {
+                "role": "loan_officer_assistant"
+              }
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "data.stage": "under_contract"
+            },
+            {
+              "data.loan_processor_id": null
+            },
+            {
+              "user_condition": {
+                "role": "processor"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }
