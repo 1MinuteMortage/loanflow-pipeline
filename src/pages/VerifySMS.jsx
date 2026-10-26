@@ -34,23 +34,7 @@ export default function VerifySMS() {
         return;
       }
 
-      // No phone number on file — skip verification
-      if (!user.phone_number) {
-        if (!user.first_login_completed) {
-          await base44.entities.User.update(user.id, { first_login_completed: true });
-        }
-        window.location.href = returnTo;
-        return;
-      }
-
-      // First login — mark completed and skip SMS
-      if (!user.first_login_completed) {
-        await base44.entities.User.update(user.id, { first_login_completed: true });
-        window.location.href = returnTo;
-        return;
-      }
-
-      // Subsequent login — require SMS verification
+      // Every login, including the first and including administrators.
       setNeedsVerification(true);
       await sendCode();
     } catch (err) {
@@ -64,10 +48,10 @@ export default function VerifySMS() {
     setSending(true);
     setError("");
     try {
-      const res = await base44.functions.invoke("send-sms-verification", {});
+      const res = await base44.functions.invoke("staff-login-otp", { action: "send" });
       if (res?.data?.error) throw new Error(res.data.error);
     } catch (err) {
-      setError(err.message || "Failed to send verification code. Add Twilio secrets in the dashboard.");
+      setError(err.message || "Could not send the code");
     } finally {
       setSending(false);
     }
@@ -77,11 +61,14 @@ export default function VerifySMS() {
     setError("");
     setVerifying(true);
     try {
-      const res = await base44.functions.invoke("verify-sms-code", { code });
-      if (res?.data?.error) throw new Error(res.data.error);
+      const res = await base44.functions.invoke("staff-login-otp", { action: "verify", code });
+      if (res?.data?.error || !res?.data?.verified) {
+        throw new Error(res?.data?.error || "That code is no longer valid. Request a new one.");
+      }
       window.location.href = returnTo;
     } catch (err) {
-      setError(err.message || "Invalid verification code");
+      setError(err.message || "That code is no longer valid. Request a new one.");
+      setCode("");
     } finally {
       setVerifying(false);
     }
@@ -101,7 +88,7 @@ export default function VerifySMS() {
     <AuthLayout
       icon={ShieldCheck}
       title="Verify your identity"
-      subtitle="We sent a 6-digit code to your phone"
+      subtitle="We sent a 5-digit code. It expires in 5 minutes and works once. This includes administrators."
     >
       {error && (
         <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
@@ -110,7 +97,7 @@ export default function VerifySMS() {
       )}
       <div className="flex justify-center mb-6">
         <InputOTP
-          maxLength={6}
+          maxLength={5}
           value={code}
           onChange={setCode}
           autoFocus
@@ -122,14 +109,13 @@ export default function VerifySMS() {
             <InputOTPSlot index={2} />
             <InputOTPSlot index={3} />
             <InputOTPSlot index={4} />
-            <InputOTPSlot index={5} />
           </InputOTPGroup>
         </InputOTP>
       </div>
       <Button
         className="w-full h-12 font-medium"
         onClick={handleVerify}
-        disabled={verifying || code.length < 6}
+        disabled={verifying || code.length < 5}
       >
         {verifying ? (
           <>
