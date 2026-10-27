@@ -8,6 +8,8 @@ export default function IdleTimer() {
   const timerRef = useRef(null);
 
   useEffect(() => {
+    if (localStorage.getItem("los-remember-me") === "1") return;
+
     const resetTimer = () => {
       if (timerRef.current) clearTimeout(timerRef.current);
       timerRef.current = setTimeout(() => {

@@ -14,7 +14,14 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [rememberMe, setRememberMe] = useState(() => localStorage.getItem("rememberEmail") === "true");
+  const [rememberMe, setRememberMe] = useState(() => {
+    if (localStorage.getItem("los-remember-me") === "1") return true;
+    if (localStorage.getItem("rememberEmail") === "true") {
+      localStorage.setItem("los-remember-me", "1");
+      return true;
+    }
+    return false;
+  });
   // Post-login destination (e.g. the MCP OAuth consent page sends users here
   // with returnTo so the grant flow can resume). Same-origin paths only.
   const returnTo = safeReturnTo();
@@ -25,12 +32,15 @@ export default function Login() {
     setLoading(true);
     try {
       await base44.auth.loginViaEmailPassword(email, password);
+      sessionStorage.setItem("los-browser-session", "1");
       if (rememberMe) {
         localStorage.setItem("savedEmail", email);
         localStorage.setItem("rememberEmail", "true");
+        localStorage.setItem("los-remember-me", "1");
       } else {
         localStorage.removeItem("savedEmail");
         localStorage.removeItem("rememberEmail");
+        localStorage.setItem("los-remember-me", "0");
       }
       const verifyUrl = "/verify-sms" + (returnTo !== "/" ? "?returnTo=" + encodeURIComponent(returnTo) : "");
       window.location.href = verifyUrl;
@@ -42,6 +52,8 @@ export default function Login() {
   };
 
   const handleGoogle = () => {
+    sessionStorage.setItem("los-browser-session", "1");
+    localStorage.setItem("los-remember-me", rememberMe ? "1" : "0");
     const verifyUrl = "/verify-sms" + (returnTo !== "/" ? "?returnTo=" + encodeURIComponent(returnTo) : "");
     base44.auth.loginWithProvider("google", verifyUrl);
   };
@@ -134,7 +146,7 @@ export default function Login() {
             onChange={(e) => setRememberMe(e.target.checked)}
             className="w-4 h-4 rounded border-input"
           />
-          <Label htmlFor="remember-me" className="text-sm cursor-pointer">Remember me</Label>
+          <Label htmlFor="remember-me" className="text-sm cursor-pointer">Remember me on this device</Label>
         </div>
         <Button type="submit" className="w-full h-12 font-medium" disabled={loading}>
           {loading ? (

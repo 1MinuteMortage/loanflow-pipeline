@@ -17,6 +17,13 @@ export const AuthProvider = ({ children }) => {
     checkAppState();
   }, []);
 
+  useEffect(() => {
+    const beat = () => localStorage.setItem("los-session-heartbeat", String(Date.now()));
+    beat();
+    const id = setInterval(beat, 4000);
+    return () => clearInterval(id);
+  }, []);
+
   const checkAppState = async () => {
     try {
       setIsLoadingPublicSettings(true);
