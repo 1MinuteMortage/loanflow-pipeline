@@ -13,7 +13,7 @@ export default function FolderBar({ active, counts, onChange, unassignedCount = 
 
   return (
     <div className="sticky top-0 z-20 bg-card/95 backdrop-blur border-b border-border">
-      <div className="flex items-center gap-1.5 px-4 sm:px-6 py-3 overflow-x-auto no-scrollbar">
+      <div className="flex items-center justify-between gap-1 px-2 sm:px-4 py-2.5 overflow-hidden">
         {tabs.map((tab) => {
           const isActive = active === tab.key;
           const count = tab.key === "all"
@@ -27,7 +27,7 @@ export default function FolderBar({ active, counts, onChange, unassignedCount = 
             <button
               key={tab.key}
               onClick={() => onChange(tab.key)}
-              className={`relative flex items-center gap-2 px-3.5 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all border ${
+              className={`relative flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all border flex-1 justify-center ${
                 isActive
                   ? "bg-foreground text-background border-foreground"
                   : "bg-card text-muted-foreground border-border hover:border-foreground/30 hover:text-foreground"
