@@ -6,6 +6,7 @@ export default function FolderBar({ active, counts, onChange, unassignedCount = 
   const tabs = [
     { key: "all", label: "All" },
     { key: "urgent", label: "8 days or less", color: "#ef4444" },
+    { key: "accepted", label: "Accepted Files", color: "#22c55e" },
     { key: "unaccepted", label: "Unaccepted", color: "#ef4444" },
     ...STAGES.map((s) => ({ key: s.key, label: s.label, color: s.color })),
   ];
@@ -19,6 +20,8 @@ export default function FolderBar({ active, counts, onChange, unassignedCount = 
             ? counts.all
             : tab.key === "unaccepted"
             ? counts.unassigned || 0
+            : tab.key === "accepted"
+            ? counts.accepted || 0
             : counts[tab.key] || 0;
           return (
             <button

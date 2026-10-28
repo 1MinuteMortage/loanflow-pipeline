@@ -99,6 +99,7 @@ export default function Home() {
       if (c[l.stage] !== undefined) c[l.stage]++;
       if (isWithin8Days(l.finance_contingency_date)) c.urgent++;
     });
+    c.accepted = visibleLoans.filter((l) => l.loan_officer_id).length;
     c.unassigned = loans.filter((l) => !l.loan_officer_id).length;
     c.unassignedProcessor = loans.filter(
       (l) => l.stage === "under_contract" && !l.loan_processor_id
@@ -110,6 +111,8 @@ export default function Home() {
     let list = visibleLoans;
     if (activeFolder === "urgent") {
       list = list.filter((l) => isWithin8Days(l.finance_contingency_date));
+    } else if (activeFolder === "accepted") {
+      list = list.filter((l) => l.loan_officer_id);
     } else if (activeFolder === "unaccepted") {
       list = list.filter((l) => !l.loan_officer_id && !l.assigned_to_id);
     } else if (activeFolder !== "all") {
