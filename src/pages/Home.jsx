@@ -50,6 +50,8 @@ export default function Home() {
       handleUpdate(loan.id, {
         loan_officer_id: currentUser.id,
         loan_officer_name: name,
+        loan_officer_email: currentUser.email || "",
+        loan_officer_phone: currentUser.phone_number || currentUser.phone || "",
         assigned_to_id: currentUser.id,
         assigned_to_name: name,
       });

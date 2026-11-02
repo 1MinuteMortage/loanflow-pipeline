@@ -364,6 +364,14 @@
       "type": "string",
       "description": "Display name of the assigned loan officer"
     },
+    "loan_officer_email": {
+      "type": "string",
+      "description": "Email of the loan officer who accepted the file"
+    },
+    "loan_officer_phone": {
+      "type": "string",
+      "description": "Phone number of the loan officer who accepted the file"
+    },
     "loan_processor_id": {
       "type": "string",
       "description": "User id of the assigned loan processor"

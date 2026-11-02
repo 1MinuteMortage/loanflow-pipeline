@@ -4,9 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import IncomeCalculatorModal from "./IncomeCalculatorModal";
 import AssetInformationSection from "./AssetInformationSection";
-import LoanOfficerRemarks from "./LoanOfficerRemarks";
-
-export default function LoanOfficerSection({ form, setForm, saveField, loan, onUpdate, currentUser }) {
+export default function LoanOfficerSection({ form, setForm, saveField, loan }) {
   const [calculatorOpen, setCalculatorOpen] = useState(false);
   const [assetDialogOpen, setAssetDialogOpen] = useState(false);
   const calc = loan.income_calculation;
@@ -95,7 +93,6 @@ export default function LoanOfficerSection({ form, setForm, saveField, loan, onU
         onConfirm={handleConfirm}
       />
 
-      <LoanOfficerRemarks loan={loan} onUpdate={onUpdate} currentUser={currentUser} />
     </div>
   );
 }
