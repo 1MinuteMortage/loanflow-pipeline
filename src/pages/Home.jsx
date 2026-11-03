@@ -9,6 +9,16 @@ import LoanCard from "@/components/loans/LoanCard";
 import LoanDrawer from "@/components/loans/LoanDrawer";
 import NewLoanDialog from "@/components/loans/NewLoanDialog";
 import AcceptFileDialog from "@/components/loans/AcceptFileDialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { STAGES } from "@/lib/loan-utils";
 import { isWithin8Days } from "@/lib/date-urgency";
@@ -36,6 +46,8 @@ export default function Home() {
   const [newOpen, setNewOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [acceptTarget, setAcceptTarget] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(setCurrentUser).catch(() => setCurrentUser(null));
@@ -187,6 +199,30 @@ export default function Home() {
     }
   };
 
+  const confirmDelete = async () => {
+    const loan = deleteTarget;
+    if (!loan || !isAdmin(currentUser) || deleting) return;
+    setDeleting(true);
+    try {
+      const sync = await base44.functions.invoke("notify-crm-delete-client", { loanId: loan.id });
+      const syncError = sync?.data?.error || sync?.error;
+      if (syncError) {
+        alert(typeof syncError === "string" ? syncError : "The realtor app was not updated. This file was kept.");
+        return;
+      }
+      await base44.entities.Loan.delete(loan.id);
+      setLoans((prev) => prev.filter((l) => l.id !== loan.id));
+      setDrawerLoan((prev) => (prev?.id === loan.id ? null : prev));
+      if (drawerLoan?.id === loan.id) setDrawerOpen(false);
+      setDeleteTarget(null);
+    } catch (e) {
+      console.error(e);
+      alert("Could not delete this client. Try again.");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const handleCreate = async (data) => {
     try {
       const created = await base44.entities.Loan.create(data);
@@ -302,13 +338,13 @@ export default function Home() {
               </div>
             ) : (
               filtered.map((loan) => (
-                <LoanCard key={loan.id} loan={loan} onOpen={openDrawer} currentUser={currentUser} onAccept={requestAccept} />
+                <LoanCard key={loan.id} loan={loan} onOpen={openDrawer} currentUser={currentUser} onAccept={requestAccept} onDelete={isAdmin(currentUser) ? setDeleteTarget : undefined} />
               ))
             )}
           </div>
         ) : (
           <div className="rounded-lg border border-border bg-card overflow-hidden">
-            <LoanTable loans={filtered} onOpen={openDrawer} currentUser={currentUser} onAccept={requestAccept} />
+            <LoanTable loans={filtered} onOpen={openDrawer} currentUser={currentUser} onAccept={requestAccept} onDelete={isAdmin(currentUser) ? setDeleteTarget : undefined} />
           </div>
         )}
       </main>
@@ -330,6 +366,32 @@ export default function Home() {
       />
 
       <NewLoanDialog open={newOpen} onOpenChange={setNewOpen} onCreate={handleCreate} />
+
+      <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && !deleting && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this client?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteTarget
+                ? `Permanently delete ${[deleteTarget.first_name, deleteTarget.last_name].filter(Boolean).join(" ") || "this client"} from the LOS and from the realtor app. This cannot be undone.`
+                : "Permanently delete this client from the LOS and from the realtor app. This cannot be undone."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={deleting}
+              onClick={(e) => {
+                e.preventDefault();
+                confirmDelete();
+              }}
+              className="bg-red-600 text-white hover:bg-red-700"
+            >
+              {deleting ? "Deleting..." : "Delete client"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

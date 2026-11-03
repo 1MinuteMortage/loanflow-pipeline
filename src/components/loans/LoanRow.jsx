@@ -1,9 +1,9 @@
 import React from "react";
-import { MoreHorizontal, ChevronRight } from "lucide-react";
+import { ChevronRight, Trash2 } from "lucide-react";
 import { STAGE_MAP, fullName, documentsNeededSummary } from "@/lib/loan-utils";
 import { dateUrgency } from "@/lib/date-urgency";
 import AssignedToCell from "./AssignedToCell";
-import { canOpenLoanDetails, needsFileAccept } from "@/lib/permissions";
+import { canOpenLoanDetails, isAdmin, needsFileAccept } from "@/lib/permissions";
 
 function StageBadge({ stage }) {
   const s = STAGE_MAP[stage];
@@ -67,7 +67,25 @@ function TbdPill() {
   );
 }
 
-export default function LoanRow({ loan, onOpen, currentUser, onAccept }) {
+function DeleteClientButton({ loan, currentUser, onDelete }) {
+  if (!isAdmin(currentUser) || !onDelete) return null;
+  return (
+    <button
+      type="button"
+      title="Delete client"
+      aria-label="Delete client"
+      onClick={(e) => {
+        e.stopPropagation();
+        onDelete(loan);
+      }}
+      className="inline-flex items-center justify-center h-7 w-7 rounded-md text-muted-foreground hover:bg-red-50 hover:text-red-600"
+    >
+      <Trash2 className="w-4 h-4" />
+    </button>
+  );
+}
+
+export default function LoanRow({ loan, onOpen, currentUser, onAccept, onDelete }) {
   const needed = documentsNeededSummary(loan);
 
   const showTbd =
@@ -102,15 +120,20 @@ export default function LoanRow({ loan, onOpen, currentUser, onAccept }) {
           <div className="font-semibold text-foreground text-sm">{fullName(loan)}</div>
           <p className="text-xs text-muted-foreground mt-0.5">Accept file to view details</p>
         </td>
-        <td className="px-4 py-3 text-xs text-muted-foreground">—</td>
+        <td className="px-4 py-3">
+          <LeadTypeCell loan={loan} />
+        </td>
         <td className="px-4 py-3">
           <AssignedToCell loan={loan} currentUser={currentUser} onAccept={onAccept} />
         </td>
         <td className="px-4 py-3 text-xs text-muted-foreground">—</td>
         <td className="px-4 py-3 text-xs text-muted-foreground">—</td>
         <td className="px-4 py-3 text-xs text-muted-foreground">—</td>
-        <td className="px-4 py-3">
-          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+        <td className="px-4 py-3 text-right">
+          <div className="flex items-center justify-end gap-1">
+            <DeleteClientButton loan={loan} currentUser={currentUser} onDelete={onDelete} />
+            <ChevronRight className="w-4 h-4 text-muted-foreground" />
+          </div>
         </td>
       </tr>
     );
@@ -181,7 +204,8 @@ export default function LoanRow({ loan, onOpen, currentUser, onAccept }) {
       </td>
       {/* Actions */}
       <td className="px-4 py-3 text-right">
-        <div className="flex items-center justify-end">
+        <div className="flex items-center justify-end gap-1">
+          <DeleteClientButton loan={loan} currentUser={currentUser} onDelete={onDelete} />
           <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
         </div>
       </td>

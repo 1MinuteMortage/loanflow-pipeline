@@ -12,7 +12,7 @@ const COLUMNS = [
   { key: "actions", label: "", className: "w-[5%]" }
 ];
 
-export default function LoanTable({ loans, onOpen, currentUser, onAccept }) {
+export default function LoanTable({ loans, onOpen, currentUser, onAccept, onDelete }) {
   return (
     <div className="w-full overflow-x-auto">
       <table className="w-full border-collapse">
@@ -37,7 +37,7 @@ export default function LoanTable({ loans, onOpen, currentUser, onAccept }) {
             </tr>
           ) : (
             loans.map((loan) => (
-              <LoanRow key={loan.id} loan={loan} onOpen={onOpen} currentUser={currentUser} onAccept={onAccept} />
+              <LoanRow key={loan.id} loan={loan} onOpen={onOpen} currentUser={currentUser} onAccept={onAccept} onDelete={onDelete} />
             ))
           )}
         </tbody>

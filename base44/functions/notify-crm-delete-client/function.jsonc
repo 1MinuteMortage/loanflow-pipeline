@@ -1,0 +1,4 @@
+{
+  "name": "notify-crm-delete-client",
+  "entry": "entry.ts"
+}

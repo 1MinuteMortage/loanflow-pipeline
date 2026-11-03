@@ -4,9 +4,10 @@ import { STAGE_MAP, fullName, documentsNeededSummary } from "@/lib/loan-utils";
 import { dateUrgency } from "@/lib/date-urgency";
 import ContactsCell from "./ContactsCell";
 import { getContacts } from "@/lib/loan-utils";
-import { canOpenLoanDetails, needsFileAccept } from "@/lib/permissions";
+import { canOpenLoanDetails, isAdmin, needsFileAccept } from "@/lib/permissions";
+import { Trash2 } from "lucide-react";
 
-export default function LoanCard({ loan, onOpen, currentUser, onAccept }) {
+export default function LoanCard({ loan, onOpen, currentUser, onAccept, onDelete }) {
   const [expanded, setExpanded] = useState(false);
   const needed = documentsNeededSummary(loan);
   const stage = STAGE_MAP[loan.stage];
@@ -28,7 +29,29 @@ export default function LoanCard({ loan, onOpen, currentUser, onAccept }) {
         onClick={handleClick}
         className="rounded-lg border border-dashed border-border bg-muted/70 opacity-75 p-4 cursor-pointer active:bg-muted/90"
       >
-        <div className="font-heading text-lg font-bold text-foreground truncate">{fullName(loan)}</div>
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <div className="font-heading text-lg font-bold text-foreground truncate">{fullName(loan)}</div>
+            {((loan.lead_type || "").trim() || (loan.realtor_name || "").trim()) ? (
+              <p className="mt-1 text-sm text-foreground/90">
+                Lead type: {(loan.lead_type || "").trim() || (loan.realtor_name || "").trim()}
+              </p>
+            ) : null}
+          </div>
+          {isAdmin(currentUser) && onDelete ? (
+            <button
+              type="button"
+              aria-label="Delete client"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(loan);
+              }}
+              className="inline-flex items-center justify-center h-8 w-8 rounded-md text-muted-foreground hover:bg-red-50 hover:text-red-600"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          ) : null}
+        </div>
         <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
           Accept this file to view borrower details and documents.
         </p>
@@ -51,6 +74,11 @@ export default function LoanCard({ loan, onOpen, currentUser, onAccept }) {
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="font-heading text-lg font-bold text-foreground truncate">{fullName(loan)}</div>
+          {((loan.lead_type || "").trim() || (loan.realtor_name || "").trim()) ? (
+            <p className="mt-1 text-sm text-foreground/90 line-clamp-2">
+              Lead type: {(loan.lead_type || "").trim() || (loan.realtor_name || "").trim()}
+            </p>
+          ) : null}
           <div className="mt-1.5">
             {loan.stage === "pending" || loan.stage === "preapproved" || loan.address_tbd || !loan.property_address ? (
               <span className="text-sm text-foreground/80">TBD</span>
@@ -64,6 +92,19 @@ export default function LoanCard({ loan, onOpen, currentUser, onAccept }) {
             </div>
           )}
         </div>
+        {isAdmin(currentUser) && onDelete ? (
+          <button
+            type="button"
+            aria-label="Delete client"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(loan);
+            }}
+            className="inline-flex items-center justify-center h-8 w-8 rounded-md text-muted-foreground hover:bg-red-50 hover:text-red-600"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        ) : null}
       </div>
 
       <div className="mt-3 flex items-center justify-between">
