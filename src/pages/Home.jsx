@@ -372,9 +372,7 @@ export default function Home() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete this client?</AlertDialogTitle>
             <AlertDialogDescription>
-              {deleteTarget
-                ? `Permanently delete ${[deleteTarget.first_name, deleteTarget.last_name].filter(Boolean).join(" ") || "this client"} from the LOS and from the realtor app. This cannot be undone.`
-                : "Permanently delete this client from the LOS and from the realtor app. This cannot be undone."}
+              Permanently delete this client from the LOS and from the realtor app. This cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
