@@ -12,6 +12,7 @@ import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword';
 import VerifySMS from '@/pages/VerifySMS';
+import Calculator from '@/pages/Calculator';
 // Add page imports here
 import Home from '@/pages/Home';
 import Team from '@/pages/Team';
@@ -47,6 +48,7 @@ const AuthenticatedApp = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/verify-sms" element={<VerifySMS />} />
+      <Route path="/calculator" element={<Calculator />} />
       {/* Add your page Route elements here */}
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route path="/" element={<Home />} />
