@@ -4,10 +4,10 @@ import { Label } from "@/components/ui/label";
 
 const LOAN_TYPES = [
   "DPA FHA",
-  "DPA Conventional",
   "30 Year FHA",
   "FHA 203k",
   "30 Year Conventional",
+  "VA Loan",
   "Jumbo",
   "DSCR",
 ];
@@ -33,7 +33,7 @@ export default function PropertyTab({
   return (
     <>
       {/* === Pre-approval section — available in Pre-approved stage === */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-3 gap-3">
         <div className="space-y-1.5">
           <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Pre-Approved Amount</Label>
           <div className="relative">
@@ -70,6 +70,26 @@ export default function PropertyTab({
               <option key={t} value={t}>{t}</option>
             ))}
           </select>
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Interest Rate</Label>
+          <div className="relative">
+            <Input
+              type="number"
+              min="0"
+              step="0.001"
+              disabled={!preapprovalEnabled}
+              value={form.interest_rate ?? ""}
+              onChange={(e) => {
+                const val = e.target.value === "" ? "" : Number(e.target.value);
+                setForm({ ...form, interest_rate: val });
+                saveField({ interest_rate: val });
+              }}
+              placeholder="Enter text"
+              className="pr-7"
+            />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">%</span>
+          </div>
         </div>
       </div>
 

@@ -103,6 +103,7 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate, current
         loan_number: loan.loan_number || "",
         loan_type: loan.loan_type || "",
         preapproval_amount: loan.preapproval_amount ?? "",
+        interest_rate: loan.interest_rate ?? "",
         ltv: loan.ltv ?? "",
         sales_price: loan.sales_price ?? "",
         sellers_concession: loan.sellers_concession ?? "",
@@ -277,7 +278,7 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate, current
   const saveField = (patch) => {
     if (patch.stage && !canChangeStage(currentUser, loan, patch.stage)) return;
     if (
-      ("preapproval_amount" in patch || "loan_type" in patch || "sellers_concession" in patch) &&
+      ("preapproval_amount" in patch || "loan_type" in patch || "sellers_concession" in patch || "interest_rate" in patch) &&
       readOnlyPreapproval
     ) {
       return;

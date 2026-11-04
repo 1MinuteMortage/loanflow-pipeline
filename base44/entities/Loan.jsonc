@@ -404,6 +404,10 @@
       "type": "number",
       "description": "Monthly HOA dues"
     },
+    "monthly_property_taxes": {
+      "type": "number",
+      "description": "Monthly property taxes (client calculator)"
+    },
     "property_type": {
       "type": "string",
       "enum": [
@@ -436,14 +440,18 @@
       "type": "string",
       "enum": [
         "DPA FHA",
-        "DPA Conventional",
         "30 Year FHA",
         "FHA 203k",
         "30 Year Conventional",
+        "VA Loan",
         "Jumbo",
         "DSCR"
       ],
       "description": "Loan program type"
+    },
+    "interest_rate": {
+      "type": "number",
+      "description": "Interest rate saved at pre-approval"
     },
     "realtor_name": {
       "type": "string",
@@ -588,7 +596,7 @@
           },
           "file_name": {
             "type": "string",
-            "description": "Original uploaded file name (legacy single-file)"
+            "description": "Original uploaded initial conditions file name"
           },
           "files": {
             "type": "array",
