@@ -158,10 +158,10 @@ export default function ContactsPromptDialog({ open, onOpenChange, loan, onSave 
                 >
                   <option value="">Select...</option>
                   <option value="DPA FHA">DPA FHA</option>
-                  <option value="DPA Conventional">DPA Conventional</option>
                   <option value="30 Year FHA">30 Year FHA</option>
                   <option value="FHA 203k">FHA 203k</option>
                   <option value="30 Year Conventional">30 Year Conventional</option>
+                  <option value="VA Loan">VA Loan</option>
                   <option value="Jumbo">Jumbo</option>
                   <option value="DSCR">DSCR</option>
                 </select>
