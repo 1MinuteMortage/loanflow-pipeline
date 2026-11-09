@@ -2,7 +2,8 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.49';
 
 // Public lookup for the client calculator page (/calculator?loanId=ID, no login).
 // Deliberately unauthenticated per the loan-officer's request: the loan id is the
-// access key, and only the calculator fields are returned - no borrower data.
+// access key, and only the calculator fields plus the borrower's first name
+// (for the page title) are returned - no other borrower data.
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
@@ -16,6 +17,7 @@ export default async function(req) {
 
     return Response.json({
       id: loan.id,
+      first_name: loan.first_name || null,
       loan_type: loan.loan_type || null,
       interest_rate: loan.interest_rate ?? null,
       preapproval_amount: loan.preapproval_amount ?? null,

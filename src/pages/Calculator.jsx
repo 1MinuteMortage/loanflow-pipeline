@@ -5,6 +5,7 @@ import { Loader2, Save } from "lucide-react";
 import { calculateQuote, getProgramRules } from "@/lib/loan-calculator";
 import CalculatorFields from "@/components/calculator/CalculatorFields";
 import CalculatorResults from "@/components/calculator/CalculatorResults";
+import LoanProgramHeader from "@/components/calculator/LoanProgramHeader";
 
 export default function Calculator() {
   const [loading, setLoading] = useState(true);
@@ -103,7 +104,9 @@ export default function Calculator() {
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-5">
-          <h1 className="font-heading text-xl sm:text-2xl font-bold text-foreground">Mortgage Calculator</h1>
+          <h1 className="font-heading text-xl sm:text-2xl font-bold text-foreground">
+            {loan?.first_name ? `${loan.first_name}'s Mortgage Calculator` : "Mortgage Calculator"}
+          </h1>
           <p className="text-sm text-muted-foreground mt-1">
             Estimate your monthly payment and out-of-pocket costs.
           </p>
@@ -125,13 +128,14 @@ export default function Calculator() {
           </div>
         ) : (
           <>
+            <LoanProgramHeader loanType={loan.loan_type} interestRate={loan.interest_rate} />
             <CalculatorFields
               form={form}
               onChange={handleChange}
               preapprovalAmount={loan.preapproval_amount}
               exceedsPreapproval={exceedsPreapproval}
             />
-            <CalculatorResults quote={quote} loanType={loan.loan_type} interestRate={loan.interest_rate} />
+            <CalculatorResults quote={quote} />
             <div className="flex items-center gap-3">
               <Button onClick={handleSave} disabled={saving || exceedsPreapproval}>
                 {saving ? (

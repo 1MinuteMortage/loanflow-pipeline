@@ -1,24 +1,13 @@
 import React from "react";
-import { Lock } from "lucide-react";
 import { formatUSD } from "@/lib/loan-calculator";
+import MonthlyPaymentBreakdown from "@/components/calculator/MonthlyPaymentBreakdown";
 
-export default function CalculatorResults({ quote, loanType, interestRate }) {
+export default function CalculatorResults({ quote }) {
   if (!quote) return null;
   const { rules } = quote;
   const coveredByDPA = !rules.downInOutOfPocket;
   return (
     <div className="space-y-4">
-      <div className="rounded-lg border border-border bg-secondary/50 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Loan Program</p>
-          <p className="font-semibold text-foreground">{loanType}</p>
-        </div>
-        <div className="text-right">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Interest Rate</p>
-          <p className="font-semibold text-foreground">{interestRate != null ? `${interestRate}%` : "Not set"}</p>
-        </div>
-        <Lock className="w-4 h-4 text-muted-foreground" aria-label="Program and rate are locked" />
-      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="rounded-lg bg-primary text-primary-foreground p-4">
@@ -45,6 +34,8 @@ export default function CalculatorResults({ quote, loanType, interestRate }) {
           </div>
         </div>
       </div>
+
+      <MonthlyPaymentBreakdown quote={quote} />
 
       {quote.concessionCapped && (
         <p className="text-xs text-muted-foreground">
