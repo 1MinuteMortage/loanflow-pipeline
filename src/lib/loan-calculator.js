@@ -1,14 +1,18 @@
 // Client-side calculator rules copied from MortgageMaster Pro.
 // Mirrors base44/shared/loan-calculator.ts (the platform keeps server and
 // frontend code in separate bundles, so the locked program table lives in both).
+// downPercent is the program minimum (and the starting value); the client can
+// raise it up to MAX_DOWN_PERCENT.
+export const MAX_DOWN_PERCENT = 0.9;
+
 export const PROGRAM_RULES = {
-  "DPA FHA": { downPercent: 0.035, downInOutOfPocket: false, pmi: 45, maxConcessionPercent: 0.06 },
-  "30 Year FHA": { downPercent: 0.035, downInOutOfPocket: true, pmi: 45, maxConcessionPercent: 0.06 },
-  "FHA 203k": { downPercent: 0.035, downInOutOfPocket: true, pmi: 45, maxConcessionPercent: 0.06 },
-  "30 Year Conventional": { downPercent: 0.03, downInOutOfPocket: true, pmi: 45, maxConcessionPercent: 0.03 },
-  "Jumbo": { downPercent: 0.03, downInOutOfPocket: true, pmi: 45, maxConcessionPercent: 0.03 },
-  "DSCR": { downPercent: 0.2, downInOutOfPocket: true, pmi: 0, maxConcessionPercent: 0.03 },
-  "VA Loan": { downPercent: 0, downInOutOfPocket: true, pmi: 0, maxConcessionPercent: 0.04 },
+  "DPA FHA": { downPercent: 0, minDownPercent: 0, downLocked: true, downInOutOfPocket: false, pmi: 45, maxConcessionPercent: 0.06 },
+  "30 Year FHA": { downPercent: 0.035, minDownPercent: 0.035, downLocked: false, downInOutOfPocket: true, pmi: 45, maxConcessionPercent: 0.06 },
+  "FHA 203k": { downPercent: 0.035, minDownPercent: 0.035, downLocked: false, downInOutOfPocket: true, pmi: 45, maxConcessionPercent: 0.06 },
+  "30 Year Conventional": { downPercent: 0.03, minDownPercent: 0.03, downLocked: false, downInOutOfPocket: true, pmi: 45, maxConcessionPercent: 0.03 },
+  "VA Loan": { downPercent: 0, minDownPercent: 0, downLocked: false, downInOutOfPocket: true, pmi: 0, maxConcessionPercent: 0.04 },
+  "Jumbo": { downPercent: 0.1, minDownPercent: 0.1, downLocked: false, downInOutOfPocket: true, pmi: 45, maxConcessionPercent: 0.03 },
+  "DSCR": { downPercent: 0.2, minDownPercent: 0.2, downLocked: false, downInOutOfPocket: true, pmi: 0, maxConcessionPercent: 0.03 },
 };
 
 export const INSURANCE_MONTHLY = 125;
@@ -26,7 +30,15 @@ export function calcMonthlyPI(loanAmount, annualRatePercent) {
   return (amount * r) / (1 - Math.pow(1 + r, -n));
 }
 
-export function calculateQuote({ loanType, interestRate, salesPrice, monthlyTaxes, hoaDues, concession }) {
+export function calculateQuote({
+  loanType,
+  interestRate,
+  salesPrice,
+  monthlyTaxes,
+  hoaDues,
+  concession,
+  downPercent,
+}) {
   const rules = getProgramRules(loanType);
   if (!rules) return null;
   const sales = Math.max(0, Number(salesPrice) || 0);
@@ -35,7 +47,12 @@ export function calculateQuote({ loanType, interestRate, salesPrice, monthlyTaxe
   const requested = Math.max(0, Number(concession) || 0);
   const maxConcession = sales * rules.maxConcessionPercent;
   const effectiveConcession = Math.min(requested, maxConcession);
-  const downPayment = sales * rules.downPercent;
+  const requestedDown = Number(downPercent);
+  const chosenDown = Number.isFinite(requestedDown) ? requestedDown : rules.minDownPercent;
+  const effectiveDownPercent = rules.downLocked
+    ? rules.minDownPercent
+    : Math.min(Math.max(chosenDown, rules.minDownPercent), MAX_DOWN_PERCENT);
+  const downPayment = sales * effectiveDownPercent;
   const loanAmount = sales - downPayment;
   const principalAndInterest = calcMonthlyPI(loanAmount, interestRate);
   const monthlyPayment =
@@ -45,6 +62,9 @@ export function calculateQuote({ loanType, interestRate, salesPrice, monthlyTaxe
   const totalOutOfPocket = Math.max(0, downOutOfPocket + closingCosts - effectiveConcession);
   return {
     rules,
+    downPercent: effectiveDownPercent,
+    minDownPercent: rules.minDownPercent,
+    maxDownPercent: MAX_DOWN_PERCENT,
     downPayment,
     loanAmount,
     principalAndInterest,

@@ -1,9 +1,10 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.49';
-import { getProgramRules } from '../../shared/loan-calculator.ts';
+import { getProgramRules, normalizeDownPaymentPercent } from '../../shared/loan-calculator.ts';
 
 // Public save for the client calculator page (no login, per request).
-// Only the four client-editable fields are written; preapproval_amount,
-// loan_type and interest_rate can never be changed through this endpoint.
+// Only the four client-editable fields plus the chosen down payment percentage
+// are written; preapproval_amount, loan_type, interest_rate and the loan amount
+// can never be changed through this endpoint.
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
@@ -32,11 +33,14 @@ export default async function(req) {
 
     const cappedConcession = Math.min(concession, salesPrice * rules.maxConcessionPercent);
 
+    const downPaymentPercent = normalizeDownPaymentPercent(loan.loan_type, body.down_payment_percent);
+
     await base44.asServiceRole.entities.Loan.update(loanId, {
       sales_price: salesPrice,
       monthly_property_taxes: taxes,
       hoa_dues: hoa,
       sellers_concession: cappedConcession,
+      down_payment_percent: downPaymentPercent,
     });
 
     return Response.json({
@@ -45,6 +49,7 @@ export default async function(req) {
       monthly_property_taxes: taxes,
       hoa_dues: hoa,
       sellers_concession: cappedConcession,
+      down_payment_percent: downPaymentPercent,
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

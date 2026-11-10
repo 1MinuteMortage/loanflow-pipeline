@@ -453,6 +453,10 @@
       "type": "number",
       "description": "Interest rate saved at pre-approval"
     },
+    "down_payment_percent": {
+      "type": "number",
+      "description": "Down payment percentage chosen on the client calculator (3.5 means 3.5%)"
+    },
     "realtor_name": {
       "type": "string",
       "description": "Name of the realtor who referred the client"

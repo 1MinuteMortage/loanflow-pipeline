@@ -25,6 +25,7 @@ export default async function(req) {
       monthly_property_taxes: loan.monthly_property_taxes ?? null,
       hoa_dues: loan.hoa_dues ?? null,
       sellers_concession: loan.sellers_concession ?? null,
+      down_payment_percent: loan.down_payment_percent ?? null,
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

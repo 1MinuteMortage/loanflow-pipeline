@@ -13,15 +13,16 @@ const SLICES = [
 export default function MonthlyPaymentBreakdown({ quote }) {
   if (!quote) return null;
   const total = Number(quote.monthlyPayment) || 0;
-  const slices = SLICES.map((s) => ({ ...s, amount: Number(quote[s.key]) || 0 }))
-    .filter((s) => s.amount > 0)
-    .map((s) => ({ ...s, percent: total > 0 ? (s.amount / total) * 100 : 0 }));
+  const slices = SLICES.map((s) => ({ ...s, amount: Number(quote[s.key]) || 0 })).filter(
+    (s) => s.amount > 0
+  );
   if (slices.length === 0) return null;
-  const largest = slices.reduce((a, b) => (b.amount > a.amount ? b : a));
 
   return (
     <div className="rounded-lg border border-border bg-card p-4 sm:p-5">
-      <h2 className="font-heading text-lg font-bold text-foreground">Your Monthly Mortgage Payment</h2>
+      <h2 className="font-heading text-lg font-bold text-foreground">
+        Your Estimated Monthly Mortgage Payment
+      </h2>
       <p className="text-sm text-muted-foreground">See exactly where your money goes!</p>
 
       <div className="mt-4 flex flex-col sm:flex-row items-center gap-6">
@@ -43,12 +44,6 @@ export default function MonthlyPaymentBreakdown({ quote }) {
               </Pie>
             </PieChart>
           </ResponsiveContainer>
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-8 pointer-events-none">
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-              {largest.label}
-            </p>
-            <p className="text-2xl font-bold text-foreground">{Math.round(largest.percent)}%</p>
-          </div>
         </div>
 
         <ul className="w-full space-y-2">

@@ -16,6 +16,10 @@ export default function CalculatorResults({ quote }) {
         </div>
         <div className="rounded-lg border border-border bg-card p-4 space-y-2.5">
           <div className="flex items-baseline justify-between gap-2">
+            <p className="text-xs font-medium text-muted-foreground">Estimated Loan Amount</p>
+            <p className="text-sm font-semibold text-foreground">{formatUSD(quote.loanAmount)}</p>
+          </div>
+          <div className="flex items-baseline justify-between gap-2 border-t border-border pt-2.5">
             <div>
               <p className="text-xs font-medium text-muted-foreground">Estimated Down Payment</p>
               {coveredByDPA && (

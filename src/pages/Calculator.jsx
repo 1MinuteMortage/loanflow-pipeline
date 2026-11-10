@@ -2,16 +2,23 @@ import React, { useEffect, useMemo, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Loader2, Save } from "lucide-react";
-import { calculateQuote, getProgramRules } from "@/lib/loan-calculator";
+import { calculateQuote, getProgramRules, MAX_DOWN_PERCENT } from "@/lib/loan-calculator";
 import CalculatorFields from "@/components/calculator/CalculatorFields";
 import CalculatorResults from "@/components/calculator/CalculatorResults";
 import LoanProgramHeader from "@/components/calculator/LoanProgramHeader";
+import CalculatorHeader from "@/components/calculator/CalculatorHeader";
 
 export default function Calculator() {
   const [loading, setLoading] = useState(true);
   const [loan, setLoan] = useState(null);
   const [notFound, setNotFound] = useState(false);
-  const [form, setForm] = useState({ salesPrice: "", taxes: "", hoa: "", concession: "" });
+  const [form, setForm] = useState({
+    salesPrice: "",
+    taxes: "",
+    hoa: "",
+    concession: "",
+    downPercent: 0,
+  });
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
   const [savedAt, setSavedAt] = useState(null);
@@ -32,11 +39,22 @@ export default function Calculator() {
           return;
         }
         setLoan(data);
+        const programRules = getProgramRules(data.loan_type);
+        const minPercent = programRules ? programRules.downPercent * 100 : 0;
+        let downPercent = Number(data.down_payment_percent);
+        if (!programRules || programRules.downLocked) {
+          downPercent = 0;
+        } else if (!Number.isFinite(downPercent) || downPercent < minPercent) {
+          downPercent = minPercent;
+        } else {
+          downPercent = Math.min(downPercent, MAX_DOWN_PERCENT * 100);
+        }
         setForm({
           salesPrice: data.sales_price != null ? String(data.sales_price) : "",
           taxes: data.monthly_property_taxes != null ? String(data.monthly_property_taxes) : "",
           hoa: data.hoa_dues != null ? String(data.hoa_dues) : "",
           concession: data.sellers_concession != null ? String(data.sellers_concession) : "",
+          downPercent,
         });
       })
       .catch(() => setNotFound(true))
@@ -53,6 +71,8 @@ export default function Calculator() {
   }, [notFound]);
 
   const handleChange = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
+  const handleDownPercentChange = (value) =>
+    setForm((prev) => ({ ...prev, downPercent: value }));
 
   const quote = useMemo(() => {
     if (!loan) return null;
@@ -63,6 +83,7 @@ export default function Calculator() {
       monthlyTaxes: form.taxes,
       hoaDues: form.hoa,
       concession: form.concession,
+      downPercent: (Number(form.downPercent) || 0) / 100,
     });
   }, [loan, form]);
 
@@ -83,6 +104,7 @@ export default function Calculator() {
         monthly_property_taxes: parseFloat(form.taxes) || 0,
         hoa_dues: parseFloat(form.hoa) || 0,
         sellers_concession: parseFloat(form.concession) || 0,
+        down_payment_percent: Number(form.downPercent) || 0,
       });
       const data = res?.data ?? res;
       if (!data || data.error) {
@@ -102,16 +124,7 @@ export default function Calculator() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-5">
-          <h1 className="font-heading text-xl sm:text-2xl font-bold text-foreground">
-            {loan?.first_name ? `${loan.first_name}'s Mortgage Calculator` : "Mortgage Calculator"}
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Estimate your monthly payment and out-of-pocket costs.
-          </p>
-        </div>
-      </header>
+      <CalculatorHeader firstName={loan?.first_name} />
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-6 space-y-6">
         {loading ? (
@@ -134,6 +147,9 @@ export default function Calculator() {
               onChange={handleChange}
               preapprovalAmount={loan.preapproval_amount}
               exceedsPreapproval={exceedsPreapproval}
+              rules={rules}
+              downPercent={form.downPercent}
+              onDownPercentChange={handleDownPercentChange}
             />
             <CalculatorResults quote={quote} />
             <div className="flex items-center gap-3">
