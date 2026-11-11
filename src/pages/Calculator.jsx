@@ -1,7 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { Button } from "@/components/ui/button";
-import { Loader2, Save } from "lucide-react";
 import { calculateQuote, getProgramRules, MAX_DOWN_PERCENT } from "@/lib/loan-calculator";
 import CalculatorFields from "@/components/calculator/CalculatorFields";
 import CalculatorResults from "@/components/calculator/CalculatorResults";
@@ -19,10 +17,6 @@ export default function Calculator() {
     concession: "",
     downPercent: 0,
   });
-  const [saving, setSaving] = useState(false);
-  const [saveError, setSaveError] = useState("");
-  const [savedAt, setSavedAt] = useState(null);
-
   useEffect(() => {
     const loanId = new URLSearchParams(window.location.search).get("loanId");
     if (!loanId) {
@@ -93,33 +87,6 @@ export default function Calculator() {
     return Number.isFinite(p) && p > loan.preapproval_amount;
   }, [loan, form.salesPrice]);
 
-  const handleSave = async () => {
-    if (!loan || saving || exceedsPreapproval) return;
-    setSaving(true);
-    setSaveError("");
-    try {
-      const res = await base44.functions.invoke("loan-calculator-save", {
-        loanId: loan.id,
-        sales_price: parseFloat(form.salesPrice) || 0,
-        monthly_property_taxes: parseFloat(form.taxes) || 0,
-        hoa_dues: parseFloat(form.hoa) || 0,
-        sellers_concession: parseFloat(form.concession) || 0,
-        down_payment_percent: Number(form.downPercent) || 0,
-      });
-      const data = res?.data ?? res;
-      if (!data || data.error) {
-        setSaveError(data?.error || "Could not save. Please try again.");
-      } else {
-        setSavedAt(new Date());
-        setForm((prev) => ({ ...prev, concession: String(data.sellers_concession) }));
-      }
-    } catch (e) {
-      setSaveError("Could not save. Please try again.");
-    } finally {
-      setSaving(false);
-    }
-  };
-
   const rules = loan ? getProgramRules(loan.loan_type) : null;
 
   return (
@@ -141,7 +108,11 @@ export default function Calculator() {
           </div>
         ) : (
           <>
-            <LoanProgramHeader loanType={loan.loan_type} interestRate={loan.interest_rate} />
+            <LoanProgramHeader
+              preapprovalAmount={loan.preapproval_amount}
+              interestRate={loan.interest_rate}
+              loanType={loan.loan_type}
+            />
             <CalculatorFields
               form={form}
               onChange={handleChange}
@@ -152,20 +123,6 @@ export default function Calculator() {
               onDownPercentChange={handleDownPercentChange}
             />
             <CalculatorResults quote={quote} />
-            <div className="flex items-center gap-3">
-              <Button onClick={handleSave} disabled={saving || exceedsPreapproval}>
-                {saving ? (
-                  <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
-                ) : (
-                  <Save className="w-4 h-4 mr-1.5" />
-                )}
-                {saving ? "Saving..." : "Save"}
-              </Button>
-              {savedAt && !saveError && (
-                <p className="text-sm text-green-600">Your numbers have been saved.</p>
-              )}
-            </div>
-            {saveError && <p className="text-sm text-destructive">{saveError}</p>}
           </>
         )}
       </main>

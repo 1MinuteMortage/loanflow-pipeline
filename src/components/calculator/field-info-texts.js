@@ -1,0 +1,13 @@
+// Help text shown in the info dialogs beside each adjustable calculator field.
+export const FIELD_INFO = {
+  salesPrice:
+    "The sales price is the amount you plan to offer or pay for your new home. Enter a purchase price and see how it affects your estimated monthly mortgage payment. This allows you to customize your offer based on a payment that works best for your budget.",
+  downPayment:
+    "Your down payment is the amount of money you contribute upfront toward purchasing your home. Depending on your loan program, you may have the option to increase your down payment to reduce your mortgage loan amount and potentially lower your monthly payment. Use the slider to explore different down payment amounts and see how they affect your estimated mortgage payment. Minimum down payment requirements will automatically apply based on your loan program.",
+  taxes:
+    "Property taxes are taxes assessed by your local government based on the property's value. In most mortgage transactions, these taxes are collected monthly as part of your mortgage payment and held in an escrow account until they are paid on your behalf. You can typically find the property's tax information on the real estate listing where you found the home or by asking your real estate agent. Please enter the estimated monthly property tax amount. If the listing provides an annual amount, divide that figure by 12 to calculate the monthly estimate.",
+  hoa:
+    "Some neighborhoods, condominiums, and residential communities require Homeowners Association (HOA) dues. These fees may cover community maintenance, shared amenities, landscaping, or other neighborhood services. Not every property has HOA dues. You can typically find this information on the property's real estate listing or by asking your real estate agent. If the property does not have HOA dues, enter $0. If HOA fees are quoted annually or quarterly, convert them into a monthly amount.",
+  concession:
+    "A seller's concession is a contribution from the home seller toward your eligible closing costs and prepaid expenses. This can help reduce the amount of money you need to bring to closing. Seller contributions are typically negotiated as part of your purchase offer. For this calculator, we use the following contribution thresholds: FHA Loans: 6% of the sales price. VA Loans: 4% of the sales price. Conventional Loans: 3% of the sales price. Enter the dollar amount you would like to request from the seller. The calculator will notify you if your request exceeds the recommended threshold for your loan program.",
+};

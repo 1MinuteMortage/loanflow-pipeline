@@ -5,7 +5,7 @@ import { formatUSD } from "@/lib/loan-calculator";
 const SLICES = [
   { key: "principalAndInterest", label: "Principal & Interest", color: "#2563eb" },
   { key: "taxes", label: "Property Taxes", color: "#16a34a" },
-  { key: "insuranceMonthly", label: "Home Insurance", color: "#f97316" },
+  { key: "insuranceMonthly", label: "Homeowners Insurance", color: "#f97316" },
   { key: "hoa", label: "HOA Dues", color: "#8b5cf6" },
   { key: "pmi", label: "Mortgage Insurance", color: "#14b8a6" },
 ];
@@ -44,6 +44,16 @@ export default function MonthlyPaymentBreakdown({ quote }) {
               </Pie>
             </PieChart>
           </ResponsiveContainer>
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <div className="w-[58%] text-center">
+              <p className="text-[10px] font-medium leading-tight text-muted-foreground">
+                Estimated Mortgage Payment
+              </p>
+              <p className="mt-1 text-base font-bold leading-tight text-foreground">
+                {formatUSD(total, 2)}
+              </p>
+            </div>
+          </div>
         </div>
 
         <ul className="w-full space-y-2">

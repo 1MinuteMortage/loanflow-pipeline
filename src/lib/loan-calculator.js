@@ -46,7 +46,9 @@ export function calculateQuote({
   const hoa = Math.max(0, Number(hoaDues) || 0);
   const requested = Math.max(0, Number(concession) || 0);
   const maxConcession = sales * rules.maxConcessionPercent;
-  const effectiveConcession = Math.min(requested, maxConcession);
+  // The client's typed concession is used as-is in the cash-to-close math; the
+  // program's recommended limit only drives the warning beside the field.
+  const effectiveConcession = requested;
   const requestedDown = Number(downPercent);
   const chosenDown = Number.isFinite(requestedDown) ? requestedDown : rules.minDownPercent;
   const effectiveDownPercent = rules.downLocked

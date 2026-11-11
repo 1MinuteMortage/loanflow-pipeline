@@ -40,14 +40,6 @@ export default function CalculatorResults({ quote }) {
       </div>
 
       <MonthlyPaymentBreakdown quote={quote} />
-
-      {quote.concessionCapped && (
-        <p className="text-xs text-muted-foreground">
-          Your requested concession exceeds this program's maximum. The maximum seller concession for this
-          program is {formatUSD(quote.maxConcession)} ({Math.round(rules.maxConcessionPercent * 100)}% of
-          sales price), and that amount is used in the estimate.
-        </p>
-      )}
     </div>
   );
 }
