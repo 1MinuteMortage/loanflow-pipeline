@@ -152,7 +152,7 @@ export default function IncomeCalculatorModal({ open, onOpenChange, loan, existi
         <DialogHeader>
           <DialogTitle>Calculate Income</DialogTitle>
           <DialogDescription>
-            Determine the preliminary qualifying income using two years of source income figures. The lower of the two years is used as the conservative qualifying income.
+            Determine the preliminary qualifying income using two years of source income figures. W-2 income averages both years; 1099 income uses the lower of the two years.
           </DialogDescription>
         </DialogHeader>
 

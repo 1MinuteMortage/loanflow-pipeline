@@ -28,7 +28,9 @@ export function calculateSourceIncome(source) {
         ? Number(hoursPerPayPeriod) * Number(hourlyRate) * PAY_PERIODS_PER_YEAR[payFrequency]
         : null
       : amountRecent !== "" && amountPrior !== ""
-        ? Math.min(Number(amountRecent), Number(amountPrior))
+        ? incomeType === "w2"
+          ? (Number(amountRecent) + Number(amountPrior)) / 2
+          : Math.min(Number(amountRecent), Number(amountPrior))
         : null;
   const calculatedIncome = annualIncome != null ? Math.round((annualIncome / 12) * 100) / 100 : null;
   return { payFrequency, annualIncome, calculatedIncome };
@@ -193,11 +195,18 @@ export default function IncomeSourceFields({ source, onChange, yearRecent, yearP
             </>
           ) : (
             <>
+              {incomeType === "w2" ? (
+                <p className="text-muted-foreground">
+                  Average Annual Income = (${Number(amountRecent).toLocaleString()} + $
+                  {Number(amountPrior).toLocaleString()}) ÷ 2 = ${annualIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </p>
+              ) : (
+                <p className="text-muted-foreground">
+                  Conservative Annual Income = lower of ${Number(amountRecent).toLocaleString()} or ${Number(amountPrior).toLocaleString()}
+                </p>
+              )}
               <p className="text-muted-foreground">
-                Conservative Annual Income = lower of ${Number(amountRecent).toLocaleString()} or ${Number(amountPrior).toLocaleString()}
-              </p>
-              <p className="text-muted-foreground">
-                Monthly Qualifying Income = ${annualIncome.toLocaleString()} ÷ 12
+                Monthly Qualifying Income = ${annualIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ÷ 12
               </p>
             </>
           )}

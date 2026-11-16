@@ -32,8 +32,16 @@ export function buildExplanationText(loan, calc) {
       lines.push(`${prefix} ${yrRecent} ${label === "W-2" ? "W-2 Income" : "AGI"}: $${Number(amtRecent).toLocaleString()}`);
       lines.push(`${prefix} ${yrPrior} ${label === "W-2" ? "W-2 Income" : "AGI"}: $${Number(amtPrior).toLocaleString()}`);
       lines.push("");
-      lines.push(`${prefix} Qualifying Income: The lower of $${fmt(amtRecent)} (${yrRecent}) or $${fmt(amtPrior)} (${yrPrior}) annually`);
-      lines.push(`${prefix} Monthly Qualifying Income: $${fmt(monthlyIncome)} per month`);
+      if (incomeType === "w2") {
+        const averageAnnual = (Number(amtRecent) + Number(amtPrior)) / 2;
+        lines.push(
+          `${prefix} Average Annual Income: ($${fmt(amtRecent)} (${yrRecent}) + $${fmt(amtPrior)} (${yrPrior})) ÷ 2 = $${fmt(averageAnnual)} annually`
+        );
+        lines.push(`${prefix} Monthly Qualifying Income: $${fmt(averageAnnual)} ÷ 12 = $${fmt(monthlyIncome)} per month`);
+      } else {
+        lines.push(`${prefix} Qualifying Income: The lower of $${fmt(amtRecent)} (${yrRecent}) or $${fmt(amtPrior)} (${yrPrior}) annually`);
+        lines.push(`${prefix} Monthly Qualifying Income: $${fmt(monthlyIncome)} per month`);
+      }
     }
   }
 
@@ -75,7 +83,7 @@ export function buildExplanationText(loan, calc) {
 
   lines.push("");
   lines.push(
-    `The preliminary qualifying income was calculated using the conservative (lower) of the two most recent applicable income figures entered into the loan processing system, consistent with standard underwriting practice. The resulting figure was used as the preliminary qualifying income for the Loan Officer's pre-approval analysis. Final income eligibility and qualifying income remain subject to review and approval by the lender/underwriter in accordance with applicable underwriting guidelines and documentation requirements.`
+    `The preliminary qualifying income was calculated from the two most recent applicable income figures entered into the loan processing system, consistent with standard underwriting practice: W-2 income is averaged over the two years, while self-employed (1099) income uses the lower of the two years. The resulting figure was used as the preliminary qualifying income for the Loan Officer's pre-approval analysis. Final income eligibility and qualifying income remain subject to review and approval by the lender/underwriter in accordance with applicable underwriting guidelines and documentation requirements.`
   );
   lines.push("");
   lines.push(`Calculation Completed By: ${calc.loan_officer_name || "N/A"}`);
