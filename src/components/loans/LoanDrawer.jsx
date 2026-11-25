@@ -33,6 +33,7 @@ import {
   canOpenLoanDetails,
   isAdmin,
 } from "@/lib/permissions";
+import { base44 } from "@/api/base44Client";
 
 const DEFAULT_TAB_ORDER = ["borrower", "property", "contacts", "docs", "uw", "ai_assist"];
 const TAB_LABELS = {
@@ -73,19 +74,10 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate, current
   const [exportingMismo, setExportingMismo] = useState(false);
   const [returning, setReturning] = useState(false);
 
-  const loaFn = "https://vdcouyronkvgsdclgsgj.supabase.co/functions/v1";
-  const loaSecret = import.meta.env.VITE_LOA_WEBHOOK_SECRET || "";
-
-  async function callLoa(path, body) {
-    const headers = { "Content-Type": "application/json" };
-    if (loaSecret) headers["x-webhook-secret"] = loaSecret;
-    const res = await fetch(`${loaFn}/${path}`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(body),
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok || data.error) throw new Error(data.error || "Request failed");
+  async function callLoa(name, body) {
+    const result = await base44.functions.invoke(name, body);
+    const data = result?.data || result || {};
+    if (data.error) throw new Error(data.error);
     return data;
   }
 
