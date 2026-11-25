@@ -70,6 +70,24 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate, current
   const [contactsPromptOpen, setContactsPromptOpen] = useState(false);
   const [preapprovalPromptOpen, setPreapprovalPromptOpen] = useState(false);
   const [pendingStage, setPendingStage] = useState(null);
+  const [exportingMismo, setExportingMismo] = useState(false);
+  const [returning, setReturning] = useState(false);
+
+  const loaFn = "https://vdcouyronkvgsdclgsgj.supabase.co/functions/v1";
+  const loaSecret = import.meta.env.VITE_LOA_WEBHOOK_SECRET || "";
+
+  async function callLoa(path, body) {
+    const headers = { "Content-Type": "application/json" };
+    if (loaSecret) headers["x-webhook-secret"] = loaSecret;
+    const res = await fetch(`${loaFn}/${path}`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(body),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data.error) throw new Error(data.error || "Request failed");
+    return data;
+  }
 
   useEffect(() => {
     if (loan) {
@@ -102,6 +120,7 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate, current
         lender_name: loan.lender_name || "",
         loan_number: loan.loan_number || "",
         loan_type: loan.loan_type || "",
+        interest_rate: loan.interest_rate ?? "",
         preapproval_amount: loan.preapproval_amount ?? "",
         interest_rate: loan.interest_rate ?? "",
         ltv: loan.ltv ?? "",
@@ -393,6 +412,52 @@ export default function LoanDrawer({ loan, open, onOpenChange, onUpdate, current
               <span className="text-xs text-muted-foreground">
                 {needed.remaining} item{needed.remaining !== 1 ? "s" : ""} needed
               </span>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={exportingMismo}
+                onClick={async () => {
+                  setExportingMismo(true);
+                  try {
+                    const data = await callLoa("export-mismo", { loanId: loan.id });
+                    const blob = new Blob([data.xml], { type: "application/xml" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = data.filename || "loan-mismo-3.4.xml";
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  } catch (err) {
+                    window.alert(err instanceof Error ? err.message : "Could not create the MISMO file");
+                  } finally {
+                    setExportingMismo(false);
+                  }
+                }}
+              >
+                {exportingMismo ? "Creating file..." : "Create MISMO 3.4 file"}
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={returning}
+                onClick={async () => {
+                  if (!window.confirm("Return this client to Needs Review and remove them from LOS? Their information and documents stay.")) return;
+                  setReturning(true);
+                  try {
+                    await callLoa("return-client-to-loa", { loanId: loan.id });
+                    window.alert("This client is back on Needs Review in the office app.");
+                    onOpenChange(false);
+                  } catch (err) {
+                    window.alert(err instanceof Error ? err.message : "Could not return this client");
+                  } finally {
+                    setReturning(false);
+                  }
+                }}
+              >
+                {returning ? "Returning..." : "Return to LOA"}
+              </Button>
             </div>
           </SheetHeader>
 
